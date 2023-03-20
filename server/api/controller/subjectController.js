@@ -1,6 +1,6 @@
 const { Student, Subject } = require("../models/model");
 
-const subjectController = {
+const SubjectController = {
   //ADD SUBJECT
   addSubject: async (req, res) => {
     try {
@@ -57,4 +57,4 @@ const subjectController = {
   },
 };
 
-module.exports = subjectController;
+module.exports = SubjectController;

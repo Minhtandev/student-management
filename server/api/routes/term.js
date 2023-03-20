@@ -1,19 +1,19 @@
 const router = require("express").Router();
-const termController = require("../controller/termController");
+const TermController = require("../controller/termController");
 
 // ADD A TERM
-router.post("/", termController.addTerm);
+router.post("/", TermController.addTerm);
 
 //GET A TERM
-router.get("/:id", termController.getTerm);
+router.get("/:id", TermController.getTerm);
 
 //GET ALL TERMS
-router.get("/", termController.getAllTerms);
+router.get("/", TermController.getAllTerms);
 
 //UPDATE A TERM
-router.put("/:id", termController.updateTerm);
+router.put("/:id", TermController.updateTerm);
 
 //DELETE A TERM
-router.delete("/:id", termController.deleteTerm);
+router.delete("/:id", TermController.deleteTerm);
 
 module.exports = router;

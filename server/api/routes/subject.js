@@ -1,19 +1,19 @@
 const router = require("express").Router();
-const subjectController = require("../controller/subjectController");
+const SubjectController = require("../controller/subjectController");
 
 // ADD A SUBJECT
-router.post("/", subjectController.addSubject);
+router.post("/", SubjectController.addSubject);
 
 //GET A SUBJECT
-router.get("/:id", subjectController.getSubject);
+router.get("/:id", SubjectController.getSubject);
 
 //GET ALL SUBJECTS
-router.get("/", subjectController.getAllSubjects);
+router.get("/", SubjectController.getAllSubjects);
 
 //UPDATE A SUBJECT
-router.put("/:id", subjectController.updateSubject);
+router.put("/:id", SubjectController.updateSubject);
 
 //DELETE A SUBJECT
-router.delete("/:id", subjectController.deleteSubject);
+router.delete("/:id", SubjectController.deleteSubject);
 
 module.exports = router;

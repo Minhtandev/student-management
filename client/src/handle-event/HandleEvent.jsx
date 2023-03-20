@@ -154,7 +154,7 @@ export const helper = {
         let isAgeValid;
         let today = new Date();
         let thisYear = today.getFullYear();
-        let [inputYear, inputMonth, inputDay] = data.dateOfBirth.split("-");
+        let [inputYear, inputMonth, inputDay] = data.birth.split("-");
         let age = Number(thisYear) - Number(inputYear);
         isAgeValid = age >= minAge && age <= maxAge;
         console.log("age>>>", data.dateOfBirth);
@@ -189,8 +189,8 @@ export const helper = {
 
       case "class": {
         let isThereClass = true;
-        const classNameArr = classArr.map((item) => item.nameClass);
-        if (!classNameArr.includes(data.nameClass)) {
+        const classNameArr = classArr.map((item) => item.name);
+        if (!classNameArr.includes(data.name)) {
           isThereClass = false;
         }
         if (!isThereClass) {

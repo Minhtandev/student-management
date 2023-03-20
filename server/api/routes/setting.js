@@ -1,19 +1,19 @@
 const router = require("express").Router();
-const settingController = require("../controller/settingController");
+const SettingController = require("../controller/settingController");
 
 // ADD A SETTING
-router.post("/", settingController.addSetting);
+router.post("/", SettingController.addSetting);
 
 //GET ALL SETTINGS
-router.get("/", settingController.getAllSettings);
+router.get("/", SettingController.getAllSettings);
 
 //UPDATE A SETTING
-router.put("/:id", settingController.updateSetting);
+router.put("/:id", SettingController.updateSetting);
 
 //GET A SETTING
-router.get("/:id", settingController.getSetting);
+router.get("/:id", SettingController.getSetting);
 
 //DELETE A SETTING
-router.delete("/:id", settingController.deleteSetting);
+router.delete("/:id", SettingController.deleteSetting);
 
 module.exports = router;

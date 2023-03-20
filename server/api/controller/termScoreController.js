@@ -1,10 +1,10 @@
-const { ScoreSchoolYear } = require("../models/model");
+const { TermScore } = require("../models/model");
 
-const scoreSchoolYearController = {
+const TermScoreController = {
   //ADD SCORE_SCHOOL_YEAR
-  addScoreSchoolYear: async (req, res) => {
+  addTermScore: async (req, res) => {
     try {
-      const newScoreSchoolYear = new ScoreSchoolYear(req.body);
+      const newScoreSchoolYear = new TermScore(req.body);
       const savedScoreSchoolYear = await newScoreSchoolYear.save();
       res.status(200).json(savedScoreSchoolYear);
     } catch (err) {
@@ -13,9 +13,9 @@ const scoreSchoolYearController = {
   },
 
   // GET ALL SCORE_SCHOOL_YEARS
-  getAllScoreSchoolYears: async (req, res) => {
+  getAllTermScores: async (req, res) => {
     try {
-      const scoreSheets = await ScoreSchoolYear.find();
+      const scoreSheets = await TermScore.find();
       res.status(200).json(scoreSheets);
     } catch (err) {
       res.status(500).json(err);
@@ -23,9 +23,9 @@ const scoreSchoolYearController = {
   },
 
   //GET A SCORE_SCHOOL_YEAR
-  getScoreSchoolYear: async (req, res) => {
+  getTermScore: async (req, res) => {
     try {
-      const scoreSchoolYear = await ScoreSchoolYear.findById(req.params.id);
+      const scoreSchoolYear = await TermScore.findById(req.params.id);
       res.status(200).json(scoreSchoolYear);
     } catch (err) {
       res.status(500).json(err);
@@ -33,9 +33,9 @@ const scoreSchoolYearController = {
   },
 
   //UPDATE SCORE_SCHOOL_YEAR
-  updateScoreSchoolYear: async (req, res) => {
+  updateTermScore: async (req, res) => {
     try {
-      const scoreSchoolYear = await ScoreSchoolYear.findById(req.params.id);
+      const scoreSchoolYear = await TermScore.findById(req.params.id);
       await scoreSchoolYear.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -44,9 +44,9 @@ const scoreSchoolYearController = {
   },
 
   //DELETE SCORE_SCHOOL_YEAR
-  deleteScoreSchoolYear: async (req, res) => {
+  deleteTermScore: async (req, res) => {
     try {
-      await ScoreSchoolYear.findByIdAndDelete(req.params.id);
+      await TermScore.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
       res.status(500).json(err);
@@ -54,4 +54,4 @@ const scoreSchoolYearController = {
   },
 };
 
-module.exports = scoreSchoolYearController;
+module.exports = TermScoreController;

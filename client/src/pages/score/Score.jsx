@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom";
 export const Score = () => {
   let history = useHistory();
   const [classArrState, setClassArrState] = useState([]);
-  const [CCLASSState, setCCLASSArrState] = useState([]);
+  const [ClassDetailState, setClassDetailArrState] = useState([]);
   const [subjectArrState, setSubjectArrState] = useState([]);
   const [termArrState, setTermArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
@@ -27,7 +27,7 @@ export const Score = () => {
   // const [classIDState, setClassIDState] = useState("");
   //tạo options cho select
   // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.nameClass };
+  //   return { value: item.ID, text: item.name };
   // });
 
   // const subjectNameArr = subjectArr.map((item) => {
@@ -46,13 +46,13 @@ export const Score = () => {
       const scoreArr = await api.getScoreSubject();
       const subjectArr = await api.getSubjectList();
       const termArr = await api.getTermList();
-      const classArr = await api.getClassListArr();
-      const CLASS = await api.getCCLASS();
+      const classArr = await api.getClassList();
+      const CLASS = await api.getClassDetail();
       const schoolYearArr = await api.getSchoolYearList();
       const UIsubjectArr = subjectArr.map((item) => {
         return {
           ...item,
-          text: item.nameSubject,
+          text: item.name,
         };
       });
       const UItermArr = termArr.map((item) => {
@@ -70,7 +70,7 @@ export const Score = () => {
       const UIClassArr = classArr.map((item) => {
         return {
           ...item,
-          text: item.nameClass,
+          text: item.name,
         };
       });
 
@@ -80,7 +80,7 @@ export const Score = () => {
       setSchoolYearArrState(UISchoolYearArr);
       setClassArrState(UIClassArr);
       setScoreArrState(scoreArr);
-      setCCLASSArrState(CLASS);
+      setClassDetailArrState(CLASS);
     };
     getData();
   }, []);
@@ -96,21 +96,19 @@ export const Score = () => {
   const handleClickCreateBtn = () => {
     const [className, subject, term, schoolYear] = getSelectedOptions();
     console.log();
-    let subjectID = subjectArrState.find(
-      (item) => item.nameSubject === subject
-    )._id;
+    let subjectID = subjectArrState.find((item) => item.name === subject)._id;
     let termID = "6299d1a3197adb1f05703d97";
     let schoolYearID = schoolYearArrState.find(
       (item) => item.nameSchYear === schoolYear
     )._id;
     console.log(classArrState);
-    let classID = CCLASSState.find(
-      (item) => item.nameClass === className && item.schoolYear === schoolYearID
+    let classID = ClassDetailState.find(
+      (item) => item.name === className && item.schoolYear === schoolYearID
     )._id;
 
     let isExisted =
       scoreArrState.filter(
-        (item) => item.cClass === classID && item.subject === subjectID
+        (item) => item.ClassDetail === classID && item.subject === subjectID
         //&& item.term === termID
       ).length > 0;
     console.log(isExisted);

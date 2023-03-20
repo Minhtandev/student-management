@@ -43,7 +43,7 @@ export const SubjectList = () => {
 
           //dò tìm phần tử mang ID cần sửa
           let index = subjectArrStateCopy.findIndex(
-            (item) => item.idSubject == result[0].idSubject
+            (item) => item.name == result[0].name
           );
 
           //sửa giá trị
@@ -55,8 +55,8 @@ export const SubjectList = () => {
           helper.turnOnNotification("edit");
 
           //Cập nhật xuống CSDL
-          api.putSubjectList(subjectArrState[index]._id, {
-            nameSubject: result[0].nameSubject,
+          api.putSubject(subjectArrState[index]._id, {
+            name: result[0].name,
           });
           setResult([]);
         }
@@ -82,9 +82,9 @@ export const SubjectList = () => {
           document.querySelector(".row.add").style.display = "none";
 
           //Cập nhật xuống CSDL
-          api.postSubjectList({
-            idSubject: result[0].idSubject,
-            nameSubject: result[0].nameSubject,
+          api.postSubject({
+            name: result[0].name,
+            name: result[0].name,
           });
           setResult([]);
         }
@@ -95,7 +95,7 @@ export const SubjectList = () => {
 
         //lọc phần tử bị xóa ra khỏi mảng
         const newSubjectArrStateCopy = subjectArrStateCopy.filter((item, i) => {
-          return item.idSubject !== result[0].idSubject;
+          return item.name !== result[0].name;
         });
 
         //Cập nhật mảng, hiển thị thông báo
@@ -103,7 +103,7 @@ export const SubjectList = () => {
         helper.turnOnNotification("delete");
 
         //Lưu xuống CSDL
-        api.deleteSubjectList(result[0]._id);
+        api.deleteSubject(result[0]._id);
         setResult([]);
       },
       deleteSelectedSubject: () => {
@@ -121,7 +121,7 @@ export const SubjectList = () => {
 
         //Lưu xuống CSDL
         result.forEach((item) => {
-          api.deleteSubjectList(item._id);
+          api.deleteSubject(item._id);
         });
         setResult([]);
       },
@@ -134,7 +134,7 @@ export const SubjectList = () => {
           setResult([subjectArrState[index]]);
           setResultUI([
             {
-              "Tên môn": subjectArrState[index].nameSubject,
+              "Tên môn": subjectArrState[index].name,
             },
           ]);
           helper.turnOnConfirm("delete");
@@ -146,14 +146,14 @@ export const SubjectList = () => {
         let subjectArrStateCopy = JSON.parse(JSON.stringify(subjectArrState));
         let index = +e.target.getAttribute("data-set");
         let inputValue = e.target.closest(".row").querySelector("input").value;
-        subjectArrStateCopy[index].nameSubject = inputValue;
+        subjectArrStateCopy[index].name = inputValue;
 
         let newValue = subjectArrStateCopy[index];
 
         setResult([newValue]);
         setResultUI([
           {
-            "Tên môn": newValue.nameSubject,
+            "Tên môn": newValue.name,
           },
         ]);
         document.querySelector(".confirm.edit").style.display = "flex";
@@ -163,8 +163,8 @@ export const SubjectList = () => {
       subject: () => {
         const inputs = document.querySelectorAll(".row.add input");
         const newItem = {
-          idSubject: helper.generateID(subjectArrState, "idSubject", ""),
-          nameSubject: inputs[0].value,
+          name: helper.generateID(subjectArrState, "name", ""),
+          name: inputs[0].value,
           Edit: false,
           Checked: false,
         };
@@ -172,7 +172,7 @@ export const SubjectList = () => {
         setResult([newItem]);
         setResultUI([
           {
-            "Tên môn": newItem.nameSubject,
+            "Tên môn": newItem.name,
           },
         ]);
         document.querySelector(".confirm.add").style.display = "flex";
@@ -185,7 +185,7 @@ export const SubjectList = () => {
         setResultUI(
           selectedSubject.map((item, i) => {
             return {
-              "Tên môn": item.nameSubject,
+              "Tên môn": item.name,
             };
           })
         );
@@ -203,7 +203,7 @@ export const SubjectList = () => {
     },
     // handleNameInputChange: (e, i) => {
     //   let subjectArrStateCopy = JSON.parse(JSON.stringify(subjectArrState));
-    //   subjectArrStateCopy[i].nameSubject = e.target.value;
+    //   subjectArrStateCopy[i].name = e.target.value;
     //   setSubjectArrState(subjectArrStateCopy);
     // },
   };
@@ -263,9 +263,7 @@ export const SubjectList = () => {
                       data-set={i}
                     />
                   </div>
-                  <div className="item col-45-percent center">
-                    {item.nameSubject}
-                  </div>
+                  <div className="item col-45-percent center">{item.name}</div>
                   <div className="item col-45-percent center">
                     <button
                       className="edit-btn"
@@ -276,8 +274,7 @@ export const SubjectList = () => {
                           subjectArrState,
                           setSubjectArrState
                         )
-                      }
-                    >
+                      }>
                       <img className="edit-img" src={EditIcon} alt="" />
                     </button>
                     <button
@@ -285,8 +282,7 @@ export const SubjectList = () => {
                       data-set={i}
                       onClick={(e) =>
                         handleEvent.handleClickDeleteBtn.subject(e)
-                      }
-                    >
+                      }>
                       <img className="delete-img" src={DeleteIcon} alt="" />
                     </button>
                   </div>
@@ -299,14 +295,14 @@ export const SubjectList = () => {
                         type="text"
                         className="input--small"
                         placeholder="Nhập tên môn học mới..."
-                        value={item.nameSubject}
+                        value={item.name}
                         onChange={(e) =>
                           handler.handleEditInputChange(
                             e,
                             i,
                             subjectArrState,
                             setSubjectArrState,
-                            "nameSubject"
+                            "name"
                           )
                         }
                       />
@@ -317,8 +313,7 @@ export const SubjectList = () => {
                           handleEvent.handleSaveToEditBtn.subject(e)
                         }
                         data-set={i}
-                        className="save-btn--small"
-                      >
+                        className="save-btn--small">
                         Lưu
                       </button>
                     </div>
@@ -341,8 +336,7 @@ export const SubjectList = () => {
             <div className="item col-45-percent center save-btn__container">
               <button
                 onClick={handleEvent.handleSaveToAddBtn.subject}
-                className="save-btn--small"
-              >
+                className="save-btn--small">
                 Lưu
               </button>
             </div>

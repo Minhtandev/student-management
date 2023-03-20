@@ -7,6 +7,15 @@ import { Confirm } from "../../components/Confirm";
 import { Notification } from "../../components/Notification";
 import { handler, helper } from "../../handle-event/HandleEvent";
 import { api } from "../../api/api";
+
+const vietName = {
+  "max-age": "Tuổi tối đa",
+  "min-age": "Tuổi tối thiểu",
+  "pass-score": "Điểm qua môn",
+  "max-score": "Điểm tối đa",
+  "min-score": "Điểm tối thiểu",
+  "max-total": "Sĩ số tối đa",
+};
 // import axios from "axios";
 export const SettingList = () => {
   const [settingArrState, setSettingArrState] = useState([]);
@@ -40,7 +49,7 @@ export const SettingList = () => {
 
           //cập nhật mảng
           let index = settingArrStateCopy.findIndex(
-            (item) => item.idSet == result[0].idSet
+            (item) => item.name == result[0].name
           );
           settingArrStateCopy[index] = result[0];
           settingArrStateCopy[index].Edit = false;
@@ -50,8 +59,8 @@ export const SettingList = () => {
           helper.turnOnNotification("edit");
 
           //cập nhật xuống CSDL
-          api.putSettingList(settingArrState[index]._id, {
-            valueSet: result[0].valueSet,
+          api.putSetting(settingArrState[index]._id, {
+            value: result[0].value,
           });
         }
       },
@@ -62,13 +71,13 @@ export const SettingList = () => {
         let settingArrStateCopy = JSON.parse(JSON.stringify(settingArrState));
         let index = +e.target.getAttribute("data-set");
         let inputs = e.target.closest(".row").querySelectorAll("input");
-        settingArrStateCopy[index].valueSet = inputs[0].value;
+        settingArrStateCopy[index].value = inputs[0].value;
 
         let newResult = settingArrStateCopy[index];
         setResult([newResult]);
         let newResultUI = {
           "Tên tham số": newResult.nameSet,
-          "Giá trị": newResult.valueSet,
+          "Giá trị": newResult.value,
         };
         setResultUI([newResultUI]);
         helper.turnOnConfirm("edit");
@@ -76,7 +85,7 @@ export const SettingList = () => {
     },
     // handleValueInputChange: (e, i) => {
     //   let settingArrStateCopy = JSON.parse(JSON.stringify(settingArrState));
-    //   settingArrStateCopy[i].valueSet = e.target.value;
+    //   settingArrStateCopy[i].value = e.target.value;
     //   setSettingArrState(settingArrStateCopy);
     // },
   };
@@ -105,11 +114,9 @@ export const SettingList = () => {
               <>
                 <div className="row content" key={i}>
                   <div className="item col-33-percent center al-left pl-80">
-                    {item.nameSet}
+                    {vietName[item.name]}
                   </div>
-                  <div className="item col-33-percent center">
-                    {item.valueSet}
-                  </div>
+                  <div className="item col-33-percent center">{item.value}</div>
                   <div className="item col-33-percent center">
                     <button
                       className="edit-btn"
@@ -120,8 +127,7 @@ export const SettingList = () => {
                           settingArrState,
                           setSettingArrState
                         )
-                      }
-                    >
+                      }>
                       <img className="edit-img" src={EditIcon} alt="" />
                     </button>
                   </div>
@@ -134,14 +140,14 @@ export const SettingList = () => {
                         type="text"
                         className="input--small"
                         placeholder="Nhập giá trị mới..."
-                        value={item.valueSet}
+                        value={item.value}
                         onChange={(e) =>
                           handler.handleEditInputChange(
                             e,
                             i,
                             settingArrState,
                             setSettingArrState,
-                            "valueSet"
+                            "value"
                           )
                         }
                       />
@@ -152,8 +158,7 @@ export const SettingList = () => {
                         onClick={(e) =>
                           handleEvent.handleSaveToEditBtn.setting(e)
                         }
-                        data-set={i}
-                      >
+                        data-set={i}>
                         Lưu
                       </button>
                     </div>

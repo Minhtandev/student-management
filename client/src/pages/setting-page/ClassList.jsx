@@ -21,7 +21,7 @@ export const ClassList = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const apiArr = await api.getClassListArr();
+      const apiArr = await api.getClassList();
       setClassArrState(apiArr);
     };
     getData();
@@ -43,7 +43,7 @@ export const ClassList = () => {
 
           //Tìm index phần tử bị edit
           let index = classArrStateCopy.findIndex(
-            (item) => item.idClass == result[0].idClass
+            (item) => item.name == result[0].name
           );
 
           //Cập nhật mảng
@@ -55,8 +55,8 @@ export const ClassList = () => {
           helper.turnOnNotification("edit");
 
           //Cập nhật xuống CSDL
-          api.putClassList(classArrState[index]._id, {
-            nameClass: result[0].nameClass,
+          api.putClass(classArrState[index]._id, {
+            name: result[0].name,
           });
           setResult([]);
         }
@@ -82,21 +82,20 @@ export const ClassList = () => {
           document.querySelector(".row.add").style.display = "none";
 
           //cập nhật xuống CSDL
-          api.postClassList({
-            idClass: result[0].idClass,
-            nameClass: result[0].nameClass,
+          api.postClass({
+            name: result[0].name,
           });
           console.log(result);
           setResult([]);
         }
       },
-      deleteClass: () => {
+      deleteClass: async () => {
         //tạo copy
         const classArrStateCopy = helper.generateArrCopy(classArrState);
 
         //cập nhật mảng
         const newClassArrStateCopy = classArrStateCopy.filter((item, i) => {
-          return item.idClass !== result[0].idClass;
+          return item.name !== result[0].name;
         });
         setClassArrState(newClassArrStateCopy);
 
@@ -104,10 +103,10 @@ export const ClassList = () => {
         helper.turnOnNotification("delete");
 
         //cập nhật xuống CSDL
-        api.deleteClassList(result[0]._id);
+        await api.deleteClass(result[0]._id);
         setResult([]);
       },
-      deleteSelectedClass: () => {
+      deleteSelectedClass: async () => {
         //tạo copy
         const classArrStateCopy = helper.generateArrCopy(classArrState);
 
@@ -122,7 +121,7 @@ export const ClassList = () => {
 
         //cập nhật xuống CSDL
         result.forEach((item) => {
-          api.deleteClassList(item._id);
+          api.deleteClass(item._id);
         });
         setResult([]);
       },
@@ -135,7 +134,7 @@ export const ClassList = () => {
           setResult([classArrState[index]]);
           setResultUI([
             {
-              "Tên lớp": classArrState[index].nameClass,
+              "Tên lớp": classArrState[index].name,
             },
           ]);
           helper.turnOnConfirm("delete");
@@ -147,13 +146,13 @@ export const ClassList = () => {
         let classArrStateCopy = JSON.parse(JSON.stringify(classArrState));
         let index = +e.target.getAttribute("data-set");
         let inputs = e.target.closest(".row").querySelectorAll("input");
-        classArrStateCopy[index].nameClass = inputs[0].value;
+        classArrStateCopy[index].name = inputs[0].value;
 
         let newValue = classArrStateCopy[index];
         setResult([newValue]);
         setResultUI([
           {
-            "Tên lớp": newValue.nameClass,
+            "Tên lớp": newValue.name,
           },
         ]);
         helper.turnOnConfirm("edit");
@@ -163,8 +162,7 @@ export const ClassList = () => {
       class: () => {
         const inputs = document.querySelectorAll(".row.add input");
         const newItem = {
-          idClass: helper.generateID(classArrState, "idClass", ""),
-          nameClass: inputs[0].value,
+          name: inputs[0].value,
           Edit: false,
           Checked: false,
         };
@@ -172,7 +170,7 @@ export const ClassList = () => {
         setResult([newItem]);
         setResultUI([
           {
-            "Tên lớp": newItem.nameClass,
+            "Tên lớp": newItem.name,
           },
         ]);
         helper.turnOnConfirm("add");
@@ -185,7 +183,7 @@ export const ClassList = () => {
         setResultUI(
           selectedClass.map((item, i) => {
             return {
-              "Tên lớp": item.nameClass,
+              "Tên lớp": item.name,
             };
           })
         );
@@ -202,7 +200,7 @@ export const ClassList = () => {
     },
     // handleNameInputChange: (e, i) => {
     //   let classArrStateCopy = JSON.parse(JSON.stringify(classArrState));
-    //   classArrStateCopy[i].nameClass = e.target.value;
+    //   classArrStateCopy[i].name = e.target.value;
     //   setClassArrState(classArrStateCopy);
     // },
   };
@@ -260,9 +258,7 @@ export const ClassList = () => {
                       onChange={(e) => handleEvent.handleCheckbox.class(e)}
                     />
                   </div>
-                  <div className="item col-45-percent center">
-                    {item.nameClass}
-                  </div>
+                  <div className="item col-45-percent center">{item.name}</div>
                   <div className="item col-45-percent center">
                     <button
                       data-set={i}
@@ -273,15 +269,15 @@ export const ClassList = () => {
                           setClassArrState
                         )
                       }
-                      className="edit-btn"
-                    >
+                      className="edit-btn">
                       <img className="edit-img" src={EditIcon} alt="" />
                     </button>
                     <button
                       className="delete-btn"
                       data-set={i}
-                      onClick={(e) => handleEvent.handleClickDeleteBtn.class(e)}
-                    >
+                      onClick={(e) =>
+                        handleEvent.handleClickDeleteBtn.class(e)
+                      }>
                       <img className="delete-img" src={DeleteIcon} alt="" />
                     </button>
                   </div>
@@ -294,14 +290,14 @@ export const ClassList = () => {
                         type="text"
                         className="input--small"
                         placeholder="Nhập tên lớp mới..."
-                        value={item.nameClass}
+                        value={item.name}
                         onChange={(e) =>
                           handler.handleEditInputChange(
                             e,
                             i,
                             classArrState,
                             setClassArrState,
-                            "nameClass"
+                            "name"
                           )
                         }
                       />
@@ -312,8 +308,7 @@ export const ClassList = () => {
                           handleEvent.handleSaveToEditBtn.class(e)
                         }
                         data-set={i}
-                        className="save-btn--small"
-                      >
+                        className="save-btn--small">
                         Lưu
                       </button>
                     </div>
@@ -336,8 +331,7 @@ export const ClassList = () => {
             <div className="item col-45-percent center save-btn__container">
               <button
                 onClick={handleEvent.handleSaveToAddBtn.class}
-                className="save-btn--small"
-              >
+                className="save-btn--small">
                 Lưu
               </button>
             </div>

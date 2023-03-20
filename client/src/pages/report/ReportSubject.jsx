@@ -34,7 +34,7 @@ export const ReportSubject = () => {
       const schoolYearArr = await api.getSchoolYearList();
       const UIsubjectArr = subjectArr.map((item) => {
         return {
-          text: item.nameSubject,
+          text: item.name,
         };
       });
       const UItermArr = termArr.map((item) => {

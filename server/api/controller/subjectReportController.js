@@ -1,10 +1,10 @@
-const { ReportedSubject } = require("../models/model");
+const { SubjectReport } = require("../models/model");
 
-const reportedSubjectController = {
+const SubjectReportController = {
   //ADD REPORTED_SUBJECT
-  addReportedSubject: async (req, res) => {
+  addSubjectReport: async (req, res) => {
     try {
-      const newReportedSubject = new ReportedSubject(req.body);
+      const newReportedSubject = new SubjectReport(req.body);
       const savedReportedSubject = await newReportedSubject.save();
       res.status(200).json(savedReportedSubject);
     } catch (err) {
@@ -13,9 +13,9 @@ const reportedSubjectController = {
   },
 
   // GET ALL REPORTED_SUBJECTS
-  getReportedSubjects: async (req, res) => {
+  getSubjectReports: async (req, res) => {
     try {
-      const reportedSubjects = await ReportedSubject.find();
+      const reportedSubjects = await SubjectReport.find();
       res.status(200).json(reportedSubjects);
     } catch (err) {
       res.status(500).json(err);
@@ -23,9 +23,9 @@ const reportedSubjectController = {
   },
 
   //GET A REPORTED_SUBJECT
-  getReportedSubject: async (req, res) => {
+  getSubjectReport: async (req, res) => {
     try {
-      const reportedSubject = await ReportedSubject.findById(req.params.id);
+      const reportedSubject = await SubjectReport.findById(req.params.id);
       res.status(200).json(reportedSubject);
     } catch (err) {
       res.status(500).json(err);
@@ -33,9 +33,9 @@ const reportedSubjectController = {
   },
 
   //UPDATE A REPORTED_SUBJECT
-  updateReportedSubject: async (req, res) => {
+  updateSubjectReport: async (req, res) => {
     try {
-      const reportedSubject = await ReportedSubject.findById(req.params.id);
+      const reportedSubject = await SubjectReport.findById(req.params.id);
       await reportedSubject.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -44,11 +44,11 @@ const reportedSubjectController = {
   },
 
   //DELETE REPORTED_SUBJECT
-  deleteReportedSubject: async (req, res) => {
+  deleteSubjectReport: async (req, res) => {
     console.log("delete");
 
     try {
-      await ReportedSubject.findByIdAndDelete(req.params.id);
+      await SubjectReport.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
       res.status(500).json(err);
@@ -56,4 +56,4 @@ const reportedSubjectController = {
   },
 };
 
-module.exports = reportedSubjectController;
+module.exports = SubjectReportController;

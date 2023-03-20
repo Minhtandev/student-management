@@ -9,11 +9,11 @@ import { useHistory } from "react-router-dom";
 import { api } from "../../api/api";
 import { useState, useEffect } from "react";
 import { Confirm } from "../../components/Confirm";
-
+import { schoolYear } from "../../config/data";
 export const AddClass = () => {
   let history = useHistory();
   let allClass;
-  const [CCLASSState, setCCLASSArrState] = useState([]);
+  const [ClassDetailState, setClassDetailArrState] = useState([]);
   const [classArrState, setClassArrState] = useState([]);
   const [gradeArrState, setGradeArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
@@ -21,9 +21,9 @@ export const AddClass = () => {
 
   //tạo options cho select
   // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.nameClass };
+  //   return { value: item.ID, text: item.name };
   // });
-  // const gradeNameArr = gradeArr.map((item) => {
+  // const nameArr = gradeArr.map((item) => {
   //   return { value: item.ID, text: item.Name };
   // });
   // const schoolYearNameArr = schoolYearArr.map((item) => {
@@ -33,25 +33,25 @@ export const AddClass = () => {
   useEffect(() => {
     const getData = async () => {
       const gradeArr = await api.getGradeList();
-      const CLASS = await api.getCCLASS();
-      const classArr = await api.getClassListArr();
-      const schoolYearArr = await api.getSchoolYearList();
+      const CLASS = await api.getClassDetail();
+      const classArr = await api.getClassList();
+      // const schoolYearArr = await api.getSchoolYearList();
       const UIgradeArr = gradeArr.map((item) => {
         return {
           ...item,
-          text: item.gradeName,
+          text: item.name,
         };
       });
       const UIClassArr = classArr.map((item) => {
         return {
           ...item,
-          text: item.nameClass,
+          text: item.name,
         };
       });
-      const UISchoolYearArr = schoolYearArr.map((item) => {
+      const UISchoolYearArr = schoolYear.map((item) => {
         return {
           ...item,
-          text: item.nameSchYear,
+          text: item,
         };
       });
       // console.log(subjectArr, UIsubjectArr);
@@ -59,7 +59,7 @@ export const AddClass = () => {
       // setClassArrState(UItermArr);
       setClassArrState(UIClassArr);
       allClass = UIClassArr;
-      setCCLASSArrState(CLASS);
+      setClassDetailArrState(CLASS);
       setSchoolYearArrState(UISchoolYearArr);
     };
     getData();
@@ -102,28 +102,27 @@ export const AddClass = () => {
 
   const handleClickCreateBtn = () => {
     const [grade, className, schoolYear] = getSelectedOptions();
-    console.log(className, grade);
+    // console.log(className, grade);
     if (className.includes(grade)) {
       // let subjectID = subjectArrState.find(
-      //   (item) => item.nameSubject === subject
+      //   (item) => item.name === subject
       // )._id;
       // let termID = "6299d1a3197adb1f05703d97";
-      let schoolYearID = schoolYearArrState.find(
-        (item) => item.nameSchYear === schoolYear
-      )._id;
+      // let schoolYearID = schoolYearArrState.find(
+      //   (item) => item.nameSchYear === schoolYear
+      // )._id;
       // console.log(classArrState);
-      // let classID = CCLASSState.find(
+      // let classID = ClassDetailState.find(
       //   (item) =>
-      //     item.nameClass === className && item.schoolYear === schoolYearID
+      //     item.name === className && item.schoolYear === schoolYearID
       // )._id;
 
       let isExisted =
-        CCLASSState.filter(
-          (item) =>
-            item.nameClass === className && item.schoolYear === schoolYearID
+        ClassDetailState.filter(
+          (item) => item.name === className && item.schoolYear === schoolYear
           //&& item.term === termID
         ).length > 0;
-      console.log(isExisted);
+      // console.log(isExisted);
       if (isExisted) {
         document.querySelector(".confirm.override").style.display = "flex";
       } else {
@@ -162,7 +161,7 @@ export const AddClass = () => {
           <Input
             type="select"
             labelText="Tên khối"
-            selectName="GradeName"
+            selectName="name"
             options={gradeArrState}
             onChangeSelect={onChangeSelect}
           />
