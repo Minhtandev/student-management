@@ -1,10 +1,10 @@
-const { ReportedTerm } = require("../models/model");
+const { TermReport } = require("../models/model");
 
-const reportedTermController = {
+const TermReportController = {
   //ADD REPORT_TERM
-  addReportedTerm: async (req, res) => {
+  addTermReport: async (req, res) => {
     try {
-      const newReportedTerm = new ReportedTerm(req.body);
+      const newReportedTerm = new TermReport(req.body);
       const savedReportedTerm = await newReportedTerm.save();
       res.status(200).json(savedReportedTerm);
     } catch (err) {
@@ -14,9 +14,9 @@ const reportedTermController = {
   },
 
   // GET ALL REPORT_TERMS
-  getReportedTerms: async (req, res) => {
+  getTermReports: async (req, res) => {
     try {
-      const reportedTerms = await ReportedTerm.find();
+      const reportedTerms = await TermReport.find();
       res.status(200).json(reportedTerms);
     } catch (err) {
       res.status(500).json(err);
@@ -24,9 +24,9 @@ const reportedTermController = {
   },
 
   //GET A REPORT_TERM
-  getReportedTerm: async (req, res) => {
+  getTermReport: async (req, res) => {
     try {
-      const reportedTerm = await ReportedTerm.findById(req.params.id);
+      const reportedTerm = await TermReport.findById(req.params.id);
       res.status(200).json(schoolYear);
     } catch (err) {
       res.status(500).json(err);
@@ -34,9 +34,9 @@ const reportedTermController = {
   },
 
   //UPDATE REPORT_TERM
-  updateReportedTerm: async (req, res) => {
+  updateTermReport: async (req, res) => {
     try {
-      const reportedTerm = await ReportedTerm.findById(req.params.id);
+      const reportedTerm = await TermReport.findById(req.params.id);
       await reportedTerm.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -45,9 +45,9 @@ const reportedTermController = {
   },
 
   //DELETE REPORT_TERM
-  deleteReportedTerm: async (req, res) => {
+  deleteTermReport: async (req, res) => {
     try {
-      await ReportedTerm.findByIdAndDelete(req.params.id);
+      await TermReport.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
       res.status(500).json(err);
@@ -55,4 +55,4 @@ const reportedTermController = {
   },
 };
 
-module.exports = reportedTermController;
+module.exports = TermReportController;

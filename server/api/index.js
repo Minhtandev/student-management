@@ -8,16 +8,15 @@ var bodyParser = require("body-parser");
 const settingRoute = require("./routes/setting");
 const studentRoute = require("./routes/student");
 const gradeRoute = require("./routes/grade");
-const classRoute = require("./routes/cClass");
-const classListRoute = require("./routes/classList");
+const classDetailRoute = require("./routes/classDetail");
+const classRoute = require("./routes/class");
 const subjectRoute = require("./routes/subject");
 const termRoute = require("./routes/term");
-const schoolYearRoute = require("./routes/schoolYear");
-const scoreSubjectRoute = require("./routes/scoreSubject");
-const scoreSchoolYearRoute = require("./routes/scoreSchoolYear");
-const coEffRoute = require("./routes/coEff");
-const reportedSubjectRoute = require("./routes/reportedSubject");
-const reportedTermRoute = require("./routes/reportedTerm");
+const subjectScoreRoute = require("./routes/subjectScore");
+const termScoreRoute = require("./routes/termScore");
+const paramRoute = require("./routes/param");
+const subjectReportRoute = require("./routes/subjectReport");
+const termReportRoute = require("./routes/termReport");
 
 app.use(
   cors({
@@ -35,15 +34,14 @@ app.use("/api/setting", settingRoute);
 app.use("/api/student", studentRoute);
 app.use("/api/grade", gradeRoute);
 app.use("/api/class", classRoute);
-app.use("/api/classList", classListRoute);
+app.use("/api/class-detail", classDetailRoute);
 app.use("/api/subject", subjectRoute);
-app.use("/api/coEff", coEffRoute);
+app.use("/api/param", paramRoute);
 app.use("/api/term", termRoute);
-app.use("/api/schoolYear", schoolYearRoute);
-app.use("/api/scoreSubject", scoreSubjectRoute);
-app.use("/api/scoreSchoolYear", scoreSchoolYearRoute);
-app.use("/api/reportedSubject", reportedSubjectRoute);
-app.use("/api/reportedTerm", reportedTermRoute);
+app.use("/api/subject-score", subjectScoreRoute);
+app.use("/api/term-score", termScoreRoute);
+app.use("/api/subject-report", subjectReportRoute);
+app.use("/api/term-report", termReportRoute);
 
 mongoose
   .connect(process.env.MONGO_URL, {

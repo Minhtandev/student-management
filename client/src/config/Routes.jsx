@@ -32,30 +32,25 @@ export const Routes = () => {
       <Route path="/add/add-student" component={AddStudent}></Route>
       <Route path="/add/add-class" exact component={AddClass}></Route>
       <Route
-        path="/add/add-class/:className/:grade/:schoolYear"
-        component={CreateClass}
-      ></Route>
+        path="/add/add-class/:name/:grade/:schoolyear"
+        component={CreateClass}></Route>
       <Route path="/search" component={Search}></Route>
       <Route path="/score" exact component={Score}></Route>
       <Route
         path="/score/:className/:subject/:term/:schoolYear"
-        component={CreateScore}
-      ></Route>
+        component={CreateScore}></Route>
       <Route path="/report" exact component={Report}></Route>
       <Route
         path="/report/report-subject"
         exact
-        component={ReportSubject}
-      ></Route>
+        component={ReportSubject}></Route>
       <Route
         path="/report/report-subject/:subject/:term/:schoolYear"
-        component={CreateReportSubject}
-      ></Route>
+        component={CreateReportSubject}></Route>
       <Route path="/report/report-term" exact component={ReportTerm}></Route>
       <Route
         path="/report/report-term/:term/:schoolYear"
-        component={CreateReportTerm}
-      ></Route>
+        component={CreateReportTerm}></Route>
       <Route path="*" component={NotFound}></Route>
     </Switch>
   );

@@ -21,10 +21,10 @@ export const CreateReportTerm = () => {
     const getData = async () => {
       const termArr = await api.getTermList();
       const schoolYearArr = await api.getSchoolYearList();
-      const scoreArr = await api.getScoreSchoolYear();
+      const scoreArr = await api.getTermScores();
       // const scoreArr = ScoreSchoolYear;
-      const classArray = await api.getCCLASS();
-      const reportTerm = await api.getReportTerm();
+      const classArray = await api.getClassDetail();
+      const reportTerm = await api.getTermReports();
 
       termID = termArr.find((item) => item.nameTerm === term)._id;
       schoolYearID = schoolYearArr.find(
@@ -57,12 +57,12 @@ export const CreateReportTerm = () => {
         );
 
         let isThereScore = scoreArr.find(
-          (score) => score.cClass === thisClass._id
+          (score) => score.ClassDetail === thisClass._id
           // && score.term === thisTerm._id
         );
 
         let isThereReport = reportTerm.find(
-          (report) => report.cClass === thisClass._id
+          (report) => report.ClassDetail === thisClass._id
           // && report.term === thisTerm._id
         );
 
@@ -76,7 +76,7 @@ export const CreateReportTerm = () => {
             rate;
           scoreArr.forEach((score) => {
             if (
-              score.cClass === thisClass._id &&
+              score.ClassDetail === thisClass._id &&
               // score.term === thisTerm._id &&
               score.schoolYearAvgScore >= 5
             ) {
@@ -87,7 +87,7 @@ export const CreateReportTerm = () => {
           rate = rateNumber + "%";
 
           api.postReportTerm({
-            cClass: thisClass._id,
+            ClassDetail: thisClass._id,
             term: "6299d1a3197adb1f05703d97",
             schoolYear: thisSchoolYear._id,
             totalStudents: total,
@@ -98,7 +98,7 @@ export const CreateReportTerm = () => {
       });
       // });
 
-      const newReportTerm = await api.getReportTerm();
+      const newReportTerm = await api.getTermReports();
       console.log("newReport", newReportTerm);
       const UIarr = newReportTerm.filter(
         (item) =>
@@ -134,9 +134,10 @@ export const CreateReportTerm = () => {
         {reportTermState.map((item) => (
           <div className="row content">
             <div className="item col-25-percent center al-center">
-              {classArr.find((classItem) => classItem._id === item.cClass)
-                ? classArr.find((classItem) => classItem._id === item.cClass)
-                    .nameClass
+              {classArr.find((classItem) => classItem._id === item.ClassDetail)
+                ? classArr.find(
+                    (classItem) => classItem._id === item.ClassDetail
+                  ).name
                 : "10A5"}
             </div>
             <div className="item col-25-percent center al-center">

@@ -1,10 +1,10 @@
-const { CoEff } = require("../models/model");
+const { Param } = require("../models/model");
 
-const coEffController = {
+const ParamController = {
   //POST COEFF
-  addCoEff: async (req, res) => {
+  addParam: async (req, res) => {
     try {
-      const newCoEff = new CoEff(req.body);
+      const newCoEff = new Param(req.body);
       const savedCoEff = await newCoEff.save();
       res.status(200).json(savedCoEff);
     } catch (err) {
@@ -13,9 +13,9 @@ const coEffController = {
   },
 
   // GET ALL COEFFS
-  getAllCoEffs: async (req, res) => {
+  getAllParams: async (req, res) => {
     try {
-      const coEffs = await CoEff.find();
+      const coEffs = await Param.find();
       res.status(200).json(coEffs);
     } catch (err) {
       res.status(500).json(err);
@@ -23,9 +23,9 @@ const coEffController = {
   },
 
   //GET COEFF
-  getCoEff: async (req, res) => {
+  getParam: async (req, res) => {
     try {
-      const coEff = await CoEff.findById(req.params.id);
+      const coEff = await Param.findById(req.params.id);
       res.status(200).json(coEff);
     } catch (err) {
       res.status(500).json(err);
@@ -33,9 +33,9 @@ const coEffController = {
   },
 
   //UPDATE COEFF
-  updateCoEff: async (req, res) => {
+  updateParam: async (req, res) => {
     try {
-      const coEff = await CoEff.findById(req.params.id);
+      const coEff = await Param.findById(req.params.id);
       await coEff.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -44,9 +44,9 @@ const coEffController = {
   },
 
   //DELETE A COEFF
-  deleteCoEff: async (req, res) => {
+  deleteParam: async (req, res) => {
     try {
-      await CoEff.findByIdAndDelete(req.params.id);
+      await Param.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
       res.status(500).json(err);
@@ -54,4 +54,4 @@ const coEffController = {
   },
 };
 
-module.exports = coEffController;
+module.exports = ParamController;

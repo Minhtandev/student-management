@@ -10,30 +10,22 @@ export const api = {
     const url = "student";
     return axiosClient.get(url, params);
   },
-  getClassListArr: (params) => {
-    const url = "classList";
+  getClassList: (params) => {
+    const url = "class";
     return axiosClient.get(url, params);
   },
-  //   getStudentScoreArr: (params) => {
-  //     const url = "score";
-  //     return axiosClient.get(url, params);
-  //   },
-  getReportSubjects: (params) => {
-    const url = "reportedSubject";
+  getSubjectReports: (params) => {
+    const url = "subject-report";
     return axiosClient.get(url, params);
   },
-  getReportTerm: (params) => {
-    const url = "reportedTerm";
+  getTermReports: (params) => {
+    const url = "term-report";
     return axiosClient.get(url, params);
   },
   getSettingList: (params) => {
     const url = "setting";
     return axiosClient.get(url, params);
   },
-  //   getClassArr: (params) => {
-  //     const url = "student";
-  //     return axiosClient.get(url, params);
-  //   },
   getSubjectList: (params) => {
     const url = "subject";
     return axiosClient.get(url, params);
@@ -42,133 +34,121 @@ export const api = {
     const url = "term";
     return axiosClient.get(url, params);
   },
-  getSchoolYearList: (params) => {
-    const url = "schoolYear";
-    return axiosClient.get(url, params);
-  },
+  // getSchoolYearList: (params) => {
+  //   const url = "schoolYear";
+  //   return axiosClient.get(url, params);
+  // },
   getGradeList: (params) => {
     const url = "grade";
     return axiosClient.get(url, params);
   },
-  getCCLASS: (params) => {
-    const url = "class";
+  getClassDetail: (params) => {
+    const url = "class-detail";
     return axiosClient.get(url, params);
   },
-  getA_CCLASS: (id, params) => {
-    const url = "class/" + String(id);
+  getA_ClassDetail: (id, params) => {
+    const url = "class-detail/" + String(id);
     return axiosClient.get(url, params);
   },
-  getScoreSchoolYear: (params) => {
-    const url = "scoreSchoolYear";
+  getTermScores: (params) => {
+    const url = "term-score";
     return axiosClient.get(url, params);
   },
-  getScoreSubject: (params) => {
-    const url = "scoreSubject";
+  getSubjectScore: (params) => {
+    const url = "subject-score";
     return axiosClient.get(url, params);
   },
-  getCoEff: (params) => {
-    const url = "coEff";
+  getParamList: (params) => {
+    const url = "param";
     return axiosClient.get(url, params);
   },
 
   //POST******************************************************
-  postNewStudentInfo: (payload) => {
+  postStudentInfo: (payload) => {
     const url = "student";
     return axiosClient.post(url, payload);
   },
-  postNewClassList: (payload) => {
+  postClass: (payload) => {
     const url = "class";
     return axiosClient.post(url, payload);
   },
-  //   postStudentScore: (payload) => {
-  //     const url = "score";
-  //     return axiosClient.post(url, payload);
-  //   },
-  //   postClassArr: (payload) => {
-  //     const url = "student";
-  //     return axiosClient.post(url, payload);
-  //   },
-  postSubjectList: (payload) => {
+  postSubject: (payload) => {
     const url = "subject";
     return axiosClient.post(url, payload);
   },
-  postClassList: (payload) => {
-    const url = "classList";
+  postClassDetai: (payload) => {
+    const url = "class-detail";
     return axiosClient.post(url, payload);
   },
-  postClassWithStudents: (payload) => {
-    const url = "class";
+  postSubjectScore: (payload) => {
+    const url = "subject-score";
     return axiosClient.post(url, payload);
   },
-  postScoreSubject: (payload) => {
-    const url = "scoreSubject";
+  postSubjectReport: (payload) => {
+    const url = "subject-report";
     return axiosClient.post(url, payload);
   },
-  postReportSubject: (payload) => {
-    const url = "reportedSubject";
-    return axiosClient.post(url, payload);
-  },
-  postReportTerm: (payload) => {
-    const url = "reportedTerm";
+  postTermReport: (payload) => {
+    const url = "term-report";
     return axiosClient.post(url, payload);
   },
 
   //PUT***************************
-  putSubjectList: (id, payload) => {
+  putSubject: (id, payload) => {
     const url = "subject/" + String(id);
     return axiosClient.put(url, payload);
   },
-  putClassList: (id, payload) => {
-    const url = "classList/" + String(id);
+  putClass: (id, payload) => {
+    const url = "class/" + String(id);
     return axiosClient.put(url, payload);
   },
-  putSettingList: (id, payload) => {
+  putSetting: (id, payload) => {
     const url = "setting/" + String(id);
     return axiosClient.put(url, payload);
   },
-  putScoreSchoolYear: (id, payload) => {
-    const url = "scoreSchoolYear/" + String(id);
+  putTermScore: (id, payload) => {
+    const url = "termScore/" + String(id);
     return axiosClient.put(url, payload);
   },
   putStudentInfo: (id, payload) => {
     const url = "student/" + String(id);
     return axiosClient.put(url, payload);
   },
-  putCCLASS: (id, payload) => {
-    const url = "class/" + String(id);
+  putClassDetail: (id, payload) => {
+    const url = "class-detail/" + String(id);
     return axiosClient.put(url, payload);
   },
 
   //DELETE*****************************
-  deleteSubjectList: (id) => {
+  deleteSubject: (id) => {
     const url = "subject/" + String(id);
     return axiosClient.delete(url);
   },
-  deleteClassList: (id) => {
-    const url = "classList/" + String(id);
-    return axiosClient.delete(url);
-  },
-  deleteCLASS: (id) => {
+  deleteClass: (id) => {
     const url = "class/" + String(id);
     return axiosClient.delete(url);
   },
-  deleteScoreSchoolYear: (id) => {
-    const url = "scoreSchoolYear/" + String(id);
+  deleteClassDetail: (id) => {
+    const url = "class-detail/" + String(id);
     return axiosClient.delete(url);
   },
-  deleteScoreSubject: (id) => {
+  deleteTermScore: (id) => {
+    const url = "term-score/" + String(id);
+    return axiosClient.delete(url);
+  },
+  deleteSubjectScore: (id) => {
     // console.log("delete from api");
-    const url = "scoreSubject/" + String(id);
+    const url = "subject-score/" + String(id);
     return axiosClient.delete(url);
   },
-  deleteReportSubject: (id) => {
-    console.log("delete from api");
-    const url = "reportedSubject/" + String(id);
+  deleteSubjectReport: (id) => {
+    // console.log("delete from api");
+    const url = "subject-report/" + String(id);
     return axiosClient.delete(url);
   },
-  deleteReportTerm: (id) => {
-    console.log("delete from api");
-    const url = "reportedTerm/" + String(id);
+  deleteTermReport: (id) => {
+    // console.log("delete from api");
+    const url = "term-report/" + String(id);
     return axiosClient.delete(url);
   },
 };

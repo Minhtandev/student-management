@@ -22,9 +22,9 @@ export const CreateClass = () => {
   const { className, grade, schoolYear } = useParams();
   // let gradeID, schoolYearID;
   // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.nameClass };
+  //   return { value: item.ID, text: item.name };
   // });
-  // const gradeNameArr = gradeArr.map((item) => {
+  // const nameArr = gradeArr.map((item) => {
   //   return { value: item.ID, text: item.Name };
   // });
   // const schoolYearNameArr = schoolYearArr.map((item) => {
@@ -41,7 +41,7 @@ export const CreateClass = () => {
   const [studentArrTempState, setStudentArrTempState] = useState([]);
   const [newClassArrState, setNewClassArrState] = useState([]);
   const [result, setResult] = useState([]);
-  const [allCCLASS, setAllCCLASS] = useState([]);
+  const [allClassDetail, setAllClassDetail] = useState([]);
   const [classArr, setClassArr] = useState([]);
 
   const [message, setMessage] = useState("");
@@ -55,20 +55,20 @@ export const CreateClass = () => {
   useEffect(() => {
     const getData = async () => {
       const gradeArr = await api.getGradeList();
-      const classArr = await api.getClassListArr();
-      const CLASSArr = await api.getCCLASS();
+      const classArr = await api.getClassList();
+      const CLASSArr = await api.getClassDetail();
 
       const schoolYearArr = await api.getSchoolYearList();
       const UIgradeArr = gradeArr.map((item) => {
         return {
           ...item,
-          text: item.gradeName,
+          text: item.name,
         };
       });
       const UIClassArr = classArr.map((item) => {
         return {
           ...item,
-          text: item.nameClass,
+          text: item.name,
         };
       });
       const UISchoolYearArr = schoolYearArr.map((item) => {
@@ -79,7 +79,7 @@ export const CreateClass = () => {
       });
       const studentArr = await api.getStudentInfoArr();
       // console.log(studentArr);
-      const allCCLASSArr = await api.getCCLASS();
+      const allClassDetailArr = await api.getClassDetail();
 
       let studentLength = studentArr.length;
       const fiveLatestStudents = [
@@ -98,7 +98,7 @@ export const CreateClass = () => {
       // allSchoolYear = [...schoolYearArr];
       setStudentArrState(studentArr);
       setStudentArrTempState(fiveLatestStudents);
-      setAllCCLASS(allCCLASSArr);
+      setAllClassDetail(allClassDetailArr);
       setClassArr(CLASSArr);
       // console.log(allClass, allGrade, allSchoolYear);
     };
@@ -129,21 +129,21 @@ export const CreateClass = () => {
       const [selectedGrade, selectedClass, selectedSchoolYear] =
         getSelectedOptions();
       const selectedGradeID = gradeArrState.find(
-        (item) => item.gradeName == selectedGrade
+        (item) => item.name == selectedGrade
       )._id;
       const selectedSchoolYearID = schoolYearArrState.find(
         (item) => item.nameSchYear == selectedSchoolYear
       )._id;
-      const selectedCCLASS = allCCLASS.filter(
+      const selectedClassDetail = allClassDetail.filter(
         (item) =>
           item.grade == selectedGradeID &&
-          item.nameClass == selectedClass &&
+          item.name == selectedClass &&
           item.schoolYear == selectedSchoolYearID
       )[0];
 
-      // console.log(selectedCCLASS, allCCLASS);
+      // console.log(selectedClassDetail, allClassDetail);
       let selectedStudents = [];
-      const studentsOfSelectedCLASS = Array.from(selectedCCLASS.students);
+      const studentsOfSelectedCLASS = Array.from(selectedClassDetail.students);
       studentArrState.forEach(async (item) => {
         if (studentsOfSelectedCLASS.includes(item._id)) {
           selectedStudents.push(item);
@@ -246,8 +246,7 @@ export const CreateClass = () => {
       )[0]._id;
       //Xoá lớp cũ
       const existItems = classArr.filter(
-        (item) =>
-          item.nameClass === className && item.schoolYear === schoolYearID
+        (item) => item.name === className && item.schoolYear === schoolYearID
       );
       existItems.forEach((item) => {
         api.deleteCLASS(item._id);
@@ -256,16 +255,15 @@ export const CreateClass = () => {
       //Lưu xuống CSDL
       const newStudentIDs = newClassArrState.map((item) => item._id);
       // console.log(gradeArrState, schoolYearArrState);
-      let gradeID = gradeArrState.filter((item) => item.gradeName == grade)[0]
-        ._id;
+      let gradeID = gradeArrState.filter((item) => item.name == grade)[0]._id;
       console.log({
-        nameClass: className,
+        name: className,
         grade: gradeID,
         schoolYear: schoolYearID,
         students: newStudentIDs,
       });
       api.postClassWithStudents({
-        nameClass: className,
+        name: className,
         grade: gradeID,
         schoolYear: schoolYearID,
         students: newStudentIDs,
@@ -320,7 +318,7 @@ export const CreateClass = () => {
                 <Input
                   type="select"
                   labelText="Tên khối"
-                  selectName="GradeName"
+                  selectName="name"
                   options={gradeArrState}
                   onChangeSelect={onChangeSelect}
                 />
@@ -347,8 +345,7 @@ export const CreateClass = () => {
                 <div className="search__btns">
                   <button
                     className="search__button"
-                    onClick={handleEvent.handleClickChoose}
-                  >
+                    onClick={handleEvent.handleClickChoose}>
                     Chọn
                   </button>
                 </div>
@@ -376,8 +373,7 @@ export const CreateClass = () => {
                 <div className="search__btns">
                   <button
                     className="search__button"
-                    onClick={handleEvent.handleClickSearchBtn}
-                  >
+                    onClick={handleEvent.handleClickSearchBtn}>
                     Tìm kiếm
                   </button>
                 </div>
@@ -425,8 +421,7 @@ export const CreateClass = () => {
                       <button
                         className="search__add-btn"
                         data-set={i}
-                        onClick={(e) => handleEvent.handleClickAddBtn(e)}
-                      >
+                        onClick={(e) => handleEvent.handleClickAddBtn(e)}>
                         {/* <img src={AddIcon} alt="" className="add-img" /> */}
                         <i className="add-img">
                           <GrFormAdd></GrFormAdd>
@@ -484,8 +479,7 @@ export const CreateClass = () => {
                       <button
                         className="new-class__delete-btn"
                         data-set={i}
-                        onClick={(e) => handleEvent.handleClickDeleteBtn(e)}
-                      >
+                        onClick={(e) => handleEvent.handleClickDeleteBtn(e)}>
                         <img src={DeleteIcon} alt="" className="delete-img" />
                       </button>
                     </div>
@@ -498,8 +492,7 @@ export const CreateClass = () => {
             <Button
               btnType="save"
               innerText="Lưu"
-              onClick={handleEvent.handleClickSaveBtn}
-            ></Button>
+              onClick={handleEvent.handleClickSaveBtn}></Button>
           </div>
         </div>
       </div>

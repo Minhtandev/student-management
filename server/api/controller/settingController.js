@@ -1,6 +1,6 @@
 const { Setting } = require("../models/model");
 
-const settingController = {
+const SettingController = {
   //POST SETTING
   addSetting: async (req, res) => {
     try {
@@ -54,4 +54,4 @@ const settingController = {
   },
 };
 
-module.exports = settingController;
+module.exports = SettingController;

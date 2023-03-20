@@ -2,17 +2,12 @@ const mongoose = require("mongoose");
 
 //Định nghĩa một cài đặt
 const settingSchema = new mongoose.Schema({
-  idSet: {
+  name: {
     type: String,
     required: true,
     unique: true,
   },
-  nameSet: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  valueSet: {
+  value: {
     type: Number,
     required: true,
   },
@@ -20,12 +15,7 @@ const settingSchema = new mongoose.Schema({
 
 //Định nghĩa một học sinh
 const studentSchema = new mongoose.Schema({
-  ID: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  fullName: {
+  name: {
     type: String,
     required: true,
   },
@@ -34,40 +24,41 @@ const studentSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  dateOfBirth: String,
+  birth: String,
   address: String,
-  gender: String,
-  cClass: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CClass",
+  gender: {
+    type: String,
+    enum: ["male", "female"],
+    required: true,
   },
+  // classes: [
+  //   {
+  //     type: mongoose.Schema.Types.ObjectId,
+  //     ref: "ClassDetail",
+  //   },
+  // ],
 });
 
 //Định nghĩa một khối
 const gradeSchema = new mongoose.Schema({
-  gradeName: {
+  name: {
     type: Number,
     required: true,
     unique: true,
   },
-  cClasses: [
+  classes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CClass",
+      ref: "Class",
     },
   ],
 });
 
-//Định nghĩa một lớp học
-const cClassSchema = new mongoose.Schema({
-  nameClass: {
-    type: String,
-    required: true,
-    // unique: true,
-  },
-  grade: {
+//Định nghĩa một danh sách lớp
+const classDetailSchema = new mongoose.Schema({
+  name: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Grade",
+    ref: "Class",
   },
   students: [
     {
@@ -75,167 +66,100 @@ const cClassSchema = new mongoose.Schema({
       ref: "Student",
     },
   ],
-  // term: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Term",
-  // },
   schoolYear: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SchoolYear",
+    type: String,
+    required: true,
   },
 });
 
-//danh sách các lớp học
-const classListSchema = new mongoose.Schema({
-  idClass: {
+//Định nghĩa lớp cố định
+const classSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
     unique: true,
   },
-  nameClass: {
-    type: String,
-    required: true,
-    unique: true,
+  grade: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Grade",
   },
 });
 
 //Định nghĩa một môn học
 const subjectSchema = new mongoose.Schema({
-  idSubject: {
+  name: {
     type: String,
     required: true,
     unique: true,
   },
-  nameSubject: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  //hệ số môn
-  // coEffSubject: {
-  //   type: Number,
-  //   required: true,
-  // },
 });
 
+//Định nghĩa một chi tiết điểm
+// const detailScoreSchema = new mongoose.Schema({
+//   param: {
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: "Param",
+//   },
+//   value: {
+//     type: Number,
+//     required: true,
+//   },
+// });
+
 //điểm 1 môn học của 1 học sinh --> dùng cho trang nhập điểm
-const scoreSubjectSchema = new mongoose.Schema({
+const subjectScoreSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
-  cClass: {
+  class: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "CClass",
+    ref: "ClassDetail",
   },
   subject: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subject",
   },
-  term: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Term",
-  },
-  scoreDetails: [
+  scores: [
     {
-      scoreName: {
-        type: String,
-        required: true,
+      param: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Param",
       },
-      score: {
+      value: {
         type: Number,
         required: true,
       },
-      coEff: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "CoEff",
-      },
     },
   ],
-  avgScore: {
-    type: Number,
-    // required: true,
-  },
+  avg: Number,
 });
 
-// const scoreTermSchema = new mongoose.Schema({
-//   student: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Student",
-//   },
-//   cClass: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "CClass",
-//   },
-//   scoreSubjects: [
-//     {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "ScoreSubject",
-//     },
-//   ],
-//   termAvgScore: {
-//     type: Number,
-//     required: true,
-//   },
-// });
-
 //điểm theo năm học của học sinh --> dùng cho trang tra cứu
-const scoreSchoolYearSchema = new mongoose.Schema({
+const termScoreSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
-  cClass: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "CClass",
-  },
   term: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Term",
   },
-  scoreTerms: [
+  subjectScores: [
     {
-      scoreSubjects: [
-        {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "ScoreSubject",
-        },
-      ],
-      termAvgScore: {
-        type: Number,
-        required: true,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SubjectScore",
     },
   ],
-  schoolYearAvgScore: {
+  avg: {
     type: Number,
     required: true,
   },
 });
 
-//chi tiết điểm
-// const scoreDetailSchema = new mongoose.Schema({
-//   student: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Student",
-//   },
-//   cClass: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "CClass",
-//   },
-//   score: {
-//     type: Number,
-//     required: true,
-//   },
-//   coEffect: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "CoEffect",
-//   },
-// });
-
-//Hệ số môn học
-const coEffSchema = new mongoose.Schema({
-  nameCoEff: {
+//Hệ số cột kiểm tra
+const paramSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
     unique: true,
@@ -249,7 +173,7 @@ const coEffSchema = new mongoose.Schema({
 
 //Định nghĩa học kỳ
 const termSchema = new mongoose.Schema({
-  nameTerm: {
+  name: {
     type: String,
     required: true,
     unique: true,
@@ -257,30 +181,23 @@ const termSchema = new mongoose.Schema({
 });
 
 //Định nghĩa năm học
-const schoolYearSchema = new mongoose.Schema({
-  nameSchYear: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-});
+// const schoolYearSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: true,
+//     unique: true,
+//   },
+// });
 
 //Dữ liệu chứa báo cáo một môn học
-const reportedSubjectSchema = new mongoose.Schema({
+const subjectReportSchema = new mongoose.Schema({
   subject: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subject",
   },
-  // grade: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Grade",
-  // },
-  cClass: {
+  class: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "CClass",
-  },
-  totalStudents: {
-    type: Number,
+    ref: "ClassDetail",
   },
   passed: {
     type: Number,
@@ -299,10 +216,10 @@ const reportedSubjectSchema = new mongoose.Schema({
 });
 
 //Dữ liệu chứa báo cáo một học kỳ
-const reportedTermSchema = new mongoose.Schema({
-  cClass: {
+const termReportSchema = new mongoose.Schema({
+  class: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "CClass",
+    ref: "ClassDetail",
   },
   term: {
     type: mongoose.Schema.Types.ObjectId,
@@ -311,9 +228,6 @@ const reportedTermSchema = new mongoose.Schema({
   schoolYear: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "schoolYear",
-  },
-  totalStudents: {
-    type: Number,
   },
   passed: {
     type: Number,
@@ -326,29 +240,31 @@ const reportedTermSchema = new mongoose.Schema({
 let Setting = mongoose.model("Setting", settingSchema);
 let Student = mongoose.model("Student", studentSchema);
 let Grade = mongoose.model("Grade", gradeSchema);
-let CClass = mongoose.model("CClass", cClassSchema);
-let ClassList = mongoose.model("ClassList", classListSchema);
+let ClassDetail = mongoose.model("ClassDetail", classDetailSchema);
+let Class = mongoose.model("Class", classSchema);
 let Subject = mongoose.model("Subject", subjectSchema);
-let CoEff = mongoose.model("CoEff", coEffSchema);
-let ScoreSubject = mongoose.model("ScoreSubject", scoreSubjectSchema);
-let ScoreSchoolYear = mongoose.model("ScoreSchoolYear", scoreSchoolYearSchema);
+let Param = mongoose.model("Param", paramSchema);
+// let DetailScore = mongoose.model("DetailScore", detailScoreSchema);
+let SubjectScore = mongoose.model("SubjectScore", subjectScoreSchema);
+let TermScore = mongoose.model("TermScore", termScoreSchema);
 let Term = mongoose.model("Term", termSchema);
-let SchoolYear = mongoose.model("SchoolYear", schoolYearSchema);
-let ReportedSubject = mongoose.model("ReportedSubject", reportedSubjectSchema);
-let ReportedTerm = mongoose.model("ReportedTerm", reportedTermSchema);
+// let SchoolYear = mongoose.model("SchoolYear", schoolYearSchema);
+let SubjectReport = mongoose.model("subjectReport", subjectReportSchema);
+let TermReport = mongoose.model("termReport", termReportSchema);
 
 module.exports = {
   Setting,
   Student,
   Grade,
-  CClass,
-  ClassList,
+  Class,
+  ClassDetail,
   Subject,
-  ScoreSubject,
-  ScoreSchoolYear,
-  CoEff,
+  // DetailScore,rs
+  SubjectScore,
+  TermScore,
+  Param,
   Term,
-  SchoolYear,
-  ReportedSubject,
-  ReportedTerm,
+  // SchoolYear,
+  SubjectReport,
+  TermReport,
 };

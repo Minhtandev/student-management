@@ -31,8 +31,8 @@ export const Search = () => {
       const scoreSchoolYearArr = await api.getScoreSchoolYear();
       // const scoreSchoolYearArr = ScoreSchoolYear;
       const studentInfoArr = await api.getStudentInfoArr();
-      const classArr = await api.getCCLASS();
-      const classList = await api.getClassListArr();
+      const classArr = await api.getClassDetail();
+      const classList = await api.getClassList();
 
       console.log(scoreSchoolYearArr, studentInfoArr, classArr);
       setStudentArrState(scoreSchoolYearArr);
@@ -45,13 +45,12 @@ export const Search = () => {
         return {
           scoreID: item._id,
           studentID: item.student,
-          classID: item.cClass,
-          nameStudent: studentInfoArr.filter(
-            (info) => info._id == item.student
-          )[0].fullName,
-          nameClass: classArr.filter(
-            (classItem) => classItem._id == item.cClass
-          )[0].nameClass,
+          classID: item.ClassDetail,
+          name: studentInfoArr.filter((info) => info._id == item.student)[0]
+            .fullName,
+          name: classArr.filter(
+            (classItem) => classItem._id == item.ClassDetail
+          )[0].name,
           AvgScore1: item.scoreTerms[0] ? item.scoreTerms[0].termAvgScore : 0,
           ScoreSubjects_1: item.scoreTerms[0]
             ? item.scoreTerms[0].scoreSubjects
@@ -95,8 +94,8 @@ export const Search = () => {
     handleConfirmToEdit: async () => {
       //kiểm tra ràng buộc dữ liệu
       let checkEmptyMessage = helper.validateData("empty", {
-        nameStudent: result[0].nameStudent,
-        nameClass: result[0].nameClass,
+        name: result[0].name,
+        name: result[0].name,
         AvgScore1: result[0].AvgScore1,
         AvgScore2: result[0].AvgScore2,
       });
@@ -107,7 +106,7 @@ export const Search = () => {
       let checkClassMessage = helper.validateData(
         "class",
         {
-          nameClass: result[0].nameClass,
+          name: result[0].name,
         },
         classListState
       );
@@ -158,14 +157,14 @@ export const Search = () => {
         const editedStudent = await api.getAStudentInfo(result[0].studentID);
         const newValueToStudent = {
           ...editedStudent,
-          fullName: result[0].nameStudent,
+          fullName: result[0].name,
         };
         api.putStudentInfo(result[0].studentID, newValueToStudent);
 
         ////cập nhật lớp chứa học sinh
         let newClassIDForSave;
-        if (result[0].nameClass !== allStudentArrTempState[index].nameClass) {
-          const editedClass = await api.getA_CCLASS(result[0].classID);
+        if (result[0].name !== allStudentArrTempState[index].name) {
+          const editedClass = await api.getA_ClassDetail(result[0].classID);
           console.log(editedClass.students);
 
           //////bỏ ra khỏi lớp trước đó
@@ -176,23 +175,23 @@ export const Search = () => {
             ...editedClass,
             students: newStudentList,
           };
-          api.putCCLASS(result[0].classID, newValueToClass);
+          api.putClassDetail(result[0].classID, newValueToClass);
 
           //////lấy ID class mới -> get class đó -> thêm studentID vào mảng students của class mới -> putClass
           let newClassID;
           if (
             classArrState.filter(
               (item) =>
-                item.nameClass === result[0].nameClass &&
+                item.name === result[0].name &&
                 item.schoolYear === editedClass.schoolYear
             ).length > 0
           ) {
             newClassID = classArrState.filter(
               (item) =>
-                item.nameClass === result[0].nameClass &&
+                item.name === result[0].name &&
                 item.schoolYear === editedClass.schoolYear
             )[0]._id;
-            const newClass = await api.getA_CCLASS(newClassID);
+            const newClass = await api.getA_ClassDetail(newClassID);
             console.log("students>>>", newClass);
             const studentList = Array.from(newClass.students);
             const newStudentList = [...studentList, result[0].studentID];
@@ -204,11 +203,11 @@ export const Search = () => {
               ...newClass,
               students: newStudentList,
             };
-            api.putCCLASS(newClassID, newClassValue);
+            api.putClassDetail(newClassID, newClassValue);
             newClassIDForSave = newClassID;
           } else {
             // api.postClassWithStudents({
-            //   nameClass: result[0].nameClass,
+            //   name: result[0].name,
             //   // grade: newClass.grade,
             //   schoolYear: editedClass.schoolYear,
             //   student: [result[0].studentID],
@@ -226,7 +225,7 @@ export const Search = () => {
         ////Cập nhật score
         const newValueToScore = {
           student: result[0].studentID,
-          cClass: newClassIDForSave,
+          ClassDetail: newClassIDForSave,
           scoreTerms: [
             {
               scoreSubjects: result[0].ScoreSubjects_1,
@@ -253,8 +252,8 @@ export const Search = () => {
       let studentArrStateCopy = JSON.parse(JSON.stringify(studentArrTempState));
       let index = +e.target.getAttribute("data-set");
       let inputs = e.target.closest(".row").querySelectorAll("input");
-      studentArrStateCopy[index].nameStudent = inputs[0].value;
-      studentArrStateCopy[index].nameClass = inputs[1].value;
+      studentArrStateCopy[index].name = inputs[0].value;
+      studentArrStateCopy[index].name = inputs[1].value;
       studentArrStateCopy[index].AvgScore1 = inputs[2].value;
       studentArrStateCopy[index].AvgScore2 = inputs[3].value;
 
@@ -262,8 +261,8 @@ export const Search = () => {
       //   (info) => info._id == studentArrStateCopy[index].student
       // ).fullName = inputs[0].value;
       // classArrState.find(
-      //   (classItem) => classItem._id == studentArrStateCopy[index].cClass
-      // ).nameClass = inputs[1].value;
+      //   (classItem) => classItem._id == studentArrStateCopy[index].ClassDetail
+      // ).name = inputs[1].value;
       // studentArrStateCopy[index].scoreTerms[0].termAvgScore = inputs[2].value;
       // studentArrStateCopy[index].scoreTerms[1].termAvgScore = inputs[3].value;
 
@@ -272,8 +271,8 @@ export const Search = () => {
       setResult([newValue]);
       setResultUI([
         {
-          "Họ tên": newValue.nameStudent,
-          Lớp: newValue.nameClass,
+          "Họ tên": newValue.name,
+          Lớp: newValue.name,
           "Điểm TBHKI": newValue.AvgScore1,
           "Điểm TBHKII": newValue.AvgScore2,
         },
@@ -314,8 +313,8 @@ export const Search = () => {
           )
           .map((item) => {
             return {
-              "Họ tên": item.nameStudent,
-              Lớp: item.nameClass,
+              "Họ tên": item.name,
+              Lớp: item.name,
               "Điểm TBHKI": item.AvgScore1,
               "Điểm TBHKII": item.AvgScore2,
             };
@@ -334,8 +333,8 @@ export const Search = () => {
 
         setResultUI([
           {
-            "Họ tên": studentArrTempState[index].nameStudent,
-            Lớp: studentArrTempState[index].nameClass,
+            "Họ tên": studentArrTempState[index].name,
+            Lớp: studentArrTempState[index].name,
             "Điểm TBHKI": studentArrTempState[index].AvgScore1,
             "Điểm TBHKII": studentArrTempState[index].AvgScore2,
           },
@@ -352,7 +351,7 @@ export const Search = () => {
     // },
     // handleEditClass: (e, i) => {
     //   classArrState.find(
-    //     (info) => info._id == studentArrTempState[i].cClass
+    //     (info) => info._id == studentArrTempState[i].ClassDetail
     //   ).fullName = e.target.value;
     //   setStudentArrTempState(studentArrTempState);
     // },
@@ -409,8 +408,7 @@ export const Search = () => {
             <div className="search__btns">
               <button
                 className="search__button"
-                onClick={handleEvent.handleClickSearchBtn}
-              >
+                onClick={handleEvent.handleClickSearchBtn}>
                 Tìm kiếm
               </button>
             </div>
@@ -434,10 +432,10 @@ export const Search = () => {
             <>
               <div className="row content">
                 <div className="item col-30-percent center al-left pl-50">
-                  {item.nameStudent}
+                  {item.name}
                 </div>
                 <div className="item col-10-percent center al-center">
-                  {item.nameClass}
+                  {item.name}
                 </div>
                 <div className="item col-20-percent center al-center">
                   {item.AvgScore1}
@@ -449,8 +447,7 @@ export const Search = () => {
                   <button
                     className="info-btn"
                     data-set={i}
-                    onClick={(e) => handleEvent.handleClickInfoBtn(e)}
-                  >
+                    onClick={(e) => handleEvent.handleClickInfoBtn(e)}>
                     <img src={InfoIcon} alt="" className="info-img" />
                   </button>
                   <button
@@ -462,15 +459,13 @@ export const Search = () => {
                         studentArrTempState,
                         setStudentArrTempState
                       )
-                    }
-                  >
+                    }>
                     <img src={EditIcon} alt="" className="edit-img" />
                   </button>
                   <button
                     className="delete-btn"
                     data-set={i}
-                    onClick={(e) => handleEvent.handleClickDeleteBtn(e)}
-                  >
+                    onClick={(e) => handleEvent.handleClickDeleteBtn(e)}>
                     <img src={DeleteIcon} alt="" className="delete-img" />
                   </button>
                 </div>
@@ -482,14 +477,14 @@ export const Search = () => {
                       type="text"
                       className="input--small"
                       placeholder="Nhập họ tên..."
-                      value={item.nameStudent}
+                      value={item.name}
                       onChange={(e) =>
                         handler.handleEditInputChange(
                           e,
                           i,
                           studentArrTempState,
                           setStudentArrTempState,
-                          "nameStudent"
+                          "name"
                         )
                       }
                     />
@@ -499,14 +494,14 @@ export const Search = () => {
                       type="text"
                       className="input--tiny"
                       placeholder="Nhập lớp..."
-                      value={item.nameClass}
+                      value={item.name}
                       onChange={(e) =>
                         handler.handleEditInputChange(
                           e,
                           i,
                           studentArrTempState,
                           setStudentArrTempState,
-                          "nameClass"
+                          "name"
                         )
                       }
                     />
@@ -550,8 +545,7 @@ export const Search = () => {
                       // btnType="save"
                       onClick={(e) => handleEvent.handleSaveBtn(e)}
                       data-set={i}
-                      className="save-btn--small"
-                    >
+                      className="save-btn--small">
                       Lưu
                     </button>
                   </div>

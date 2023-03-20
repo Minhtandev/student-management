@@ -20,33 +20,33 @@ export const AddStudent = () => {
 
   useEffect(() => {
     const getStudentArr = async () => {
-      const dataArr = await api.getStudentInfoArr();
+      // const dataArr = await api.getStudentInfoArr();
       const settingList = await api.getSettingList();
 
-      let min = settingList.find((item) => item.idSet === "ST002").valueSet;
-      let max = settingList.find((item) => item.idSet === "ST003").valueSet;
+      let min = settingList.find((item) => item.name === "min-age")?.value;
+      let max = settingList.find((item) => item.idSet === "max-age")?.value;
       setMinAge(Number(min));
       setMaxAge(Number(max));
-      setStudentArrState(dataArr);
+      // setStudentArrState(dataArr);
     };
     getStudentArr();
   }, []);
 
   //Xử lý nút lưu của màn hình xác nhận
-  const handleConfirmAcceptBtn = () => {
+  const handleConfirmAcceptBtn = async () => {
     // helper.turnOffConfirm("edit");
     document.querySelector(".confirm").style.display = "none";
     //kiểm tra ràng buộc
     let checkEmptyMessage = helper.validateData("empty", result[0]);
-    // let checkAgeMessage = helper.validateData(
-    //   "age",
-    //   {
-    //     dateOfBirth: result[0].dateOfBirth,
-    //   },
-    //   null,
-    //   minAge,
-    //   maxAge
-    // );
+    let checkAgeMessage = helper.validateData(
+      "age",
+      {
+        birth: result[0].birth,
+      },
+      null,
+      minAge,
+      maxAge
+    );
     let checkEmailMessage = helper.validateData("email", {
       email: result[0].email,
     });
@@ -68,15 +68,15 @@ export const AddStudent = () => {
       ).parentElement.style.display = "flex";
     } else {
       //Lưu xuống CSDL
-      const studentArrStateCopy = JSON.parse(JSON.stringify(studentArrState));
-      studentArrStateCopy.push(result[0]);
-      setStudentArrState(studentArrStateCopy);
+      // const studentArrStateCopy = JSON.parse(JSON.stringify(studentArrState));
+      // studentArrStateCopy.push(result[0]);
+      // setStudentArrState(studentArrStateCopy);
+
+      //Lưu xuống CSDL
+      await api.postStudentInfo(result[0]);
 
       //hiện thông báo
       document.querySelector(".notification").style.display = "flex";
-
-      //Lưu xuống CSDL
-      api.postNewStudentInfo(result[0]);
     }
   };
 
@@ -102,10 +102,10 @@ export const AddStudent = () => {
     const selects = Array.from(document.querySelectorAll(".dropdown_selected"));
 
     const newStudent = {
-      ID: helper.generateID(studentArrState, "ID", "SD"),
-      fullName: inputs[0].value,
+      // ID: helper.generateID(studentArrState, "ID", "SD"),
+      name: inputs[0].value,
       email: inputs[1].value,
-      dateOfBirth: inputs[2].value,
+      birth: inputs[2].value,
       address: inputs[3].value,
       gender:
         selects[0]
@@ -161,8 +161,8 @@ export const AddStudent = () => {
             name="gender"
             selectName="gender"
             options={[
-              { value: "Boy", text: "Nam" },
-              { value: "Girl", text: "Nữ" },
+              { value: "male", text: "Nam" },
+              { value: "female", text: "Nữ" },
             ]}
           />
         </div>

@@ -19,7 +19,7 @@ export const Homepage = () => {
   const [numSubject, setNumSubject] = useState(0);
   useEffect(() => {
     const getData = async () => {
-      const classArr = await api.getClassListArr();
+      const classArr = await api.getClassList();
       const gradeArr = await api.getGradeList();
       const studentArr = await api.getStudentInfoArr();
       const subjectArr = await api.getSubjectList();

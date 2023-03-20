@@ -27,10 +27,10 @@ export const CreateScore = () => {
   let coEff15MinID, coEff1PerID, termID;
   useEffect(() => {
     const getData = async () => {
-      const classArr = await api.getCCLASS();
+      const classArr = await api.getClassDetail();
       const subjectArr = await api.getSubjectList();
       const schoolYearArr = await api.getSchoolYearList();
-      const coEffArr = await api.getCoEff();
+      const coEffArr = await api.getParamList();
       const allStudents = await api.getStudentInfoArr();
       const termArr = await api.getTermList();
       const scoreArr = await api.getScoreSubject();
@@ -41,12 +41,9 @@ export const CreateScore = () => {
 
       termID = termArr.find((item) => item.nameTerm === term)._id;
       const selectedClassList = classArr.find(
-        (item) =>
-          item.nameClass === className && item.schoolYear === schoolYearID
+        (item) => item.name === className && item.schoolYear === schoolYearID
       );
-      let subjectID = subjectArr.find(
-        (item) => item.nameSubject === subject
-      )._id;
+      let subjectID = subjectArr.find((item) => item.name === subject)._id;
       let classID = selectedClassList._id;
       console.log(schoolYearID, subjectID, classID);
       // setClassList(selectedClassList);
@@ -58,7 +55,7 @@ export const CreateScore = () => {
         .map((item) => {
           return {
             ...item,
-            nameStudent: item.fullName,
+            name: item.fullName,
             studentID: item._id,
             classID: classID,
           };
@@ -162,7 +159,8 @@ export const CreateScore = () => {
     console.log(finalResult);
     //Xoá lớp cũ
     const existItems = scoreSubjectState.filter(
-      (item) => item.cClass === classIDState && item.subject === subjectIDState
+      (item) =>
+        item.ClassDetail === classIDState && item.subject === subjectIDState
     );
     existItems.forEach((item) => {
       api.deleteScoreSubject(item._id);
@@ -172,7 +170,7 @@ export const CreateScore = () => {
     const payloadToApi = finalResult.map((item) => {
       return {
         student: item.studentID,
-        cClass: classIDState,
+        ClassDetail: classIDState,
         subject: subjectIDState,
         term: termID,
         scoreDetails: [
@@ -243,7 +241,7 @@ export const CreateScore = () => {
                   {i + 1}
                 </div>
                 <div className="item col-30-percent center al-left pl-50">
-                  {item.nameStudent}
+                  {item.name}
                 </div>
                 <div className="item col-20-percent center al-center min-15">
                   <Input type="small" placeholder="Nhập điểm 15'..." />
@@ -296,7 +294,7 @@ export const CreateScore = () => {
                   {i + 1}
                 </div>
                 <div className="item col-30-percent center al-left pl-50">
-                  {item.nameStudent}
+                  {item.name}
                 </div>
                 <div className="item col-20-percent center al-center min-15">
                   {finalResult[i].score15Min}

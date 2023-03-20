@@ -1,15 +1,15 @@
-const { Student, CClass, Subject } = require("../models/model");
+const { Student, ClassDetail, Subject } = require("../models/model");
 
-const studentController = {
+const StudentController = {
   //ADD STUDENT
   addStudent: async (req, res) => {
     try {
       const newStudent = new Student(req.body);
       const savedStudent = await newStudent.save();
-      if (req.body.cClass) {
-        const cClass = CClass.findById(req.body.cClass);
-        await cClass.updateOne({ $push: { students: savedStudent._id } });
-      }
+      // if (req.body.ClassDetail) {
+      //   const ClassDetail = ClassDetail.findById(req.body.ClassDetail);
+      //   await ClassDetail.updateOne({ $push: { students: savedStudent._id } });
+      // }
       res.status(200).json(savedStudent);
     } catch (err) {
       res.status(500).json(err);
@@ -30,7 +30,9 @@ const studentController = {
   //GET A STUDENT
   getStudent: async (req, res) => {
     try {
-      const student = await Student.findById(req.params.id).populate("cClass");
+      const student = await Student.findById(req.params.id).populate(
+        "ClassDetail"
+      );
       // .populate("subjects");
       res.status(200).json(student);
     } catch (err) {
@@ -42,11 +44,11 @@ const studentController = {
   updateStudent: async (req, res) => {
     try {
       const student = await Student.findById(req.params.id);
-      if (req.body.cClass && !student.cClass) {
-        // const author = Author.find({ _id: req.body.author });
-        const cClass = CClass.findById(req.body.cClass);
-        await cClass.updateOne({ $push: { students: student._id } });
-      }
+      // if (req.body.ClassDetail && !student.ClassDetail) {
+      //   // const author = Author.find({ _id: req.body.author });
+      //   const ClassDetail = ClassDetail.findById(req.body.ClassDetail);
+      //   await ClassDetail.updateOne({ $push: { students: student._id } });
+      // }
       await student.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -57,7 +59,7 @@ const studentController = {
   //DELETE A STUDENT
   deleteStudent: async (req, res) => {
     try {
-      await CClass.updateMany(
+      await ClassDetail.updateMany(
         { students: req.params.id },
         { $pull: { students: req.params.id } }
       );
@@ -73,4 +75,4 @@ const studentController = {
   },
 };
 
-module.exports = studentController;
+module.exports = StudentController;

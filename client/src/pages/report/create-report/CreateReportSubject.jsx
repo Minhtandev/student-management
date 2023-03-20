@@ -30,12 +30,10 @@ export const CreateReportSubject = () => {
       const scoreArr = await api.getScoreSubject();
       // const scoreArr = scoreSubject;
 
-      const classArray = await api.getCCLASS();
-      const reportSubject = await api.getReportSubjects();
+      const classArray = await api.getClassDetail();
+      const reportSubject = await api.getSubjectReports();
 
-      let subjectID = subjectArr.find(
-        (item) => item.nameSubject === subject
-      )._id;
+      let subjectID = subjectArr.find((item) => item.name === subject)._id;
       let termID = termArr.find((item) => item.nameTerm === term)._id;
       let schoolYearID = schoolYearArr.find(
         (item) => item.nameSchYear === schoolYear
@@ -65,10 +63,10 @@ export const CreateReportSubject = () => {
 
           let isThereScore = scoreArr.find(
             (score) =>
-              score.cClass === thisClass._id &&
+              score.ClassDetail === thisClass._id &&
               // score.term === thisTerm._id &&
               score.subject === thisSubject._id
-            // score.cClass &&
+            // score.ClassDetail &&
             // score.subject &&
             // score.term
           );
@@ -84,7 +82,7 @@ export const CreateReportSubject = () => {
 
           let isThereReport = reportSubject.find(
             (report) =>
-              report.cClass === thisClass._id &&
+              report.ClassDetail === thisClass._id &&
               // report.term === thisTerm._id &&
               report.subject === thisSubject._id
           );
@@ -101,7 +99,7 @@ export const CreateReportSubject = () => {
               rate;
             scoreArr.forEach((score) => {
               if (
-                score.cClass === thisClass._id &&
+                score.ClassDetail === thisClass._id &&
                 // score.term === thisTerm._id &&
                 score.subject === thisSubject._id &&
                 score.avgScore >= 5
@@ -114,7 +112,7 @@ export const CreateReportSubject = () => {
 
             api.postReportSubject({
               subject: thisSubject._id,
-              cClass: thisClass._id,
+              ClassDetail: thisClass._id,
               term: "6299d1a3197adb1f05703d97",
               schoolYear: thisSchoolYear._id,
               totalStudents: total,
@@ -126,7 +124,7 @@ export const CreateReportSubject = () => {
       });
       // });
 
-      const newReportSubject = await api.getReportSubjects();
+      const newReportSubject = await api.getSubjectReports();
       const UIarr = newReportSubject.filter(
         (item) =>
           // item.term === termID &&
@@ -168,9 +166,10 @@ export const CreateReportSubject = () => {
         {reportSubjectState.map((item) => (
           <div className="row content">
             <div className="item col-25-percent center al-center">
-              {classArr.find((classItem) => classItem._id === item.cClass)
-                ? classArr.find((classItem) => classItem._id === item.cClass)
-                    .nameClass
+              {classArr.find((classItem) => classItem._id === item.ClassDetail)
+                ? classArr.find(
+                    (classItem) => classItem._id === item.ClassDetail
+                  ).name
                 : "10A5"}
             </div>
             <div className="item col-25-percent center al-center">

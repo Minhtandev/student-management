@@ -30,55 +30,55 @@ export const settingArr = [
 export const classArr = [
   {
     ID: "001",
-    nameClass: "10A1",
+    name: "10A1",
     Edit: false,
     Checked: false,
   },
   {
     ID: "002",
-    nameClass: "10A2",
+    name: "10A2",
     Edit: false,
     Checked: false,
   },
   {
     ID: "003",
-    nameClass: "10A3",
+    name: "10A3",
     Edit: false,
     Checked: false,
   },
   {
     ID: "004",
-    nameClass: "10A4",
+    name: "10A4",
     Edit: false,
     Checked: false,
   },
   {
     ID: "005",
-    nameClass: "11A1",
+    name: "11A1",
     Edit: false,
     Checked: false,
   },
   {
     ID: "006",
-    nameClass: "11A2",
+    name: "11A2",
     Edit: false,
     Checked: false,
   },
   {
     ID: "007",
-    nameClass: "11A3",
+    name: "11A3",
     Edit: false,
     Checked: false,
   },
   {
     ID: "008",
-    nameClass: "12A1",
+    name: "12A1",
     Edit: false,
     Checked: false,
   },
   {
     ID: "009",
-    nameClass: "12A2",
+    name: "12A2",
     Edit: false,
     Checked: false,
   },
@@ -146,7 +146,7 @@ export const studentScoreArr = [
     ID: "001",
     StudentID: "001",
     Name: "Nguyễn Văn A",
-    nameClass: "10A1",
+    name: "10A1",
     AvgScore1: 9,
     AvgScore2: 4.9,
     SchoolYear: "2018-2019",
@@ -156,7 +156,7 @@ export const studentScoreArr = [
     ID: "002",
     StudentID: "001",
     Name: "Nguyễn Văn A",
-    nameClass: "11A1",
+    name: "11A1",
     AvgScore1: 8,
     AvgScore2: 4.8,
     SchoolYear: "2019-2020",
@@ -166,7 +166,7 @@ export const studentScoreArr = [
     ID: "003",
     StudentID: "001",
     Name: "Nguyễn Văn A",
-    nameClass: "12A1",
+    name: "12A1",
     AvgScore1: 7,
     AvgScore2: 4.8,
     SchoolYear: "2020-2021",
@@ -176,7 +176,7 @@ export const studentScoreArr = [
     ID: "004",
     StudentID: "002",
     Name: "Nguyễn Văn B",
-    nameClass: "10A2",
+    name: "10A2",
     AvgScore1: 5,
     AvgScore2: 4.9,
     SchoolYear: "2019-2020",
@@ -186,7 +186,7 @@ export const studentScoreArr = [
     ID: "005",
     StudentID: "002",
     Name: "Nguyễn Văn B",
-    nameClass: "11A2",
+    name: "11A2",
     AvgScore1: 9,
     AvgScore2: 4,
     SchoolYear: "2020-2021",
@@ -196,7 +196,7 @@ export const studentScoreArr = [
     ID: "006",
     StudentID: "003",
     Name: "Nguyễn Văn C",
-    nameClass: "10A1",
+    name: "10A1",
     AvgScore1: 9,
     AvgScore2: 4.9,
     SchoolYear: "2018-2019",
@@ -206,7 +206,7 @@ export const studentScoreArr = [
     ID: "007",
     StudentID: "003",
     Name: "Nguyễn Văn C",
-    nameClass: "11A1",
+    name: "11A1",
     AvgScore1: 8,
     AvgScore2: 4.8,
     SchoolYear: "2019-2020",
@@ -216,7 +216,7 @@ export const studentScoreArr = [
     ID: "008",
     StudentID: "003",
     Name: "Nguyễn Văn C",
-    nameClass: "12A1",
+    name: "12A1",
     AvgScore1: 7,
     AvgScore2: 4.8,
     SchoolYear: "2020-2021",
@@ -226,7 +226,7 @@ export const studentScoreArr = [
     ID: "009",
     StudentID: "002",
     Name: "Nguyễn Văn D",
-    nameClass: "10A3",
+    name: "10A3",
     AvgScore1: 5,
     AvgScore2: 4.9,
     SchoolYear: "2019-2020",
@@ -236,7 +236,7 @@ export const studentScoreArr = [
     ID: "010",
     StudentID: "002",
     Name: "Nguyễn Văn D",
-    nameClass: "11A3",
+    name: "11A3",
     AvgScore1: 9,
     AvgScore2: 4,
     SchoolYear: "2020-2021",
@@ -467,7 +467,7 @@ export const reportTermArr = [
 export const ScoreSchoolYear = [
   {
     student: "6299e13a39e9202bd9e809ca",
-    cClass: "6299d2e9197adb1f05703dbc",
+    ClassDetail: "6299d2e9197adb1f05703dbc",
     term: "6299d1a3197adb1f05703d97",
     scoreTerms: [
       {
@@ -481,7 +481,7 @@ export const ScoreSchoolYear = [
   },
   {
     student: "6299e13a39e9202bd9e809ca",
-    cClass: "6299d2e9197adb1f05703dbc",
+    ClassDetail: "6299d2e9197adb1f05703dbc",
     term: "6299d1a3197adb1f05703d97",
     scoreTerms: [
       {
@@ -495,7 +495,7 @@ export const ScoreSchoolYear = [
   },
   {
     student: "6299e13a39e9202bd9e809ca",
-    cClass: "6299d2e9197adb1f05703dbc",
+    ClassDetail: "6299d2e9197adb1f05703dbc",
     term: "6299d1a3197adb1f05703d97",
     scoreTerms: [
       {
@@ -514,7 +514,7 @@ export const ScoreSchoolYear = [
 export const scoreSubject = [
   {
     student: "6299e13a39e9202bd9e809ca",
-    cClass: "6299d2e9197adb1f05703dbc",
+    ClassDetail: "6299d2e9197adb1f05703dbc",
     term: "6299d1a3197adb1f05703d97",
     subject: "6299d7b5a91a8e8daa951bf7",
     scoreDetails: [

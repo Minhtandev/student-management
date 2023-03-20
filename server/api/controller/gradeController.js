@@ -1,6 +1,6 @@
-const { Grade, CClass } = require("../models/model");
+const { Grade, Class } = require("../models/model");
 
-const gradeController = {
+const GradeController = {
   //ADD GRADE
   addGrade: async (req, res) => {
     try {
@@ -25,7 +25,7 @@ const gradeController = {
   //GET A GRADE
   getGrade: async (req, res) => {
     try {
-      const grade = await Grade.findById(req.params.id).populate("cClasses");
+      const grade = await Grade.findById(req.params.id);
       res.status(200).json(grade);
     } catch (err) {
       res.status(500).json(err);
@@ -36,11 +36,11 @@ const gradeController = {
   updateGrade: async (req, res) => {
     try {
       const grade = await Grade.findById(req.params.id);
-      if (req.body.cClasses) {
-        for (let i = 0; i < req.body.cClasses.length; i++) {
-          await CClass.updateOne({ grade: req.params.id });
-        }
-      }
+      // if (req.body.ClassDetailes) {
+      //   for (let i = 0; i < req.body.ClassDetailes.length; i++) {
+      //     await ClassDetail.updateOne({ grade: req.params.id });
+      //   }
+      // }
       await grade.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -51,7 +51,8 @@ const gradeController = {
   //DELETE A GRADE
   deleteGrade: async (req, res) => {
     try {
-      await CClass.updateMany({ grade: req.params.id }, { grade: null });
+      // await ClassDetail.updateMany({ grade: req.params.id }, { grade: null });
+      await Class.deleteMany({ grade: req.params.id });
       await Grade.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
@@ -60,4 +61,4 @@ const gradeController = {
   },
 };
 
-module.exports = gradeController;
+module.exports = GradeController;

@@ -1,10 +1,10 @@
-const { ScoreSubject } = require("../models/model");
+const { SubjectScore } = require("../models/model");
 
-const scoreSubjectController = {
+const SubjectScoreController = {
   //ADD SCORE_SUBJECT
   addScoreSubject: async (req, res) => {
     try {
-      const newScoreSubject = new ScoreSubject(req.body);
+      const newScoreSubject = new SubjectScore(req.body);
       const savedScoreSubject = await newScoreSubject.save();
       res.status(200).json(savedScoreSubject);
     } catch (err) {
@@ -15,7 +15,7 @@ const scoreSubjectController = {
   // GET ALL SCORE_SUBJECTS
   getAllScoreSubjects: async (req, res) => {
     try {
-      const scoreSubjects = await ScoreSubject.find();
+      const scoreSubjects = await SubjectScore.find();
       res.status(200).json(scoreSubjects);
     } catch (err) {
       res.status(500).json(err);
@@ -25,7 +25,7 @@ const scoreSubjectController = {
   //GET A SCORE_SUBJECT
   getScoreSubject: async (req, res) => {
     try {
-      const scoreSubject = await ScoreSubject.findById(req.params.id);
+      const scoreSubject = await SubjectScore.findById(req.params.id);
       res.status(200).json(scoreSubject);
     } catch (err) {
       res.status(500).json(err);
@@ -35,7 +35,7 @@ const scoreSubjectController = {
   //UPDATE SCORE_SUBJECT
   updateScoreSubject: async (req, res) => {
     try {
-      const scoreSubject = await ScoreSubject.findById(req.params.id);
+      const scoreSubject = await SubjectScore.findById(req.params.id);
       await scoreSubject.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
@@ -46,7 +46,7 @@ const scoreSubjectController = {
   //DELETE SCORE_SUBJECT
   deleteScoreSubject: async (req, res) => {
     try {
-      await ScoreSubject.findByIdAndDelete(req.params.id);
+      await SubjectScore.findByIdAndDelete(req.params.id);
       res.status(200).json("Deleted successfully!");
     } catch (err) {
       res.status(500).json(err);
@@ -54,4 +54,4 @@ const scoreSubjectController = {
   },
 };
 
-module.exports = scoreSubjectController;
+module.exports = SubjectScoreController;
