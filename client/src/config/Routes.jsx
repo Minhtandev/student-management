@@ -32,7 +32,7 @@ export const Routes = () => {
       <Route path="/add/add-student" component={AddStudent}></Route>
       <Route path="/add/add-class" exact component={AddClass}></Route>
       <Route
-        path="/add/add-class/:name/:grade/:schoolyear"
+        path="/add/add-class/:className/:grade/:schoolyear"
         component={CreateClass}></Route>
       <Route path="/search" component={Search}></Route>
       <Route path="/score" exact component={Score}></Route>

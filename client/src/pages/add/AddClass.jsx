@@ -3,9 +3,7 @@ import "./AddClass.scss";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Notification } from "../../components/Notification";
-// import { classArr, schoolYearArr, gradeArr } from "../../config/getAPI";
 import { useHistory } from "react-router-dom";
-// import { Link } from "react-router-dom";
 import { api } from "../../api/api";
 import { useState, useEffect } from "react";
 import { Confirm } from "../../components/Confirm";
@@ -18,24 +16,11 @@ export const AddClass = () => {
   const [gradeArrState, setGradeArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
   const [message, setMessage] = useState("");
-
-  //tạo options cho select
-  // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.name };
-  // });
-  // const nameArr = gradeArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-  // const schoolYearNameArr = schoolYearArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-
   useEffect(() => {
     const getData = async () => {
       const gradeArr = await api.getGradeList();
       const CLASS = await api.getClassDetail();
       const classArr = await api.getClassList();
-      // const schoolYearArr = await api.getSchoolYearList();
       const UIgradeArr = gradeArr.map((item) => {
         return {
           ...item,
@@ -54,9 +39,7 @@ export const AddClass = () => {
           text: item,
         };
       });
-      // console.log(subjectArr, UIsubjectArr);
       setGradeArrState(UIgradeArr);
-      // setClassArrState(UItermArr);
       setClassArrState(UIClassArr);
       allClass = UIClassArr;
       setClassDetailArrState(CLASS);
@@ -64,22 +47,6 @@ export const AddClass = () => {
     };
     getData();
   }, []);
-
-  // useEffect(() => {
-  //   console.log(document.querySelectorAll(".dropdown_selected-default")[1]);
-  //   const gradeValue = document.querySelector(".dropdown_selected-default")
-  //     ? document.querySelectorAll(".dropdown_selected-default")[0].innerText
-  //     : "";
-  //   const newClassArrState = classNameArr.filter((item) =>
-  //     item.text.includes(gradeValue)
-  //   );
-  //   console.log("set new state");
-  //   setClassArrState(newClassArrState);
-  // }, [
-  //   document.querySelector(".dropdown_selected-default")
-  //     ? document.querySelectorAll(".dropdown_selected-default")[0].innerText
-  //     : null,
-  // ]);
 
   const onChangeSelect = () => {
     const gradeValue = document.querySelector(".dropdown_selected-default")
@@ -102,27 +69,12 @@ export const AddClass = () => {
 
   const handleClickCreateBtn = () => {
     const [grade, className, schoolYear] = getSelectedOptions();
-    // console.log(className, grade);
     if (className.includes(grade)) {
-      // let subjectID = subjectArrState.find(
-      //   (item) => item.name === subject
-      // )._id;
-      // let termID = "6299d1a3197adb1f05703d97";
-      // let schoolYearID = schoolYearArrState.find(
-      //   (item) => item.nameSchYear === schoolYear
-      // )._id;
-      // console.log(classArrState);
-      // let classID = ClassDetailState.find(
-      //   (item) =>
-      //     item.name === className && item.schoolYear === schoolYearID
-      // )._id;
-
       let isExisted =
         ClassDetailState.filter(
           (item) => item.name === className && item.schoolYear === schoolYear
           //&& item.term === termID
         ).length > 0;
-      // console.log(isExisted);
       if (isExisted) {
         document.querySelector(".confirm.override").style.display = "flex";
       } else {

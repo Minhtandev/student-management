@@ -57,8 +57,8 @@ const gradeSchema = new mongoose.Schema({
 //Định nghĩa một danh sách lớp
 const classDetailSchema = new mongoose.Schema({
   name: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Class",
+    type: String,
+    required: true,
   },
   students: [
     {
@@ -119,6 +119,10 @@ const subjectScoreSchema = new mongoose.Schema({
   subject: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subject",
+  },
+  term: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Term",
   },
   scores: [
     {

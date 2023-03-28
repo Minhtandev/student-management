@@ -3,52 +3,25 @@ import "./Score.scss";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Confirm } from "../../components/Confirm";
-// import {
-//   subjectArr,
-//   classArr,
-//   termArr,
-//   schoolYearArr,
-// } from "../../config/getAPI";
 import { useState, useEffect } from "react";
 import { api } from "../../api/api";
 import { useHistory } from "react-router-dom";
+import { schoolYear } from "../../config/data";
 
 export const Score = () => {
   let history = useHistory();
-  const [classArrState, setClassArrState] = useState([]);
   const [ClassDetailState, setClassDetailArrState] = useState([]);
   const [subjectArrState, setSubjectArrState] = useState([]);
   const [termArrState, setTermArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
   const [scoreArrState, setScoreArrState] = useState([]);
-  // const [termIDState, setTermIDState] = useState("");
-  // const [subjectIDState, setSubjectIDState] = useState("");
-  // const [schoolYearIDState, setSchoolYearIDState] = useState("");
-  // const [classIDState, setClassIDState] = useState("");
-  //tạo options cho select
-  // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.name };
-  // });
-
-  // const subjectNameArr = subjectArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-
-  // const termNameArr = termArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-  // const schoolYearNameArr = schoolYearArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
 
   useEffect(() => {
     const getData = async () => {
-      const scoreArr = await api.getScoreSubject();
+      const scoreArr = await api.getSubjectScore();
       const subjectArr = await api.getSubjectList();
       const termArr = await api.getTermList();
-      const classArr = await api.getClassList();
-      const CLASS = await api.getClassDetail();
-      const schoolYearArr = await api.getSchoolYearList();
+      const classArr = await api.getClassDetail();
       const UIsubjectArr = subjectArr.map((item) => {
         return {
           ...item,
@@ -58,15 +31,16 @@ export const Score = () => {
       const UItermArr = termArr.map((item) => {
         return {
           ...item,
-          text: item.nameTerm,
+          text: item.name,
         };
       });
-      const UISchoolYearArr = schoolYearArr.map((item) => {
+      const UISchoolYearArr = schoolYear.map((item) => {
         return {
           ...item,
-          text: item.nameSchYear,
+          text: item,
         };
       });
+
       const UIClassArr = classArr.map((item) => {
         return {
           ...item,
@@ -74,16 +48,28 @@ export const Score = () => {
         };
       });
 
-      // console.log(subjectArr, UIsubjectArr);
       setSubjectArrState(UIsubjectArr);
       setTermArrState(UItermArr);
       setSchoolYearArrState(UISchoolYearArr);
-      setClassArrState(UIClassArr);
       setScoreArrState(scoreArr);
-      setClassDetailArrState(CLASS);
+      setClassDetailArrState(UIClassArr);
     };
     getData();
   }, []);
+
+  //Lớp sẽ hiển thị dựa theo năm học
+  const onChangeSelect = () => {
+    const selectedSchoolYear = document.querySelector(
+      ".dropdown_selected-default"
+    )
+      ? document.querySelectorAll(".dropdown_selected-default")[0].innerText
+      : "";
+    const newClassArrState = ClassDetailState.filter(
+      (item) => item.schoolYear === selectedSchoolYear
+    );
+    console.log("selectedSchoolYear>>>", selectedSchoolYear);
+    // setClassDetailArrState(newClassArrState);
+  };
 
   const getSelectedOptions = () => {
     let optionValues = [];
@@ -93,22 +79,18 @@ export const Score = () => {
     return optionValues;
   };
 
+  //Xử lý khi nhấn nút tạo bảng điểm
   const handleClickCreateBtn = () => {
-    const [className, subject, term, schoolYear] = getSelectedOptions();
-    console.log();
+    const [schoolYear, className, subject, term] = getSelectedOptions();
     let subjectID = subjectArrState.find((item) => item.name === subject)._id;
-    let termID = "6299d1a3197adb1f05703d97";
-    let schoolYearID = schoolYearArrState.find(
-      (item) => item.nameSchYear === schoolYear
-    )._id;
-    console.log(classArrState);
     let classID = ClassDetailState.find(
-      (item) => item.name === className && item.schoolYear === schoolYearID
+      (item) => item.name === className && item.schoolYear === schoolYear
     )._id;
 
+    //Kiểm tra trùng
     let isExisted =
       scoreArrState.filter(
-        (item) => item.ClassDetail === classID && item.subject === subjectID
+        (item) => item.class === classID && item.subject === subjectID
         //&& item.term === termID
       ).length > 0;
     console.log(isExisted);
@@ -117,16 +99,12 @@ export const Score = () => {
     } else {
       history.push(`score/${className}/${subject}/${term}/${schoolYear}`);
     }
-    // setSubjectIDState(subjectID);
-    // setTermIDState(termID);
-    // setSchoolYearIDState(schoolYearID);
-    // setClassIDState(classID);
   };
   const handleConfirmCancelBtn = () => {
     document.querySelector(".confirm.override").style.display = "none";
   };
   const handleConfirmAcceptBtn = () => {
-    const [className, subject, term, schoolYear] = getSelectedOptions();
+    const [schoolYear, className, subject, term] = getSelectedOptions();
     history.push(`score/${className}/${subject}/${term}/${schoolYear}`);
   };
   return (
@@ -147,9 +125,17 @@ export const Score = () => {
           <Input
             type="select"
             // placeholder="Nhập tên lớp..."
+            labelText="Năm học"
+            selectName="SchoolYear"
+            options={schoolYearArrState}
+            onChangeSelect={onChangeSelect}
+          />
+          <Input
+            type="select"
+            // placeholder="Nhập tên lớp..."
             labelText="Tên lớp"
             selectName="ClassName"
-            options={classArrState}
+            options={ClassDetailState}
           />
           <Input
             type="select"
@@ -166,13 +152,6 @@ export const Score = () => {
             labelText="Học kì"
             selectName="Term"
             options={termArrState}
-          />
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Năm học"
-            selectName="SchoolYear"
-            options={schoolYearArrState}
           />
         </div>
       </div>
