@@ -6,8 +6,9 @@ import { Input } from "../../components/Input";
 // import { schoolYearArr, termArr } from "../../config/getAPI";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import { schoolYear } from "../../config/data";
 import { api } from "../../api/api";
+
 export const ReportTerm = () => {
   let history = useHistory();
 
@@ -25,15 +26,17 @@ export const ReportTerm = () => {
   useEffect(() => {
     const getData = async () => {
       const termArr = await api.getTermList();
-      const schoolYearArr = await api.getSchoolYearList();
+      // const schoolYearArr = await api.getSchoolYearList();
       const UItermArr = termArr.map((item) => {
         return {
-          text: item.nameTerm,
+          ...item,
+          text: item.name,
         };
       });
-      const UISchoolYearArr = schoolYearArr.map((item) => {
+      const UISchoolYearArr = schoolYear.map((item) => {
         return {
-          text: item.nameSchYear,
+          item,
+          text: item,
         };
       });
       setTermArrState(UItermArr);

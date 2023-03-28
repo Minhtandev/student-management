@@ -5,35 +5,19 @@ import { studentInfoArr } from "../../config/getAPI";
 import AddIcon from "../../assets/Add-icon.png";
 import DeleteIcon from "../../assets/Delete-icon.png";
 import { GrFormAdd } from "react-icons/gr";
-
 import { useState, useEffect } from "react";
 import "./CreateClass.scss";
 import { Button } from "../../components/Button";
 import { Confirm } from "../../components/Confirm";
 import { Notification } from "../../components/Notification";
-
-// import { classArr, schoolYearArr, gradeArr } from "../../config/getAPI";
 import { Input } from "../../components/Input";
 import { api } from "../../api/api";
-
 import { useParams } from "react-router-dom";
+import { schoolYear } from "../../config/data";
 
 export const CreateClass = () => {
-  const { className, grade, schoolYear } = useParams();
-  // let gradeID, schoolYearID;
-  // const classNameArr = classArr.map((item) => {
-  //   return { value: item.ID, text: item.name };
-  // });
-  // const nameArr = gradeArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-  // const schoolYearNameArr = schoolYearArr.map((item) => {
-  //   return { value: item.ID, text: item.Name };
-  // });
-  //   const [studentArrState, setStudentArrState] = useState(studentInfoArr);
+  const { className, grade, schoolyear } = useParams();
   let allClass;
-  // , allGrade, allSchoolYear;
-  let maxTotal = 40;
   const [classArrState, setClassArrState] = useState([]);
   const [gradeArrState, setGradeArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
@@ -43,22 +27,15 @@ export const CreateClass = () => {
   const [result, setResult] = useState([]);
   const [allClassDetail, setAllClassDetail] = useState([]);
   const [classArr, setClassArr] = useState([]);
-
+  const [maxTotal, setMaxTotal] = useState(0);
   const [message, setMessage] = useState("");
-
-  // const newClassInfo = {
-  //   ID: "001",
-  //   "Tên lớp": "10A1",
-  //   "Sĩ số": "39",
-  // };
 
   useEffect(() => {
     const getData = async () => {
       const gradeArr = await api.getGradeList();
       const classArr = await api.getClassList();
       const CLASSArr = await api.getClassDetail();
-
-      const schoolYearArr = await api.getSchoolYearList();
+      const settingList = await api.getSettingList();
       const UIgradeArr = gradeArr.map((item) => {
         return {
           ...item,
@@ -71,16 +48,14 @@ export const CreateClass = () => {
           text: item.name,
         };
       });
-      const UISchoolYearArr = schoolYearArr.map((item) => {
+      const UISchoolYearArr = schoolYear.map((item) => {
         return {
           ...item,
-          text: item.nameSchYear,
+          text: item,
         };
       });
       const studentArr = await api.getStudentInfoArr();
-      // console.log(studentArr);
       const allClassDetailArr = await api.getClassDetail();
-
       let studentLength = studentArr.length;
       const fiveLatestStudents = [
         studentArr[studentLength - 1] ? studentArr[studentLength - 1] : null,
@@ -89,22 +64,21 @@ export const CreateClass = () => {
         studentArr[studentLength - 4] ? studentArr[studentLength - 4] : null,
         studentArr[studentLength - 5] ? studentArr[studentLength - 5] : null,
       ];
-      // console.log(subjectArr, UIsubjectArr);
+
       setGradeArrState(UIgradeArr);
-      // allGrade = [...gradeArr];
       setClassArrState(UIClassArr);
       allClass = UIClassArr;
       setSchoolYearArrState(UISchoolYearArr);
-      // allSchoolYear = [...schoolYearArr];
       setStudentArrState(studentArr);
       setStudentArrTempState(fiveLatestStudents);
       setAllClassDetail(allClassDetailArr);
       setClassArr(CLASSArr);
-      // console.log(allClass, allGrade, allSchoolYear);
+      setMaxTotal(settingList.find((item) => item.name === "max-total")?.value);
     };
     getData();
   }, []);
 
+  //Khi thay đổi khối thì select lớp đổi theo
   const onChangeSelect = () => {
     const gradeValue = document.querySelector(".dropdown_selected-default")
       ? document.querySelectorAll(".dropdown_selected-default")[0].innerText
@@ -128,30 +102,20 @@ export const CreateClass = () => {
     handleClickChoose: async () => {
       const [selectedGrade, selectedClass, selectedSchoolYear] =
         getSelectedOptions();
-      const selectedGradeID = gradeArrState.find(
-        (item) => item.name == selectedGrade
-      )._id;
-      const selectedSchoolYearID = schoolYearArrState.find(
-        (item) => item.nameSchYear == selectedSchoolYear
-      )._id;
       const selectedClassDetail = allClassDetail.filter(
         (item) =>
-          item.grade == selectedGradeID &&
-          item.name == selectedClass &&
-          item.schoolYear == selectedSchoolYearID
+          // item.grade == selectedGradeID &&
+          item.name == selectedClass && item.schoolYear == selectedSchoolYear
       )[0];
-
-      // console.log(selectedClassDetail, allClassDetail);
       let selectedStudents = [];
       const studentsOfSelectedCLASS = Array.from(selectedClassDetail.students);
       studentArrState.forEach(async (item) => {
-        if (studentsOfSelectedCLASS.includes(item._id)) {
+        if (studentsOfSelectedCLASS.includes(item?._id)) {
           selectedStudents.push(item);
         }
       });
 
       const newClassArrStateCopy = [...selectedStudents, ...newClassArrState];
-      // console.log(newClassArrStateCopy);
       setNewClassArrState(newClassArrStateCopy);
     },
     handleChangeInput: (e) => {
@@ -163,17 +127,6 @@ export const CreateClass = () => {
         }
         return false;
       });
-
-      // const UIStudentArr = studentArrStateCopy.map((item) => {
-      //   return {
-      //     ID: item._id,
-      //     fullName: item.fullName,
-      //     dateOfBirth: item.dateOfBirth,
-      //     gender: item.gender == "male" ? "Nam" : "Nữ",
-      //     address: item.address,
-      //   };
-      // });
-
       setStudentArrTempState(studentArrStateCopy);
     },
     handleClickSearchBtn: () => {
@@ -185,17 +138,6 @@ export const CreateClass = () => {
         }
         return false;
       });
-
-      // const UIStudentArr = studentArrStateCopy.map((item) => {
-      //   return {
-      //     ID: item._id,
-      //     fullName: item.fullName,
-      //     dateOfBirth: item.dateOfBirth,
-      //     gender: item.gender == "male" ? "Nam" : "Nữ",
-      //     address: item.address,
-      //   };
-      // });
-
       setStudentArrTempState(studentArrStateCopy);
       document.querySelector(".search__input").value = "";
     },
@@ -230,7 +172,7 @@ export const CreateClass = () => {
         {
           Lớp: className,
           Khối: grade,
-          "Năm học": schoolYear,
+          "Năm học": schoolyear,
           "Sĩ số": newClassArrState.length,
         },
       ]);
@@ -240,32 +182,16 @@ export const CreateClass = () => {
       document.querySelector(".confirm.add").style.display = "none";
     },
     handleConfirm: () => {
-      // console.log(allClass, allGrade, allSchoolYear);
-      let schoolYearID = schoolYearArrState.filter(
-        (item) => item.nameSchYear == schoolYear
-      )[0]._id;
-      //Xoá lớp cũ
-      const existItems = classArr.filter(
-        (item) => item.name === className && item.schoolYear === schoolYearID
-      );
-      existItems.forEach((item) => {
-        api.deleteCLASS(item._id);
-      });
-
       //Lưu xuống CSDL
       const newStudentIDs = newClassArrState.map((item) => item._id);
-      // console.log(gradeArrState, schoolYearArrState);
-      let gradeID = gradeArrState.filter((item) => item.name == grade)[0]._id;
       console.log({
         name: className,
-        grade: gradeID,
-        schoolYear: schoolYearID,
+        schoolYear: schoolyear,
         students: newStudentIDs,
       });
-      api.postClassWithStudents({
+      api.postClassDetai({
         name: className,
-        grade: gradeID,
-        schoolYear: schoolYearID,
+        schoolYear: schoolyear,
         students: newStudentIDs,
       });
       document.querySelector(".confirm.add").style.display = "none";
@@ -278,8 +204,6 @@ export const CreateClass = () => {
         let newClassArrStateCopy = newClassArrState.filter(
           (item, i) => i !== index
         );
-        // let newItem = studentArrTempState[index];
-        // newClassArrStateCopy.push(newItem);
         setNewClassArrState(newClassArrStateCopy);
       }
     },
@@ -298,12 +222,6 @@ export const CreateClass = () => {
           />
 
           <Notification status="failed" message={message} />
-          {/* <Confirm
-          confirmType="delete"
-          result={result}
-          handleConfirmCancelBtn={handleEvent.handleCancelToDelete}
-          handleConfirmAcceptBtn={handleEvent.handleConfirmToDelete}
-        /> */}
           {/* <Detail /> */}
           <h3>Lập danh sách lớp</h3>
           <h4>Chọn từ danh sách lớp đã có</h4>
@@ -312,7 +230,6 @@ export const CreateClass = () => {
           </div>
           <div className="grid">
             <div className="row">
-              {/* <label htmlFor="">Học Sinh</label> */}
               {/* chọn lớp đã có */}
               <div className="grid__item option__input">
                 <Input
@@ -402,35 +319,35 @@ export const CreateClass = () => {
             </div>
 
             {studentArrTempState.map((item, i) => {
-              return (
-                <>
-                  <div className="row content">
-                    <div className="item col-30-percent center pl-50 al-left">
-                      {item.fullName}
+              if (item)
+                return (
+                  <>
+                    <div className="row content">
+                      <div className="item col-30-percent center pl-50 al-left">
+                        {item?.name}
+                      </div>
+                      <div className="item col-10-percent center al-center">
+                        {item?.gender == "male" ? "Nam" : "Nữ"}
+                      </div>
+                      <div className="item col-20-percent center al-center">
+                        {item?.birth}
+                      </div>
+                      <div className="item col-20-percent center al-center">
+                        {item?.address}
+                      </div>
+                      <div className="item col-20-percent center al-center">
+                        <button
+                          className="search__add-btn"
+                          data-set={i}
+                          onClick={(e) => handleEvent.handleClickAddBtn(e)}>
+                          <i className="add-img">
+                            <GrFormAdd></GrFormAdd>
+                          </i>
+                        </button>
+                      </div>
                     </div>
-                    <div className="item col-10-percent center al-center">
-                      {item.gender == "male" ? "Nam" : "Nữ"}
-                    </div>
-                    <div className="item col-20-percent center al-center">
-                      {item.dateOfBirth}
-                    </div>
-                    <div className="item col-20-percent center al-center">
-                      {item.address}
-                    </div>
-                    <div className="item col-20-percent center al-center">
-                      <button
-                        className="search__add-btn"
-                        data-set={i}
-                        onClick={(e) => handleEvent.handleClickAddBtn(e)}>
-                        {/* <img src={AddIcon} alt="" className="add-img" /> */}
-                        <i className="add-img">
-                          <GrFormAdd></GrFormAdd>
-                        </i>
-                      </button>
-                    </div>
-                  </div>
-                </>
-              );
+                  </>
+                );
             })}
           </div>
         </div>
@@ -440,7 +357,7 @@ export const CreateClass = () => {
           <div className="class-info">
             <h5>Tên lớp: {className}</h5>
             <h5>Tên khối: {grade}</h5>
-            <h5>Năm học: {schoolYear}</h5>
+            <h5>Năm học: {schoolyear}</h5>
           </div>
           <div className="container">
             <div className="row heading">
@@ -464,13 +381,13 @@ export const CreateClass = () => {
                 <>
                   <div className="row content">
                     <div className="item col-30-percent center pl-50">
-                      {item.fullName}
+                      {item.name}
                     </div>
                     <div className="item col-10-percent center al-center">
                       {item.gender == "male" ? "Nam" : "Nữ"}
                     </div>
                     <div className="item col-20-percent center al-center">
-                      {item.dateOfBirth}
+                      {item.birth}
                     </div>
                     <div className="item col-20-percent center al-center">
                       {item.address}

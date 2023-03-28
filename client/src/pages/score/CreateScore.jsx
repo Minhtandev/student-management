@@ -4,12 +4,11 @@ import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Confirm } from "../../components/Confirm";
 import { Notification } from "../../components/Notification";
-// import { studentList } from "../../config/getAPI";
 import { useState, useEffect } from "react";
 import { helper } from "../../handle-event/HandleEvent";
 import { useParams } from "react-router-dom";
 import { api } from "../../api/api";
-
+// import { schoolYear as schoolYearArr } from "../../config/data";
 //get từ DS lớp, giữ lại id của HS
 export const CreateScore = () => {
   const { className, subject, term, schoolYear } = useParams();
@@ -20,10 +19,9 @@ export const CreateScore = () => {
   const [scoreSubjectState, setScoreSubjectState] = useState([]);
   const [classIDState, setClassIDState] = useState([]);
   const [subjectIDState, setSubjectIDState] = useState([]);
-  const [schoolYearIDState, setSchoolYearIDState] = useState([]);
+  const [schoolYearIDState, setSchoolYearIDState] = useState(schoolYear);
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(10);
-  // let classID, subjectID, schoolYearID;
   let coEff15MinID, coEff1PerID, termID;
   useEffect(() => {
     const getData = async () => {
@@ -33,19 +31,20 @@ export const CreateScore = () => {
       const coEffArr = await api.getParamList();
       const allStudents = await api.getStudentInfoArr();
       const termArr = await api.getTermList();
-      const scoreArr = await api.getScoreSubject();
+      const scoreArr = await api.getSubjectScore();
 
-      let schoolYearID = schoolYearArr.find(
-        (item) => item.nameSchYear === schoolYear
-      )._id;
+      // let schoolYearID = schoolYearArr.find(
+      //   (item) => item.nameSchYear === schoolYear
+      // )._id;
 
-      termID = termArr.find((item) => item.nameTerm === term)._id;
+      termID = termArr.find((item) => item.name === term)._id;
+
       const selectedClassList = classArr.find(
-        (item) => item.name === className && item.schoolYear === schoolYearID
+        (item) => item.name === className && item.schoolYear === schoolYear
       );
       let subjectID = subjectArr.find((item) => item.name === subject)._id;
       let classID = selectedClassList._id;
-      console.log(schoolYearID, subjectID, classID);
+      // console.log(schoolYearID, subjectID, classID);
       // setClassList(selectedClassList);
       coEff15MinID = coEffArr[0]._id;
       coEff1PerID = coEffArr[1]._id;
@@ -64,7 +63,7 @@ export const CreateScore = () => {
       setStudentList(newStudentList);
       setClassIDState(classID);
       setSubjectIDState(subjectID);
-      setSchoolYearIDState(schoolYearID);
+      setSchoolYearIDState("");
       setScoreSubjectState(scoreArr);
     };
     getData();
@@ -163,7 +162,7 @@ export const CreateScore = () => {
         item.ClassDetail === classIDState && item.subject === subjectIDState
     );
     existItems.forEach((item) => {
-      api.deleteScoreSubject(item._id);
+      api.deleteSubjectScore(item._id);
     });
 
     //Lưu xuống CSDL
