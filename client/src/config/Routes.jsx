@@ -17,6 +17,7 @@ import { CreateReportSubject } from "../pages/report/create-report/CreateReportS
 import { ReportTerm } from "../pages/report/ReportTerm";
 import { CreateReportTerm } from "../pages/report/create-report/CreateReportTerm";
 import { NotFound } from "../pages/NotFound";
+import Loginpage from "../pages/login/Loginpage";
 
 import { Switch, Route } from "react-router-dom";
 
@@ -24,6 +25,7 @@ export const Routes = () => {
   return (
     <Switch>
       <Route path="/" exact component={Homepage}></Route>
+      <Route path="/login" exact component={Loginpage}></Route>
       <Route path="/setting" exact component={Setting}></Route>
       <Route path="/setting/class-list" component={ClassList}></Route>
       <Route path="/setting/subject-list" component={SubjectList}></Route>
