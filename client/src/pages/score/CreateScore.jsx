@@ -17,53 +17,57 @@ export const CreateScore = () => {
   const [finalResult, setFinalResult] = useState([]);
   const [studentList, setStudentList] = useState([]);
   const [scoreSubjectState, setScoreSubjectState] = useState([]);
-  const [classIDState, setClassIDState] = useState([]);
-  const [subjectIDState, setSubjectIDState] = useState([]);
-  const [schoolYearIDState, setSchoolYearIDState] = useState(schoolYear);
+  const [classIDState, setClassIDState] = useState("");
+  const [subjectIDState, setSubjectIDState] = useState("");
+  const [termIDState, setTermIDState] = useState("");
   const [minScore, setMinScore] = useState(0);
   const [maxScore, setMaxScore] = useState(10);
-  let coEff15MinID, coEff1PerID, termID;
+  const [param15ID, setParam15ID] = useState("");
+  const [param15Value, setParam15Value] = useState(1);
+  const [param1ID, setParam1ID] = useState("");
+  const [param1Value, setParam1Value] = useState(2);
+
   useEffect(() => {
     const getData = async () => {
       const classArr = await api.getClassDetail();
+      const classDetail = classArr.find(
+        (item) => item.schoolYear == schoolYear && item.name == className
+      );
+      let classID = classDetail._id;
+      const studentsOfClass = classDetail.students;
+
       const subjectArr = await api.getSubjectList();
-      const schoolYearArr = await api.getSchoolYearList();
-      const coEffArr = await api.getParamList();
-      const allStudents = await api.getStudentInfoArr();
+      let subjectID = subjectArr.find((item) => item.name == subject)._id;
+
       const termArr = await api.getTermList();
+      let termID = termArr.find((item) => item.name === term)._id;
+
+      const paramArr = await api.getParamList();
+      let param15 = paramArr.find((item) => item.name == "15 phút");
+      let param1 = paramArr.find((item) => item.name == "1 tiết");
+      // let paramTermID = paramArr.find((item) => item.name == "học kì")._id;
+
+      const settingList = await api.getSettingList();
+      let min = settingList.find((item) => item.name == "min-score");
+      let max = settingList.find((item) => item.name == "min-score");
+
+      const allStudents = await api.getStudentInfoArr();
+      const newStudentList = allStudents.filter((item) =>
+        studentsOfClass.includes(item._id)
+      );
+
       const scoreArr = await api.getSubjectScore();
 
-      // let schoolYearID = schoolYearArr.find(
-      //   (item) => item.nameSchYear === schoolYear
-      // )._id;
-
-      termID = termArr.find((item) => item.name === term)._id;
-
-      const selectedClassList = classArr.find(
-        (item) => item.name === className && item.schoolYear === schoolYear
-      );
-      let subjectID = subjectArr.find((item) => item.name === subject)._id;
-      let classID = selectedClassList._id;
-      // console.log(schoolYearID, subjectID, classID);
-      // setClassList(selectedClassList);
-      coEff15MinID = coEffArr[0]._id;
-      coEff1PerID = coEffArr[1]._id;
-
-      const newStudentList = allStudents
-        .filter((item) => selectedClassList.students.includes(item._id))
-        .map((item) => {
-          return {
-            ...item,
-            name: item.fullName,
-            studentID: item._id,
-            classID: classID,
-          };
-        });
-      // console.log(newStudentList);
-      setStudentList(newStudentList);
       setClassIDState(classID);
       setSubjectIDState(subjectID);
-      setSchoolYearIDState("");
+      setTermIDState(termID);
+      setParam15ID(param15._id);
+      setParam1ID(param1._id);
+      setParam15Value(param15.value);
+      setParam1Value(param1.value);
+      setMinScore(min);
+      setMaxScore(max);
+      setStudentList(newStudentList);
       setScoreSubjectState(scoreArr);
     };
     getData();
@@ -71,17 +75,32 @@ export const CreateScore = () => {
 
   const handleClickAddBtn = () => {
     const finalResultTemp = [];
-    const inputs15Min = document.querySelectorAll(".min-15 input");
-    const inputs1Per = document.querySelectorAll(".per-1 input");
+    const inputs15 = Array.from(document.querySelectorAll(".min-15 input"));
+    const inputs15Min = inputs15.map((input) =>
+      input.value.trim().replace(/\s+/g, " ")
+    );
+    const inputs1 = Array.from(document.querySelectorAll(".per-1 input"));
+    const inputs1Per = inputs1.map((input) =>
+      input.value.trim().replace(/\s+/g, " ")
+    );
+
     studentList.forEach((item, i) => {
+      let total15Min = inputs15Min[i]
+        .split(" ")
+        .map((item) => Number(item))
+        .reduce((total, num) => total + num * param15Value, 0);
+      let total1Per = inputs1Per[i]
+        .split(" ")
+        .map((item) => Number(item))
+        .reduce((total, num) => total + num * param1Value, 0);
+      let totalParam =
+        inputs15Min[i].split(" ").length * param15Value +
+        inputs1Per[i].split(" ").length * param1Value;
       const newItem = {
         ...item,
-        score15Min: inputs15Min[i].value,
-        score1Per: inputs1Per[i].value,
-        avgScore: (
-          (+inputs15Min[i].value + 2 * +inputs1Per[i].value) /
-          3
-        ).toFixed(2),
+        score15Min: inputs15Min[i],
+        score1Per: inputs1Per[i],
+        avgScore: ((total15Min + total1Per) / totalParam).toFixed(2),
       };
 
       finalResultTemp.push(newItem);
@@ -90,46 +109,46 @@ export const CreateScore = () => {
     let checkEmptyMessage = "ok";
     let checkNumberMessage = "ok";
     let checkScoreMessage = "ok";
-    finalResultTemp.forEach((item) => {
-      if (helper.validateData("empty", item) !== "ok")
-        checkEmptyMessage = helper.validateData("empty", item);
-      if (
-        helper.validateData("number", {
-          score15Min: item.score15Min,
-          score1Per: item.score1Per,
-        }) !== "ok"
-      )
-        checkNumberMessage = helper.validateData("number", {
-          score15Min: item.score15Min,
-          score1Per: item.score1Per,
-        });
-      if (
-        helper.validateData(
-          "score",
-          {
-            score15Min: item.score15Min,
-            score1Per: item.score1Per,
-          },
-          null,
-          null,
-          null,
-          minScore,
-          maxScore
-        ) !== "ok"
-      )
-        checkScoreMessage = helper.validateData(
-          "score",
-          {
-            score15Min: item.score15Min,
-            score1Per: item.score1Per,
-          },
-          null,
-          null,
-          null,
-          minScore,
-          maxScore
-        );
-    });
+    // finalResultTemp.forEach((item) => {
+    //   if (helper.validateData("empty", item) !== "ok")
+    //     checkEmptyMessage = helper.validateData("empty", item);
+    //   if (
+    //     helper.validateData("number", {
+    //       score15Min: item.score15Min.replace(" ", ""),
+    //       score1Per: item.score1Per.replace(" ", ""),
+    //     }) !== "ok"
+    //   )
+    //     checkNumberMessage = helper.validateData("number", {
+    //       score15Min: item.score15Min.replace(" ", ""),
+    //       score1Per: item.score1Per.replace(" ", ""),
+    //     });
+    //   if (
+    //     helper.validateData(
+    //       "score",
+    //       {
+    //         score15Min: item.score15Min,
+    //         score1Per: item.score1Per,
+    //       },
+    //       null,
+    //       null,
+    //       null,
+    //       minScore,
+    //       maxScore
+    //     ) !== "ok"
+    //   )
+    //     checkScoreMessage = helper.validateData(
+    //       "score",
+    //       {
+    //         score15Min: item.score15Min,
+    //         score1Per: item.score1Per,
+    //       },
+    //       null,
+    //       null,
+    //       null,
+    //       minScore,
+    //       maxScore
+    //     );
+    // });
     const checkMessageArr = [
       checkEmptyMessage,
       checkNumberMessage,
@@ -146,6 +165,7 @@ export const CreateScore = () => {
         ".notification--failed"
       ).parentElement.style.display = "flex";
     } else {
+      console.log(finalResultTemp);
       setFinalResult(finalResultTemp);
       setstatus("confirm");
     }
@@ -155,40 +175,40 @@ export const CreateScore = () => {
     document.querySelector(".confirm.add").style.display = "flex";
   };
   const handleConfirmAcceptBtn = () => {
-    console.log(finalResult);
-    //Xoá lớp cũ
-    const existItems = scoreSubjectState.filter(
-      (item) =>
-        item.ClassDetail === classIDState && item.subject === subjectIDState
-    );
-    existItems.forEach((item) => {
-      api.deleteSubjectScore(item._id);
-    });
-
     //Lưu xuống CSDL
     const payloadToApi = finalResult.map((item) => {
       return {
-        student: item.studentID,
-        ClassDetail: classIDState,
+        student: item._id,
+        class: classIDState,
         subject: subjectIDState,
-        term: termID,
-        scoreDetails: [
-          {
-            scoreName: "Điểm 15 phút",
-            score: item.score15Min,
-            coEff: coEff15MinID,
-          },
-          {
-            scoreName: "Điểm 1 tiết",
-            score: item.score1Per,
-            coEff: coEff1PerID,
-          },
+        term: termIDState,
+        scores: [
+          ...item.score15Min
+            .trim()
+            .split(" ")
+            .map((item) => {
+              return {
+                param: param15ID,
+                value: Number(item),
+              };
+            }),
+          ...item.score1Per
+            .trim()
+            .split(" ")
+            .map((item) => {
+              return {
+                param: param1ID,
+                value: Number(item),
+              };
+            }),
         ],
-        avgScore: item.avgScore,
+        avg: Number(item.avgScore),
       };
     });
 
-    payloadToApi.forEach((item) => api.postScoreSubject(item));
+    console.log("payloadToApi>>>", payloadToApi);
+
+    payloadToApi.forEach((item) => api.postSubjectScore(item));
     document.querySelector(".notification").style.display = "flex";
     document.querySelector(".confirm.add").style.display = "none";
   };
@@ -210,7 +230,8 @@ export const CreateScore = () => {
           <h3>Tạo bảng điểm</h3>
           <div className="guide">
             Nhập đầy đủ từng cột điểm cho từng học sinh. Điểm trung bình sẽ được
-            tính tự động
+            tính tự động. Nếu có nhiều cột điểm, ngăn với nhau bằng dấu cách "
+            ".
           </div>
           <div className="score-info">
             <h4>Lớp: {className}</h4>

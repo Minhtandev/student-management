@@ -8,7 +8,9 @@ import { AddStudent } from "../pages/add/AddStudent";
 import { ClassList } from "../pages/setting-page/ClassList";
 import { SubjectList } from "../pages/setting-page/SubjectList";
 import { SettingList } from "../pages/setting-page/SettingList";
-import { Search } from "../pages/search/Search";
+import { SearchStudent } from "../pages/search/SearchStudent";
+import SearchClassDetail from "../pages/search/SearchClassDetail";
+import SearchScore from "../pages/search/SearchScore";
 import { Score } from "../pages/score/Score";
 import { CreateScore } from "../pages/score/CreateScore";
 import { Report } from "../pages/report/Report";
@@ -36,7 +38,9 @@ export const Routes = () => {
       <Route
         path="/add/add-class/:className/:grade/:schoolyear"
         component={CreateClass}></Route>
-      <Route path="/search" component={Search}></Route>
+      <Route path="/search-student" component={SearchStudent}></Route>
+      <Route path="/search-class-detail" component={SearchClassDetail}></Route>
+      <Route path="/search-score" component={SearchScore}></Route>
       <Route path="/score" exact component={Score}></Route>
       <Route
         path="/score/:className/:subject/:term/:schoolYear"
