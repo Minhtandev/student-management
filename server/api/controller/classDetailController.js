@@ -29,10 +29,10 @@ const ClassDetailController = {
   //GET A CLASS
   getClass: async (req, res) => {
     try {
-      const ClassDetail = await ClassDetail.findById(req.params.id)
-        .populate("students")
-        .populate("grade");
-      res.status(200).json(ClassDetail);
+      const classDetail = await ClassDetail.findById(req.params.id);
+      // .populate("students")
+      // .populate("grade");
+      res.status(200).json(classDetail);
     } catch (err) {
       res.status(500).json(err);
     }
@@ -41,13 +41,13 @@ const ClassDetailController = {
   //UPDATE A CLASS
   updateClass: async (req, res) => {
     try {
-      const ClassDetail = await ClassDetail.findById(req.params.id);
+      const classDetail = await ClassDetail.findById(req.params.id);
       // if (req.body.students) {
       //   for (let i = 0; i < req.body.students.length; i++) {
       //     await Student.updateOne({ $push: { classes: req.params.id } });
       //   }
       // }
-      await ClassDetail.updateOne({ $set: req.body });
+      await classDetail.updateOne({ $set: req.body });
       res.status(200).json("Updated successfully!");
     } catch (err) {
       res.status(500).json(err);

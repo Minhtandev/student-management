@@ -9,6 +9,7 @@ export const handler = {
       let index = +e.target.parentNode.getAttribute("data-set");
       let dataStateCopy = JSON.parse(JSON.stringify(dataState));
       dataStateCopy[index].Edit = true;
+      window.localStorage.setItem("index", index);
       setDataState(dataStateCopy);
     }
   },
