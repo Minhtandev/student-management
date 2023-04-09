@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import LoginForm from "../../components/LoginForm";
 import "./Loginpage.scss";
 import LoginImg from "../../assets/login.png";
 
 const Loginpage = () => {
+	useEffect(() => {
+		window.localStorage.setItem("user-role", "");
+		window.localStorage.setItem("user-qlhs", "");
+	}, []);
 	return (
 		<div className="login-page">
 			<div className="login-img">

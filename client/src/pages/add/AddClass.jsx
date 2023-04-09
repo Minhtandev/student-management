@@ -8,6 +8,7 @@ import { api } from "../../api/api";
 import { useState, useEffect } from "react";
 import { Confirm } from "../../components/Confirm";
 import { schoolYear } from "../../config/data";
+import ProtectedPage from "../../components/ProtectedPage";
 export const AddClass = () => {
   let history = useHistory();
   let allClass;
@@ -96,50 +97,58 @@ export const AddClass = () => {
   };
 
   return (
-    <div className="add-class">
-      <Confirm
-        confirmType="override"
-        result={[]}
-        handleConfirmAcceptBtn={handleConfirmAcceptBtn}
-        handleConfirmCancelBtn={handleConfirmCancelBtn}
-      />
-      <Notification status="failed" message={message} />
-      <h3>Lập danh sách lớp</h3>
-      <div className="guide">
-        Điền thông tin lớp học mới cần tạo. Lưu ý điền đầy đủ các trường
-      </div>
-      <div className="grid">
-        <div className="row">
-          <Input
-            type="select"
-            labelText="Tên khối"
-            selectName="name"
-            options={gradeArrState}
-            onChangeSelect={onChangeSelect}
-          />
-          <Input
-            type="select"
-            labelText="Tên lớp"
-            selectName="ClassName"
-            options={classArrState}
-          />
+    <ProtectedPage>
+      <div className="add-class">
+        <Confirm
+          confirmType="override"
+          result={[]}
+          handleConfirmAcceptBtn={handleConfirmAcceptBtn}
+          handleConfirmCancelBtn={handleConfirmCancelBtn}
+        />
+        <Notification status="failed" message={message} />
+        <h3>Lập danh sách lớp</h3>
+        <div className="guide">
+          Điền thông tin lớp học mới cần tạo. Lưu ý điền đầy đủ các trường
         </div>
-        <div className="row">
-          <Input
-            type="select"
-            labelText="Năm học"
-            selectName="SchoolYear"
-            options={schoolYearArrState}
-          />
+        <div className="grid">
+          <div className="row">
+            <Input
+              type="select"
+              labelText="Tên khối"
+              selectName="name"
+              options={gradeArrState}
+              onChangeSelect={onChangeSelect}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              labelText="Tên lớp"
+              selectName="ClassName"
+              options={classArrState}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              labelText="Năm học"
+              selectName="SchoolYear"
+              options={schoolYearArrState}
+            />
+          </div>
         </div>
-      </div>
-      <div className="btns">
-        {/* <Button
+        <div className="btns">
+          {/* <Button
           btnType="clear"
           innerText={<Link to="/add-class/create-class">Tạo mới</Link>}
         /> */}
-        <Button btnType="add" innerText="Tạo" onClick={handleClickCreateBtn} />
+          <Button
+            btnType="add"
+            innerText="Tạo"
+            onClick={handleClickCreateBtn}
+          />
+        </div>
       </div>
-    </div>
+    </ProtectedPage>
   );
 };

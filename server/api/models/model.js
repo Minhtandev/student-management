@@ -94,18 +94,6 @@ const subjectSchema = new mongoose.Schema({
   },
 });
 
-//Định nghĩa một chi tiết điểm
-// const detailScoreSchema = new mongoose.Schema({
-//   param: {
-//     type: mongoose.Schema.Types.ObjectId,
-//     ref: "Param",
-//   },
-//   value: {
-//     type: Number,
-//     required: true,
-//   },
-// });
-
 //điểm 1 môn học của 1 học sinh --> dùng cho trang nhập điểm
 const subjectScoreSchema = new mongoose.Schema({
   student: {
@@ -123,6 +111,10 @@ const subjectScoreSchema = new mongoose.Schema({
   term: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Term",
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   scores: [
     {
@@ -142,6 +134,10 @@ const subjectScoreSchema = new mongoose.Schema({
 //điểm theo năm học của học sinh --> dùng cho trang tra cứu
 const termScoreSchema = new mongoose.Schema({
   student: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Student",
+  },
+  class: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
@@ -214,8 +210,7 @@ const subjectReportSchema = new mongoose.Schema({
     ref: "Term",
   },
   schoolYear: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "SchoolYear",
+    type: String,
   },
 });
 
@@ -230,14 +225,33 @@ const termReportSchema = new mongoose.Schema({
     ref: "Term",
   },
   schoolYear: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "schoolYear",
+    type: String,
   },
   passed: {
     type: Number,
   },
   rate: {
     type: String,
+  },
+});
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    enum: ["bgh", "gv", "pgv"],
   },
 });
 
@@ -255,7 +269,7 @@ let Term = mongoose.model("Term", termSchema);
 // let SchoolYear = mongoose.model("SchoolYear", schoolYearSchema);
 let SubjectReport = mongoose.model("subjectReport", subjectReportSchema);
 let TermReport = mongoose.model("termReport", termReportSchema);
-
+let User = mongoose.model("user", userSchema);
 module.exports = {
   Setting,
   Student,
@@ -271,4 +285,5 @@ module.exports = {
   // SchoolYear,
   SubjectReport,
   TermReport,
+  User,
 };

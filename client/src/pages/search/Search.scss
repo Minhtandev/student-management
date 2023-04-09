@@ -10,6 +10,7 @@
 
   .search__btns {
     text-align: left;
+
     .search__button {
       @include btn;
       margin-left: 25px;
@@ -101,7 +102,9 @@
   .btns {
     margin-left: 25px;
     margin-top: 30px;
-
+    display: flex;
+    // justify-content: space-between;
+    align-items: center;
     button {
       margin-right: 30px;
     }

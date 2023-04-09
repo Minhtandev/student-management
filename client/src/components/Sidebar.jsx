@@ -227,7 +227,7 @@
 
 //=============
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BsSearch } from "react-icons/bs";
 import { Navigation } from "react-minimal-side-navigation";
 import Logo from "../assets/Logo.png";
@@ -250,6 +250,20 @@ import "./Sidebar_Lib.scss";
 
 const Sidebar = () => {
   const history = useHistory();
+  const [userRole, setUserRole] = useState("");
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    try {
+      let role = window.localStorage.getItem("user-role");
+      let name = JSON.parse(window.localStorage.getItem("user-qlhs"))?.name;
+      setUserRole(role);
+      setName(name);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [window.localStorage.getItem("user-qlhs")]);
+
   // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   // const location = useLocation();
   return (
@@ -258,6 +272,7 @@ const Sidebar = () => {
         <div className="logo">
           <img src={Logo} alt="" />
           <h2>Edu School</h2>
+          <p className="user-name">{name}</p>
         </div>
         <div
         // className={`fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 ease-out transform translate-x-0 bg-sky-400 border-r-2 lg:translate-x-0 lg:static lg:inset-0 ${
@@ -266,102 +281,255 @@ const Sidebar = () => {
         //     : "ease-in -translate-x-full"
         // }`}
         >
-          <Navigation
-            // you can use your own router's api to get pathnam
+          {userRole === "bgh" && (
+            <Navigation
+              // you can use your own router's api to get pathname
 
-            activeItemId="/"
-            onSelect={({ itemId }) => {
-              // maybe push to the route
-              history.push(itemId);
-            }}
-            items={[
-              {
-                title: "Trang chủ",
-                itemId: "/",
-                // you can use your own custom Icon component as well
-                // icon is optional
-                elemBefore: () => (
-                  <img src={Home} alt="" />
-                  //<i class="fa-solid fa-house"></i>
-                ),
-              },
-              {
-                title: "Thêm",
-                itemId: "/add",
-                elemBefore: () => (
-                  <img src={Add} alt="" /> //<i class="fa-solid fa-tv"></i>
-                ),
-                subNav: [
-                  {
-                    title: "Tiếp nhận học sinh",
-                    itemId: "/add/add-student",
-                    // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
-                    // elemBefore: () => <img src={Home} alt="" />,
-                  },
-                  {
-                    title: "Lập danh sách lớp",
-                    itemId: "/add/add-class",
-                    // elemBefore: () => <img src={Home} alt="" />,
-                  },
-                ],
-              },
-              {
-                title: "Tra cứu",
-                itemId: "/search",
-                elemBefore: () => (
-                  <img src={Search} alt="" /> //<i class="fa-solid fa-magnifying-glass"></i>
-                ),
-              },
-              {
-                title: "Tạo bảng điểm môn",
-                itemId: "/score",
-                elemBefore: () => (
-                  <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
-                ),
-              },
-              {
-                title: "Báo cáo",
-                itemId: "/report",
-                elemBefore: () => (
-                  <img src={File} alt="" /> //<i class="fa-solid fa-file-lines"></i>
-                ),
-                subNav: [
-                  {
-                    title: "Báo cáo môn học",
-                    itemId: "/report/report-subject",
-                    // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
-                  },
-                  {
-                    title: "Báo cáo học kỳ",
-                    itemId: "/report/report-term",
-                  },
-                ],
-              },
-              {
-                title: "Thay đổi quy định",
-                itemId: "/setting",
-                elemBefore: () => (
-                  <img src={Setting} alt="" />
-                  //<i class="fa-solid fa-gears"></i>
-                ),
-                subNav: [
-                  {
-                    title: "Danh sách tham số",
-                    itemId: "/setting/setting-list",
-                    // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
-                  },
-                  {
-                    title: "Danh sách lớp",
-                    itemId: "/setting/class-list",
-                  },
-                  {
-                    title: "Danh sách môn học",
-                    itemId: "/setting/subject-list",
-                  },
-                ],
-              },
-            ]}
-          />
+              activeItemId="/"
+              onSelect={({ itemId }) => {
+                // maybe push to the route
+                history.push(itemId);
+              }}
+              items={[
+                {
+                  title: "Trang chủ",
+                  itemId: "/",
+                  // you can use your own custom Icon component as well
+                  // icon is optional
+                  elemBefore: () => (
+                    <img src={Home} alt="" />
+                    //<i class="fa-solid fa-house"></i>
+                  ),
+                },
+                {
+                  title: "Thêm",
+                  itemId: "/add",
+                  elemBefore: () => (
+                    <img src={Add} alt="" /> //<i class="fa-solid fa-tv"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Tiếp nhận học sinh",
+                      itemId: "/add/add-student",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                    {
+                      title: "Lập danh sách lớp",
+                      itemId: "/add/add-class",
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                  ],
+                },
+                {
+                  title: "Tra cứu",
+                  itemId: "/search-student",
+                  elemBefore: () => (
+                    <img src={Search} alt="" /> //<i class="fa-solid fa-magnifying-glass"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Tra cứu học sinh",
+                      itemId: "/search-student",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                    {
+                      title: "Tra cứu danh sách lớp",
+                      itemId: "/search-class-detail",
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                  ],
+                },
+                {
+                  title: "Quản lý điểm môn",
+                  itemId: "/score",
+                  elemBefore: () => (
+                    <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  ),
+                },
+                {
+                  title: "Báo cáo",
+                  itemId: "/report",
+                  elemBefore: () => (
+                    <img src={File} alt="" /> //<i class="fa-solid fa-file-lines"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Báo cáo môn học",
+                      itemId: "/report/report-subject",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                    },
+                    {
+                      title: "Báo cáo học kỳ",
+                      itemId: "/report/report-term",
+                    },
+                  ],
+                },
+                {
+                  title: "Thay đổi quy định",
+                  itemId: "/setting",
+                  elemBefore: () => (
+                    <img src={Setting} alt="" />
+                    //<i class="fa-solid fa-gears"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Danh sách tham số",
+                      itemId: "/setting/setting-list",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                    },
+                    {
+                      title: "Danh sách lớp",
+                      itemId: "/setting/class-list",
+                    },
+                    {
+                      title: "Danh sách môn học",
+                      itemId: "/setting/subject-list",
+                    },
+                    {
+                      title: "Danh sách tài khoản",
+                      itemId: "/setting/user",
+                    },
+                  ],
+                },
+                {
+                  title: "Đăng xuất",
+                  itemId: "/login",
+                  elemBefore: () => (
+                    <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  ),
+                },
+              ]}
+            />
+          )}
+          {userRole === "gv" && (
+            <Navigation
+              // you can use your own router's api to get pathname
+
+              activeItemId="/"
+              onSelect={({ itemId }) => {
+                // maybe push to the route
+                history.push(itemId);
+              }}
+              items={[
+                {
+                  title: "Trang chủ",
+                  itemId: "/",
+                  // you can use your own custom Icon component as well
+                  // icon is optional
+                  elemBefore: () => (
+                    <img src={Home} alt="" />
+                    //<i class="fa-solid fa-house"></i>
+                  ),
+                },
+                {
+                  title: "Tra cứu",
+                  itemId: "/search-student",
+                  elemBefore: () => (
+                    <img src={Search} alt="" /> //<i class="fa-solid fa-magnifying-glass"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Tra cứu học sinh",
+                      itemId: "/search-student",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                    {
+                      title: "Tra cứu danh sách lớp",
+                      itemId: "/search-class-detail",
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                  ],
+                },
+                {
+                  title: "Quản lý điểm môn",
+                  itemId: "/score",
+                  elemBefore: () => (
+                    <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  ),
+                },
+                {
+                  title: "Đăng xuất",
+                  itemId: "/login",
+                  elemBefore: () => (
+                    <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  ),
+                },
+              ]}
+            />
+          )}
+          {userRole === "pgv" && (
+            <Navigation
+              // you can use your own router's api to get pathname
+
+              activeItemId="/"
+              onSelect={({ itemId }) => {
+                // maybe push to the route
+                history.push(itemId);
+              }}
+              items={[
+                {
+                  title: "Trang chủ",
+                  itemId: "/",
+                  // you can use your own custom Icon component as well
+                  // icon is optional
+                  elemBefore: () => (
+                    <img src={Home} alt="" />
+                    //<i class="fa-solid fa-house"></i>
+                  ),
+                },
+                {
+                  title: "Thêm",
+                  itemId: "/add",
+                  elemBefore: () => (
+                    <img src={Add} alt="" /> //<i class="fa-solid fa-tv"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Tiếp nhận học sinh",
+                      itemId: "/add/add-student",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                    {
+                      title: "Lập danh sách lớp",
+                      itemId: "/add/add-class",
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                  ],
+                },
+                {
+                  title: "Tra cứu",
+                  itemId: "/search-student",
+                  elemBefore: () => (
+                    <img src={Search} alt="" /> //<i class="fa-solid fa-magnifying-glass"></i>
+                  ),
+                  subNav: [
+                    {
+                      title: "Tra cứu học sinh",
+                      itemId: "/search-student",
+                      // Requires v1.9.1+ (https://github.com/abhijithvijayan/react-minimal-side-navigation/issues/13)
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                    {
+                      title: "Tra cứu danh sách lớp",
+                      itemId: "/search-class-detail",
+                      // elemBefore: () => <img src={Home} alt="" />,
+                    },
+                  ],
+                },
+                {
+                  title: "Đăng xuất",
+                  itemId: "/login",
+                  elemBefore: () => (
+                    <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  ),
+                },
+              ]}
+            />
+          )}
         </div>
       </div>
     </React.Fragment>

@@ -8,7 +8,7 @@ hr {
   height: 2px;
   // left: 50%;
   border: none;
-  border-bottom: 2px dashed rgba(#ccc, 0.25);
+  border-bottom: 2px solid rgba(#000, 0.25);
   // float: left;
   // ~ * {
   //   clear: both;
@@ -37,14 +37,14 @@ hr {
     .search__btns {
       .search__button {
         margin: 0;
-        transform: translateY(30px);
+        // transform: translateY(30px);
       }
     }
   }
 
   .search__btns {
     .search__button {
-      transform: translateX(25px);
+      // transform: translateX(25px);
     }
   }
 }
@@ -169,5 +169,8 @@ hr {
     // button {
     //   margin-right: 40px;
     // }
+    .save-btn {
+      margin-right: -35px;
+    }
   }
 }

@@ -6,9 +6,9 @@ import { Input } from "../../components/Input";
 // import { schoolYearArr, termArr, subjectArr } from "../../config/getAPI";
 import { useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import { schoolYear } from "../../config/data";
 import { api } from "../../api/api";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const ReportSubject = () => {
   let history = useHistory();
 
@@ -31,7 +31,7 @@ export const ReportSubject = () => {
     const getData = async () => {
       const subjectArr = await api.getSubjectList();
       const termArr = await api.getTermList();
-      const schoolYearArr = await api.getSchoolYearList();
+      // const schoolYearArr = await api.getSchoolYearList();
       const UIsubjectArr = subjectArr.map((item) => {
         return {
           text: item.name,
@@ -39,12 +39,12 @@ export const ReportSubject = () => {
       });
       const UItermArr = termArr.map((item) => {
         return {
-          text: item.nameTerm,
+          text: item.name,
         };
       });
-      const UISchoolYearArr = schoolYearArr.map((item) => {
+      const UISchoolYearArr = schoolYear.map((item) => {
         return {
-          text: item.nameSchYear,
+          text: item,
         };
       });
       // console.log(subjectArr, UIsubjectArr);
@@ -68,41 +68,49 @@ export const ReportSubject = () => {
     history.push(`report-subject/${subject}/${term}/${schoolYear}`);
   };
   return (
-    <div className="report-subject">
-      <h3>TẠO BÁO CÁO TỔNG KẾT MÔN HỌC</h3>
-      <div className="guide">Chọn đầy đủ các thông tin theo mẫu bên dưới.</div>
-      <div className="grid">
-        <div className="row">
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Tên môn"
-            selectName="SubjectName"
-            options={subjectArrState}
-          />
+    <ProtectedPage>
+      <div className="report-subject">
+        <h3>TẠO BÁO CÁO TỔNG KẾT MÔN HỌC</h3>
+        <div className="guide">
+          Chọn đầy đủ các thông tin theo mẫu bên dưới.
         </div>
-        <div className="row">
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Học kì"
-            selectName="Term"
-            options={termArrState}
-          />
+        <div className="grid">
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Tên môn"
+              selectName="SubjectName"
+              options={subjectArrState}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Học kì"
+              selectName="Term"
+              options={termArrState}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Năm học"
+              selectName="SchoolYear"
+              options={schoolYearArrState}
+            />
+          </div>
         </div>
-        <div className="row">
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Năm học"
-            selectName="SchoolYear"
-            options={schoolYearArrState}
+        <div className="btns">
+          <Button
+            btnType="add"
+            innerText="Tạo"
+            onClick={handleClickCreateBtn}
           />
         </div>
       </div>
-      <div className="btns">
-        <Button btnType="add" innerText="Tạo" onClick={handleClickCreateBtn} />
-      </div>
-    </div>
+    </ProtectedPage>
   );
 };

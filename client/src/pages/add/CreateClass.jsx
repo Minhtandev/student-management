@@ -14,7 +14,7 @@ import { Input } from "../../components/Input";
 import { api } from "../../api/api";
 import { useParams } from "react-router-dom";
 import { schoolYear } from "../../config/data";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const CreateClass = () => {
   const { className, grade, schoolyear } = useParams();
   let allClass;
@@ -56,21 +56,12 @@ export const CreateClass = () => {
       });
       const studentArr = await api.getStudentInfoArr();
       const allClassDetailArr = await api.getClassDetail();
-      let studentLength = studentArr.length;
-      const fiveLatestStudents = [
-        studentArr[studentLength - 1] ? studentArr[studentLength - 1] : null,
-        studentArr[studentLength - 2] ? studentArr[studentLength - 2] : null,
-        studentArr[studentLength - 3] ? studentArr[studentLength - 3] : null,
-        studentArr[studentLength - 4] ? studentArr[studentLength - 4] : null,
-        studentArr[studentLength - 5] ? studentArr[studentLength - 5] : null,
-      ];
-
       setGradeArrState(UIgradeArr);
       setClassArrState(UIClassArr);
       allClass = UIClassArr;
       setSchoolYearArrState(UISchoolYearArr);
       setStudentArrState(studentArr);
-      setStudentArrTempState(fiveLatestStudents);
+      setStudentArrTempState(studentArr.slice(0, 5));
       setAllClassDetail(allClassDetailArr);
       setClassArr(CLASSArr);
       setMaxTotal(settingList.find((item) => item.name === "max-total")?.value);
@@ -142,30 +133,30 @@ export const CreateClass = () => {
       document.querySelector(".search__input").value = "";
     },
     handleClickAddBtn: (e) => {
-      const addImgEl = e.target.parentNode;
-      console.log(e.target);
-      if (addImgEl.classList.contains("add-img")) {
-        let index = +addImgEl.parentNode.getAttribute("data-set");
-        let newClassArrStateCopy = newClassArrState;
+      const addBtn = e.target.closest("button");
+      // console.log(e.target);
+      // if (addImgEl.classList.contains("add-img")) {
+      let index = +addBtn.getAttribute("data-set");
+      let newClassArrStateCopy = newClassArrState;
 
-        let newItem = studentArrTempState[index];
-        //kiểm tra nếu trùng thì không thêm
-        //Nếu lấy của copy sẽ bị khác giá trị con trỏ
-        if (newClassArrState.includes(newItem)) {
-          setMessage("Học sinh đã có trong danh sách");
-          document.querySelector(
-            ".notification--failed"
-          ).parentElement.style.display = "flex";
-        } else if (newClassArrState.length >= maxTotal) {
-          setMessage("Sĩ số tối đa là " + maxTotal + " học sinh");
-          document.querySelector(
-            ".notification--failed"
-          ).parentElement.style.display = "flex";
-        } else {
-          newClassArrStateCopy.push(newItem);
-          setNewClassArrState(newClassArrStateCopy);
-        }
+      let newItem = studentArrTempState[index];
+      //kiểm tra nếu trùng thì không thêm
+      //Nếu lấy của copy sẽ bị khác giá trị con trỏ
+      if (newClassArrState.includes(newItem)) {
+        setMessage("Học sinh đã có trong danh sách");
+        document.querySelector(
+          ".notification--failed"
+        ).parentElement.style.display = "flex";
+      } else if (newClassArrState.length >= maxTotal) {
+        setMessage("Sĩ số tối đa là " + maxTotal + " học sinh");
+        document.querySelector(
+          ".notification--failed"
+        ).parentElement.style.display = "flex";
+      } else {
+        // newClassArrStateCopy.push(newItem);
+        setNewClassArrState([...newClassArrState, newItem]);
       }
+      // }
     },
     handleClickSaveBtn: () => {
       setResult([
@@ -210,7 +201,7 @@ export const CreateClass = () => {
   };
 
   return (
-    <>
+    <ProtectedPage>
       <div className="create-class">
         <div className="search-page">
           {/* <Detail result={result} /> */}
@@ -301,9 +292,7 @@ export const CreateClass = () => {
           <h4>Kết quả tìm kiếm</h4>
           <div className="container">
             <div className="row heading">
-              <div className="item col-30-percent center al-left pl-70">
-                Họ Tên
-              </div>
+              <div className="item col-30-percent center al-center">Họ Tên</div>
               <div className="item col-10-percent center al-center">
                 Giới Tính
               </div>
@@ -323,17 +312,17 @@ export const CreateClass = () => {
                 return (
                   <>
                     <div className="row content">
-                      <div className="item col-30-percent center pl-50 al-left">
-                        {item?.name}
+                      <div className="item col-30-percent center">
+                        {item.name}
                       </div>
                       <div className="item col-10-percent center al-center">
-                        {item?.gender == "male" ? "Nam" : "Nữ"}
+                        {item.gender == "male" ? "Nam" : "Nữ"}
                       </div>
                       <div className="item col-20-percent center al-center">
-                        {item?.birth}
+                        {item.birth}
                       </div>
                       <div className="item col-20-percent center al-center">
-                        {item?.address}
+                        {item.address}
                       </div>
                       <div className="item col-20-percent center al-center">
                         <button
@@ -380,7 +369,7 @@ export const CreateClass = () => {
               return (
                 <>
                   <div className="row content">
-                    <div className="item col-30-percent center pl-50">
+                    <div className="item col-30-percent center">
                       {item.name}
                     </div>
                     <div className="item col-10-percent center al-center">
@@ -413,6 +402,6 @@ export const CreateClass = () => {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedPage>
   );
 };
