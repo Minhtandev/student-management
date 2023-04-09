@@ -11,7 +11,7 @@ import "./Homepage.scss";
 import { Link } from "react-router-dom";
 import { api } from "../api/api";
 import { useEffect, useState } from "react";
-
+import ProtectedPage from "../components/ProtectedPage";
 export const Homepage = () => {
   const [numClass, setNumClass] = useState(0);
   const [numGrade, setNumGrade] = useState(0);
@@ -34,64 +34,67 @@ export const Homepage = () => {
   }, []);
 
   return (
-    <div className="homepage">
-      <div className="content">
-        <div className="content-top">
-          <h4 className="general">Tổng quan</h4>
-          <div className="content-num">
-            <div className="num-of-class">
-              <h4>Tổng số lớp học</h4>
-              <div className="num-and-icon">
-                <h1>{numClass}</h1>
-                <img src={NumClass} alt="" />
+    <ProtectedPage>
+      <div className="homepage">
+        <div className="homepage__content">
+          <div className="content-top">
+            <h4 className="general">Tổng quan</h4>
+            <div className="content-num">
+              <div className="num-of-class">
+                <h4>Tổng số lớp học</h4>
+                <div className="num-and-icon">
+                  <h1>{numClass}</h1>
+                  <img src={NumClass} alt="" />
+                </div>
               </div>
-            </div>
-            <div className="num-of-subject">
-              <h4>Tổng số môn học</h4>
-              <div className="num-and-icon">
-                <h1>{numSubject}</h1>
-                <img src={NumSubject} alt="" />
+              <div className="num-of-subject">
+                <h4>Tổng số môn học</h4>
+                <div className="num-and-icon">
+                  <h1>{numSubject}</h1>
+                  <img src={NumSubject} alt="" />
+                </div>
               </div>
-            </div>
-            <div className="num-of-grade">
-              <h4>Tổng số khối lớp</h4>
-              <div className="num-and-icon">
-                <h1>{numGrade}</h1>
-                <img src={NumGrade} alt="" />
+              <div className="num-of-grade">
+                <h4>Tổng số khối lớp</h4>
+                <div className="num-and-icon">
+                  <h1>{numGrade}</h1>
+                  <img src={NumGrade} alt="" />
+                </div>
               </div>
-            </div>
-            <div className="num-of-student">
-              <h4>Tổng số học sinh</h4>
-              <div className="num-and-icon">
-                <h1>{numStudent}</h1>
-                <img src={NumStudent} alt="" />
+              <div className="num-of-student">
+                <h4>Tổng số học sinh</h4>
+                <div className="num-and-icon">
+                  <h1>{numStudent}</h1>
+                  <img src={NumStudent} alt="" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="content-bottom">
-          <div className="content__left">
-            <h1 className="content-heading">
-              Smart And<br></br>Intelligence Tool For<br></br> School Management
-            </h1>
-            <div className="content-desc">
-              Education is smart enough to change the <br></br> human mind
-              positively!
+          <div className="content-bottom">
+            <div className="content__left">
+              <h1 className="content-heading">
+                Smart And<br></br>Intelligence Tool For<br></br> School
+                Management
+              </h1>
+              <div className="content-desc">
+                Education is smart enough to change the <br></br> human mind
+                positively!
+              </div>
+              <Link to="/search">
+                <button className="btn-start">
+                  Get Started{" "}
+                  <img src={ArrowRight} alt="" className="img-start" />
+                </button>
+              </Link>
+              <img className="text-bg" src={TextBg} alt="" />
             </div>
-            <Link to="/search">
-              <button className="btn-start">
-                Get Started{" "}
-                <img src={ArrowRight} alt="" className="img-start" />
-              </button>
-            </Link>
-            <img className="text-bg" src={TextBg} alt="" />
-          </div>
-          <div className="content__right">
-            <img className="hero-img" src={HeroImg} alt="" />
-            <img className="hero-bg" src={HeroBg} alt="" />
+            <div className="content__right">
+              <img className="hero-img" src={HeroImg} alt="" />
+              <img className="hero-bg" src={HeroBg} alt="" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </ProtectedPage>
   );
 };

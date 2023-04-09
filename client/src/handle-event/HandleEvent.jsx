@@ -158,7 +158,6 @@ export const helper = {
         let [inputYear, inputMonth, inputDay] = data.birth.split("-");
         let age = Number(thisYear) - Number(inputYear);
         isAgeValid = age >= minAge && age <= maxAge;
-        console.log("age>>>", data.dateOfBirth);
         if (!isAgeValid) {
           message = "Tuổi không đúng quy định";
           return message;
@@ -204,16 +203,18 @@ export const helper = {
         let isScoreValid = true;
         console.log(data, minScore, maxScore);
         Object.values(data).forEach((item) => {
-          if (
-            Number(item) < Number(minScore) ||
-            Number(item) > Number(maxScore)
-          ) {
-            isScoreValid = false;
-          }
+          item?.split(" ").forEach((score) => {
+            if (
+              Number(score) < Number(minScore) ||
+              Number(score) > Number(maxScore)
+            ) {
+              isScoreValid = false;
+            }
+          });
         });
         console.log(isScoreValid);
         if (!isScoreValid) {
-          message = "Điểm phải từ 0 đến 10";
+          message = `Điểm phải từ ${minScore} đến ${maxScore}`;
           return message;
         }
         break;

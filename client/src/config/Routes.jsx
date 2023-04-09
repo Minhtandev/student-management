@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Homepage } from "../pages/Homepage";
 import { Setting } from "../pages/Setting";
 import { Add } from "../pages/add/Add";
@@ -8,9 +8,9 @@ import { AddStudent } from "../pages/add/AddStudent";
 import { ClassList } from "../pages/setting-page/ClassList";
 import { SubjectList } from "../pages/setting-page/SubjectList";
 import { SettingList } from "../pages/setting-page/SettingList";
+import { UserList } from "../pages/setting-page/UserList";
 import { SearchStudent } from "../pages/search/SearchStudent";
 import SearchClassDetail from "../pages/search/SearchClassDetail";
-import SearchScore from "../pages/search/SearchScore";
 import { Score } from "../pages/score/Score";
 import { CreateScore } from "../pages/score/CreateScore";
 import { Report } from "../pages/report/Report";
@@ -18,7 +18,7 @@ import { ReportSubject } from "../pages/report/ReportSubject";
 import { CreateReportSubject } from "../pages/report/create-report/CreateReportSubject";
 import { ReportTerm } from "../pages/report/ReportTerm";
 import { CreateReportTerm } from "../pages/report/create-report/CreateReportTerm";
-import { NotFound } from "../pages/NotFound";
+import NotFound from "../pages/NotFound";
 import Loginpage from "../pages/login/Loginpage";
 
 import { Switch, Route } from "react-router-dom";
@@ -32,6 +32,7 @@ export const Routes = () => {
       <Route path="/setting/class-list" component={ClassList}></Route>
       <Route path="/setting/subject-list" component={SubjectList}></Route>
       <Route path="/setting/setting-list" component={SettingList}></Route>
+      <Route path="/setting/user" component={UserList}></Route>
       <Route path="/add" exact component={Add}></Route>
       <Route path="/add/add-student" component={AddStudent}></Route>
       <Route path="/add/add-class" exact component={AddClass}></Route>
@@ -40,10 +41,9 @@ export const Routes = () => {
         component={CreateClass}></Route>
       <Route path="/search-student" component={SearchStudent}></Route>
       <Route path="/search-class-detail" component={SearchClassDetail}></Route>
-      <Route path="/search-score" component={SearchScore}></Route>
       <Route path="/score" exact component={Score}></Route>
       <Route
-        path="/score/:className/:subject/:term/:schoolYear"
+        path="/score/:className/:subject/:term/:schoolYear/:action"
         component={CreateScore}></Route>
       <Route path="/report" exact component={Report}></Route>
       <Route

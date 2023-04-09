@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { api } from "../../api/api";
 import { useHistory } from "react-router-dom";
 import { schoolYear } from "../../config/data";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const Score = () => {
   let history = useHistory();
   const [ClassDetailState, setClassDetailArrState] = useState([]);
@@ -86,18 +86,22 @@ export const Score = () => {
     let classID = ClassDetailState.find(
       (item) => item.name === className && item.schoolYear === schoolYear
     )._id;
+    let termID = termArrState.find((item) => item.name === term)._id;
 
     //Kiểm tra trùng
     let isExisted =
       scoreArrState.filter(
-        (item) => item.class === classID && item.subject === subjectID
-        //&& item.term === termID
+        (item) =>
+          item.class === classID &&
+          item.subject === subjectID &&
+          item.term === termID
       ).length > 0;
     console.log(isExisted);
     if (isExisted) {
-      document.querySelector(".confirm.override").style.display = "flex";
+      // document.querySelector(".confirm.override").style.display = "flex";
+      history.push(`score/${className}/${subject}/${term}/${schoolYear}/view`);
     } else {
-      history.push(`score/${className}/${subject}/${term}/${schoolYear}`);
+      history.push(`score/${className}/${subject}/${term}/${schoolYear}/add`);
     }
   };
   const handleConfirmCancelBtn = () => {
@@ -108,60 +112,70 @@ export const Score = () => {
     history.push(`score/${className}/${subject}/${term}/${schoolYear}`);
   };
   return (
-    <div className="score">
-      <Confirm
-        confirmType="override"
-        result={[]}
-        handleConfirmAcceptBtn={handleConfirmAcceptBtn}
-        handleConfirmCancelBtn={handleConfirmCancelBtn}
-      />
-      <h3>Tạo bảng điểm môn</h3>
-      <div className="guide">
-        Điền thông tin môn học cần tạo bảng điểm mới. Lưu ý điền đầy đủ các
-        trường
-      </div>
-      <div className="grid">
-        <div className="row">
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Năm học"
-            selectName="SchoolYear"
-            options={schoolYearArrState}
-            onChangeSelect={onChangeSelect}
-          />
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Tên lớp"
-            selectName="ClassName"
-            options={ClassDetailState}
-          />
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Tên môn"
-            selectName="SubjectName"
-            options={subjectArrState}
-          />
+    <ProtectedPage>
+      <div className="score">
+        <Confirm
+          confirmType="override"
+          result={[]}
+          handleConfirmAcceptBtn={handleConfirmAcceptBtn}
+          handleConfirmCancelBtn={handleConfirmCancelBtn}
+        />
+        <h3>Tạo bảng điểm môn</h3>
+        <div className="guide">
+          Điền thông tin môn học cần tạo bảng điểm mới. Lưu ý điền đầy đủ các
+          trường
         </div>
-        <div className="row">
-          <Input
-            type="select"
-            // placeholder="Nhập tên lớp..."
-            labelText="Học kì"
-            selectName="Term"
-            options={termArrState}
-          />
+        <div className="grid">
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Năm học"
+              selectName="SchoolYear"
+              options={schoolYearArrState}
+              onChangeSelect={onChangeSelect}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Tên lớp"
+              selectName="ClassName"
+              options={ClassDetailState}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Tên môn"
+              selectName="SubjectName"
+              options={subjectArrState}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="select"
+              // placeholder="Nhập tên lớp..."
+              labelText="Học kì"
+              selectName="Term"
+              options={termArrState}
+            />
+          </div>
         </div>
-      </div>
-      <div className="btns">
-        {/* <Button
+        <div className="btns">
+          {/* <Button
           btnType="clear"
           innerText={<Link to="/score/create-score">Tạo danh sách mới</Link>}
         /> */}
-        <Button btnType="add" innerText="Tạo" onClick={handleClickCreateBtn} />
+          <Button
+            btnType="add"
+            innerText="Tạo"
+            onClick={handleClickCreateBtn}
+          />
+        </div>
       </div>
-    </div>
+    </ProtectedPage>
   );
 };

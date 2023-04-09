@@ -18,8 +18,7 @@ function App() {
                 <Routes></Routes>
               </div>
             </>
-          )}
-        ></Route>
+          )}></Route>
       </BrowserRouter>
     </div>
   );

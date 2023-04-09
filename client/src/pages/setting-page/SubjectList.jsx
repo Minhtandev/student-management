@@ -12,7 +12,7 @@ import { Button } from "../../components/Button";
 import { Confirm } from "../../components/Confirm";
 import { Notification } from "../../components/Notification";
 import { handler, helper } from "../../handle-event/HandleEvent";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const SubjectList = () => {
   const [subjectArrState, setSubjectArrState] = useState([]);
   const [result, setResult] = useState([]);
@@ -32,8 +32,17 @@ export const SubjectList = () => {
       editSubject: () => {
         //kiểm tra ràng buộc dữ liệu
         let checkEmptyMessage = helper.validateData("empty", result[0]);
+        let isExisting =
+          subjectArrState.find(
+            (item) => item.name.trim() === result[0].name.trim()
+          ) !== undefined;
         if (checkEmptyMessage !== "ok") {
           setMessage(checkEmptyMessage);
+          document.querySelector(
+            ".notification--failed"
+          ).parentElement.style.display = "flex";
+        } else if (isExisting) {
+          setMessage("Đã tồn tại môn học");
           document.querySelector(
             ".notification--failed"
           ).parentElement.style.display = "flex";
@@ -64,8 +73,17 @@ export const SubjectList = () => {
       addSubject: () => {
         //kiểm tra ràng buộc dữ liệu
         let checkEmptyMessage = helper.validateData("empty", result[0]);
+        let isExisting =
+          subjectArrState.find(
+            (item) => item.name.trim() === result[0].name.trim()
+          ) !== undefined;
         if (checkEmptyMessage !== "ok") {
           setMessage(checkEmptyMessage);
+          document.querySelector(
+            ".notification--failed"
+          ).parentElement.style.display = "flex";
+        } else if (isExisting) {
+          setMessage("Đã tồn tại môn học");
           document.querySelector(
             ".notification--failed"
           ).parentElement.style.display = "flex";
@@ -209,7 +227,7 @@ export const SubjectList = () => {
   };
 
   return (
-    <>
+    <ProtectedPage>
       <Confirm
         confirmType="edit"
         result={resultUI}
@@ -343,7 +361,7 @@ export const SubjectList = () => {
           </div>
         </div>
       </div>
-      <div className="btns al-center">
+      <div className="btns al-center" style={{ marginRight: "105px" }}>
         <Button
           btnType="add"
           onClick={handler.handleClickAddBtn}
@@ -355,6 +373,6 @@ export const SubjectList = () => {
           innerText="Xóa đã chọn"
         />
       </div>
-    </>
+    </ProtectedPage>
   );
 };

@@ -16,6 +16,7 @@
 
   .logo {
     margin: 30px auto 50px 20px;
+    position: relative;
     @include flex(center, center);
 
     img {
@@ -34,6 +35,14 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+
+    .user-name {
+      position: absolute;
+      left: 10px;
+      top: 110px;
+      font-size: 16px;
+      font-weight: 700;
     }
   }
 }
