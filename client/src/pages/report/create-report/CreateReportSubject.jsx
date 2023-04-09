@@ -8,186 +8,143 @@ import { Button } from "../../../components/Button";
 import { useParams } from "react-router-dom";
 import { api } from "../../../api/api";
 // import { scoreSubject } from "../../../config/getAPI";
-
+import * as XLSX from "xlsx";
+import ProtectedPage from "../../../components/ProtectedPage";
 export const CreateReportSubject = () => {
   const { subject, term, schoolYear } = useParams();
-  const [reportSubjectState, setReportSubjectState] = useState([]);
-  const [subjectState, setSubjectState] = useState([]);
-  const [termState, setTermState] = useState([]);
-  const [schoolYearState, setSchoolYearState] = useState([]);
-  const [scoreSubjectState, setScoreSubjectState] = useState([]);
-  const [classArr, setClassArrState] = useState([]);
-  const [termIDState, setTermIDState] = useState([]);
-  const [subjectIDState, setSubjectIDState] = useState([]);
-  const [schoolYearIDState, setSchoolYearIDState] = useState([]);
-  // let subjectID, termID, schoolYearID;
+
+  const [data, setData] = useState([]);
+  const [UIdata, setUIData] = useState([]);
+  const onClickExport = () => {
+    const worksheet = XLSX.utils.json_to_sheet(UIdata);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    XLSX.writeFile(
+      workbook,
+      `Báo cáo môn ${subject.toLowerCase()} ${term.toLowerCase()} năm học ${schoolYear}.xlsx`
+    );
+  };
 
   useEffect(() => {
     const getData = async () => {
-      const subjectArr = await api.getSubjectList();
-      const termArr = await api.getTermList();
-      const schoolYearArr = await api.getSchoolYearList();
-      const scoreArr = await api.getScoreSubject();
-      // const scoreArr = scoreSubject;
+      //Lấy điểm trung bình
+      let allSetting = await api.getSettingList();
+      let passScore = allSetting.find(
+        (setting) => setting.name === "pass-score"
+      ).value;
 
-      const classArray = await api.getClassDetail();
-      const reportSubject = await api.getSubjectReports();
-
-      let subjectID = subjectArr.find((item) => item.name === subject)._id;
-      let termID = termArr.find((item) => item.nameTerm === term)._id;
-      let schoolYearID = schoolYearArr.find(
-        (item) => item.nameSchYear === schoolYear
-      )._id;
-
-      console.log(termArr, subjectArr, classArray, scoreArr, reportSubject);
-      console.log(termID, subjectID, schoolYearID);
-
-      console.log(reportSubject);
-      reportSubject.forEach((item) => {
-        console.log("delete");
-        api.deleteReportSubject(item._id);
-      });
-
-      // scoreArr.forEach((item) => {
-      //   // console.log("delete");
-      //   api.deleteScoreSubject(item._id);
-      // });
-
-      // Ma trận cấp ba giữa học kì, môn, ds lớp -> mỗi ô sẽ tạo thành 1 report
-      // termArr.forEach((thisTerm) => {
-      subjectArr.forEach((thisSubject) => {
-        classArray.forEach((thisClass) => {
-          let thisSchoolYear = schoolYearArr.find(
-            (item) => item._id === thisClass.schoolYear
-          );
-
-          let isThereScore = scoreArr.find(
-            (score) =>
-              score.ClassDetail === thisClass._id &&
-              // score.term === thisTerm._id &&
-              score.subject === thisSubject._id
-            // score.ClassDetail &&
-            // score.subject &&
-            // score.term
-          );
-
-          // console.log(
-          //   "thisCLass...",
-          //   thisClass._id,
-          //   thisTerm._id,
-          //   thisSubject._id,
-          //   // thisSchoolYear
-          //   scoreArr
-          // );
-
-          let isThereReport = reportSubject.find(
-            (report) =>
-              report.ClassDetail === thisClass._id &&
-              // report.term === thisTerm._id &&
-              report.subject === thisSubject._id
-          );
-
-          console.log(
-            "istherereport, isthereScore",
-            isThereReport,
-            isThereScore
-          );
-          // Nếu có điểm nhưng chưa có trong báo cáo thì thêm vào báo cáo
-          if (isThereScore && !isThereReport) {
-            let total = thisClass.students.length;
-            let passed = 0,
-              rate;
-            scoreArr.forEach((score) => {
-              if (
-                score.ClassDetail === thisClass._id &&
-                // score.term === thisTerm._id &&
-                score.subject === thisSubject._id &&
-                score.avgScore >= 5
-              ) {
-                passed++;
-              }
-            });
-            let rateNumber = ((passed * 100) / total).toFixed(2);
-            rate = rateNumber + "%";
-
-            api.postReportSubject({
-              subject: thisSubject._id,
-              ClassDetail: thisClass._id,
-              term: "6299d1a3197adb1f05703d97",
-              schoolYear: thisSchoolYear._id,
-              totalStudents: total,
-              passed: passed,
-              rate: rate ? rate : "100%",
-            });
-          }
-        });
-      });
-      // });
-
-      const newReportSubject = await api.getSubjectReports();
-      const UIarr = newReportSubject.filter(
-        (item) =>
-          // item.term === termID &&
-          item.schoolYear === schoolYearID && item.subject === subjectID
+      //Lấy tất cả danh sách lớp và lọc theo năm học
+      const allClassDetails = await api.getClassDetail();
+      const classDetails = allClassDetails.filter(
+        (item) => item.schoolYear === schoolYear
       );
 
-      console.log(newReportSubject, UIarr);
+      //Lấy tất cả điểm môn học
+      const allTerm = await api.getTermList();
+      let termID = allTerm.find((item) => item.name === term)._id;
+      const allSubject = await api.getSubjectList();
+      let subjectID = allSubject.find((item) => item.name === subject)._id;
+      const allSubjectScore = await api.getSubjectScore();
 
-      setScoreSubjectState(scoreArr);
-      setClassArrState(classArray);
-      setSchoolYearState(schoolYearArr);
-      setSubjectState(subjectArr);
-      setTermState(termArr);
-      setReportSubjectState(UIarr);
-      setSubjectIDState(subjectID);
-      setTermIDState(termID);
-      setSchoolYearIDState(schoolYearID);
+      //Tạo mảng DATA rỗng
+      const DATA = [];
+
+      //Duyệt các danh sách lớp
+      classDetails.forEach((item) => {
+        //Ở mỗi danh sách lớp:
+        ////1. Lấy sĩ số
+        ////2. Duyệt qua mỗi học sinh và lấy điểm học kì. Nếu lớn hơn trung bình thì ++
+        ////3. Push vào mảng DATA
+        let total = item.students.length;
+        let passed = 0;
+        item.students.forEach((studentID) => {
+          let isThereScore = allSubjectScore.find(
+            (score) =>
+              score.student === studentID &&
+              score.term === termID &&
+              score.class === item._id &&
+              score.subject === subjectID
+          );
+          let subjectScore = isThereScore ? isThereScore.avg : 0;
+          if (subjectScore >= passScore) passed += 1;
+          console.log("find>>>", studentID, termID, item._id);
+          console.log("isThereScore>>>", isThereScore);
+          console.log("subjectScore", subjectScore);
+        });
+
+        DATA.push({
+          class: item.name,
+          total: total,
+          term: term,
+          schoolYear: schoolYear,
+          passed: passed,
+          rate: `${((passed * 100) / total).toFixed(2)}%`,
+        });
+      });
+      setData(DATA);
+      setUIData(
+        DATA.map((item) => {
+          return {
+            Lớp: item.class,
+            "Sỉ số": item.total,
+            "Số lượng đạt": item.passed,
+            "Tỉ lệ": item.rate,
+          };
+        })
+      );
     };
     getData();
   }, []);
 
   return (
-    <div className="create-report-subject">
-      <h3>Báo cáo tổng kết môn học</h3>
-      <div className="score-info">
-        <h4>{term}</h4>
-        <h4>Năm học: {schoolYear}</h4>
-        <h4>Môn học: {subject}</h4>
-      </div>
-      <div className="container">
-        <div className="row heading">
-          <div className="item col-25-percent center al-center">Lớp</div>
-          <div className="item col-25-percent center al-center">Sĩ số</div>
-          <div className="item col-25-percent center al-center">
-            Số lượng đạt
-          </div>
-          <div className="item col-25-percent center al-center">Tỉ lệ</div>
+    <ProtectedPage>
+      <div className="create-report-subject">
+        <h3>Báo cáo tổng kết môn học</h3>
+        <div className="score-info">
+          <h4>{term}</h4>
+          <h4>Năm học: {schoolYear}</h4>
+          <h4>Môn học: {subject}</h4>
         </div>
-        {reportSubjectState.map((item) => (
-          <div className="row content">
+        <div className="container">
+          <div className="row heading">
+            <div className="item col-25-percent center al-center">Lớp</div>
+            <div className="item col-25-percent center al-center">Sĩ số</div>
             <div className="item col-25-percent center al-center">
-              {classArr.find((classItem) => classItem._id === item.ClassDetail)
-                ? classArr.find(
-                    (classItem) => classItem._id === item.ClassDetail
-                  ).name
-                : "10A5"}
+              Số lượng đạt
             </div>
-            <div className="item col-25-percent center al-center">
-              {item.totalStudents}
-            </div>
-            <div className="item col-25-percent center al-center">
-              {item.passed}
-            </div>
-            <div className="item col-25-percent center al-center">
-              {item.rate}
-            </div>
+            <div className="item col-25-percent center al-center">Tỉ lệ</div>
           </div>
-        ))}
+          {data.map((item) => (
+            <div className="row content">
+              <div className="item col-25-percent center al-center">
+                {item.class}
+              </div>
+              <div className="item col-25-percent center al-center">
+                {item.total}
+              </div>
+              <div className="item col-25-percent center al-center">
+                {item.passed}
+              </div>
+              <div className="item col-25-percent center al-center">
+                {item.rate}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div
+          className="btns"
+          style={{
+            transform: "translateX(20px)",
+          }}>
+          <Button
+            innerText="In báo cáo"
+            btnType="export"
+            onClick={onClickExport}
+          />
+        </div>
       </div>
-      <div className="btns">
-        <Button innerText="Xuất kết quả" btnType="export" />
-        <Button innerText="In kết quả" btnType="export" />
-      </div>
-    </div>
+    </ProtectedPage>
   );
 };

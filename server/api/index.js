@@ -17,6 +17,7 @@ const termScoreRoute = require("./routes/termScore");
 const paramRoute = require("./routes/param");
 const subjectReportRoute = require("./routes/subjectReport");
 const termReportRoute = require("./routes/termReport");
+const userRoute = require("./routes/user");
 
 app.use(
   cors({
@@ -42,6 +43,7 @@ app.use("/api/subject-score", subjectScoreRoute);
 app.use("/api/term-score", termScoreRoute);
 app.use("/api/subject-report", subjectReportRoute);
 app.use("/api/term-report", termReportRoute);
+app.use("/api/user", userRoute);
 
 mongoose
   .connect(process.env.MONGO_URL, {

@@ -8,10 +8,10 @@ import imgPage from "../../assets/imgPage.png";
 
 // import { BiRightArrow } from "react-icons/bi";
 import { Card } from "../../components/Card";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const Report = () => {
   return (
-    <>
+    <ProtectedPage>
       <div className="report">
         {/* <h3>Tạo báo cáo</h3>
         <div className="guide">
@@ -40,17 +40,15 @@ export const Report = () => {
               img={subjectImg}
               link="report/report-subject"
               content="Báo cáo môn"
-              color="linear-gradient(80.24deg, #FF5823 1.31%, #FE844F 37.88%, #FB9824 71.68%, #FFC122 100.64%, #FFBB0C 100.64%)"
-            ></Card>
+              color="linear-gradient(80.24deg, #FF5823 1.31%, #FE844F 37.88%, #FB9824 71.68%, #FFC122 100.64%, #FFBB0C 100.64%)"></Card>
             <Card
               img={termImg}
               link="report/report-term"
               content="Báo cáo học kỳ"
-              color="linear-gradient(79.53deg, #9004FF -15.74%, #E756FF 21.23%, #7B2AFF 107.65%)"
-            ></Card>
+              color="linear-gradient(79.53deg, #9004FF -15.74%, #E756FF 21.23%, #7B2AFF 107.65%)"></Card>
           </div>
         </div>
       </div>
-    </>
+    </ProtectedPage>
   );
 };

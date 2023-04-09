@@ -9,7 +9,7 @@ import { Notification } from "../../components/Notification";
 import { api } from "../../api/api";
 import { helper } from "../../handle-event/HandleEvent";
 import axios from "axios";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const AddStudent = () => {
   const [result, setResult] = useState([]);
   const [resultUI, setResultUI] = useState([]);
@@ -24,7 +24,7 @@ export const AddStudent = () => {
       const settingList = await api.getSettingList();
 
       let min = settingList.find((item) => item.name === "min-age")?.value;
-      let max = settingList.find((item) => item.idSet === "max-age")?.value;
+      let max = settingList.find((item) => item.name === "max-age")?.value;
       setMinAge(Number(min));
       setMaxAge(Number(max));
       // setStudentArrState(dataArr);
@@ -52,7 +52,7 @@ export const AddStudent = () => {
     });
     const checkMessageArr = [
       checkEmptyMessage,
-      // checkAgeMessage,
+      checkAgeMessage,
       checkEmailMessage,
     ];
     let isValid = checkMessageArr.filter((item) => item !== "ok").length == 0;
@@ -130,61 +130,63 @@ export const AddStudent = () => {
     document.querySelector(".confirm").style.display = "flex";
   };
   return (
-    <div className="add-student">
-      <Confirm
-        confirmType="add"
-        result={resultUI}
-        handleConfirmCancelBtn={handleConfirmCancelBtn}
-        handleConfirmAcceptBtn={handleConfirmAcceptBtn}
-      />
-      <Notification status="failed" message={message} />
-      <h3>Thêm học sinh</h3>
-      <div className="guide">
-        Điền vào thông tin học sinh theo mẫu bên dưới. Lưu ý điền đầy đủ tất cả
-        các trường
-      </div>
+    <ProtectedPage>
+      <div className="add-student">
+        <Confirm
+          confirmType="add"
+          result={resultUI}
+          handleConfirmCancelBtn={handleConfirmCancelBtn}
+          handleConfirmAcceptBtn={handleConfirmAcceptBtn}
+        />
+        <Notification status="failed" message={message} />
+        <h3>Thêm học sinh</h3>
+        <div className="guide">
+          Điền vào thông tin học sinh theo mẫu bên dưới. Lưu ý điền đầy đủ tất
+          cả các trường
+        </div>
 
-      <form className="grid">
-        <div className="row">
-          <Input
-            type="text"
-            placeholder="Nhập họ tên học sinh..."
-            labelText="Họ và tên"
-          />
-          <Input type="email" placeholder="Nhập email..." labelText="Email" />
-        </div>
-        <div className="row">
-          <Input type="date" labelText="Ngày sinh" />
-          <Input
-            type="select"
-            labelText="Giới tính"
-            name="gender"
-            selectName="gender"
-            options={[
-              { value: "male", text: "Nam" },
-              { value: "female", text: "Nữ" },
-            ]}
-          />
-        </div>
-        <div className="row">
-          <Input
-            type="textArea"
-            labelText="Địa chỉ"
-            rows="5"
-            placeholder="Nhập địa chỉ..."
-          />
-        </div>
-        <div className="btns al-center">
-          <Button
-            btnType="clear"
-            onClick={handleRefresh}
-            innerText="Làm sạch"></Button>
-          <Button
-            btnType="add"
-            onClick={(e) => handleSubmit(e)}
-            innerText="Thêm mới"></Button>
-        </div>
-      </form>
-    </div>
+        <form className="grid">
+          <div className="row">
+            <Input
+              type="text"
+              placeholder="Nhập họ tên học sinh..."
+              labelText="Họ và tên"
+            />
+            <Input type="email" placeholder="Nhập email..." labelText="Email" />
+          </div>
+          <div className="row">
+            <Input type="date" labelText="Ngày sinh" />
+            <Input
+              type="select"
+              labelText="Giới tính"
+              name="gender"
+              selectName="gender"
+              options={[
+                { value: "male", text: "Nam" },
+                { value: "female", text: "Nữ" },
+              ]}
+            />
+          </div>
+          <div className="row">
+            <Input
+              type="textArea"
+              labelText="Địa chỉ"
+              rows="5"
+              placeholder="Nhập địa chỉ..."
+            />
+          </div>
+          <div className="btns al-center">
+            <Button
+              btnType="clear"
+              onClick={handleRefresh}
+              innerText="Làm sạch"></Button>
+            <Button
+              btnType="add"
+              onClick={(e) => handleSubmit(e)}
+              innerText="Thêm mới"></Button>
+          </div>
+        </form>
+      </div>
+    </ProtectedPage>
   );
 };

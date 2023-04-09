@@ -8,11 +8,14 @@ import { useState, useEffect } from "react";
 import { helper } from "../../handle-event/HandleEvent";
 import { useParams } from "react-router-dom";
 import { api } from "../../api/api";
-// import { schoolYear as schoolYearArr } from "../../config/data";
+import { useHistory } from "react-router-dom";
+import * as XLSX from "xlsx";
+import ProtectedPage from "../../components/ProtectedPage";
 //get từ DS lớp, giữ lại id của HS
 export const CreateScore = () => {
-  const { className, subject, term, schoolYear } = useParams();
-  const [status, setstatus] = useState("input");
+  const history = useHistory();
+  const { className, subject, term, schoolYear, action } = useParams();
+  const [status, setstatus] = useState(action === "add" ? "input" : "view");
   const [message, setMessage] = useState("");
   const [finalResult, setFinalResult] = useState([]);
   const [studentList, setStudentList] = useState([]);
@@ -26,9 +29,17 @@ export const CreateScore = () => {
   const [param15Value, setParam15Value] = useState(1);
   const [param1ID, setParam1ID] = useState("");
   const [param1Value, setParam1Value] = useState(2);
+  const [user, setUser] = useState(null);
+  const [creatorID, setCreatorID] = useState("");
 
   useEffect(() => {
     const getData = async () => {
+      //reset localstorage
+      window.localStorage.setItem("score-page", "");
+
+      //Lấy user
+      let userFromLocal = JSON.parse(window.localStorage.getItem("user-qlhs"));
+      console.log("userFromLocal >>>", userFromLocal);
       const classArr = await api.getClassDetail();
       const classDetail = classArr.find(
         (item) => item.schoolYear == schoolYear && item.name == className
@@ -48,8 +59,8 @@ export const CreateScore = () => {
       // let paramTermID = paramArr.find((item) => item.name == "học kì")._id;
 
       const settingList = await api.getSettingList();
-      let min = settingList.find((item) => item.name == "min-score");
-      let max = settingList.find((item) => item.name == "min-score");
+      let min = settingList.find((item) => item.name == "min-score")?.value;
+      let max = settingList.find((item) => item.name == "max-score")?.value;
 
       const allStudents = await api.getStudentInfoArr();
       const newStudentList = allStudents.filter((item) =>
@@ -57,6 +68,66 @@ export const CreateScore = () => {
       );
 
       const scoreArr = await api.getSubjectScore();
+
+      //Khi bấm chuyển sang edit thì input có sẵn giá trị
+      // if (status === "input") {
+      //   let isEditActivated = window.localStorage.getItem("score-page");
+      //   if (isEditActivated) {
+      //     const rows = document.querySelectorAll(".row.content");
+      //     console.log("rows>>>", rows);
+      //     rows.forEach((row, i) => {
+      //       const inputs = row.querySelectorAll("input");
+      //       inputs[0].value = finalResult[i]?.score15Min;
+      //       inputs[1].value = finalResult[i]?.score1Per;
+      //     });
+      //   }
+      // }
+
+      if (status === "view") {
+        setFinalResult(
+          newStudentList.map((student) => {
+            //1. Lấy điểm môn học này của học sinh này
+            const subjectScore = scoreArr.find(
+              (item) =>
+                item.student === student._id &&
+                item.class === classID &&
+                item.subject === subjectID &&
+                item.term === termID
+            );
+            const scores = subjectScore ? subjectScore.scores : [];
+
+            //2. Lấy điểm 15 phút và join lại
+            const score15JoinString = scores
+              .filter((item) => item.param === param15._id)
+              .map((item) => item.value)
+              .join(" ");
+
+            //3. Lấy điểm 1 tiết và join lại
+            const score1JoinString = scores
+              .filter((item) => item.param === param1._id)
+              .map((item) => item.value)
+              .join(" ");
+
+            return {
+              ...student,
+              scoreID: subjectScore?._id,
+              score15Min: score15JoinString,
+              score1Per: score1JoinString,
+              avgScore: subjectScore?.avg,
+            };
+          })
+        );
+
+        const subjectScore = scoreArr.filter(
+          (item) =>
+            item.class === classID &&
+            item.subject === subjectID &&
+            item.term === termID
+        )[0];
+        let userID = subjectScore?.user;
+        setCreatorID(userID);
+        console.log("userID>>>>:", userID);
+      }
 
       setClassIDState(classID);
       setSubjectIDState(subjectID);
@@ -69,9 +140,75 @@ export const CreateScore = () => {
       setMaxScore(max);
       setStudentList(newStudentList);
       setScoreSubjectState(scoreArr);
+      setUser(userFromLocal);
     };
     getData();
   }, []);
+
+  useEffect(() => {
+    const updateStatus = () => {
+      if (status === "input") {
+        let isEditActivated = window.localStorage.getItem("score-page");
+        if (isEditActivated) {
+          const rows = document.querySelectorAll(".row.content");
+          console.log("rows>>>", rows);
+          rows.forEach((row, i) => {
+            const inputs = row.querySelectorAll("input");
+            inputs[0].value = finalResult[i]?.score15Min;
+            inputs[1].value = finalResult[i]?.score1Per;
+          });
+        }
+      }
+
+      //Nếu đã có điểm thì hiển thị điểm đã có
+      // if (status === "view") {
+      //   setFinalResult(
+      //     studentList.map((student) => {
+      //       //1. Lấy điểm môn học này của học sinh này
+      //       const subjectScore = scoreSubjectState.find(
+      //         (item) =>
+      //           item.student === student._id &&
+      //           item.class === classIDState &&
+      //           item.subject === subjectIDState &&
+      //           item.term === termIDState
+      //       );
+      //       const scores = subjectScore ? subjectScore.scores : [];
+
+      //       //2. Lấy điểm 15 phút và join lại
+      //       const score15JoinString = scores
+      //         .filter((item) => item.param === param15ID)
+      //         .map((item) => item.value)
+      //         .join(" ");
+
+      //       //3. Lấy điểm 1 tiết và join lại
+      //       const score1JoinString = scores
+      //         .filter((item) => item.param === param1ID)
+      //         .map((item) => item.value)
+      //         .join(" ");
+
+      //       return {
+      //         ...student,
+      //         scoreID: subjectScore?._id,
+      //         score15Min: score15JoinString,
+      //         score1Per: score1JoinString,
+      //         avgScore: subjectScore?.avg,
+      //       };
+      //     })
+      //   );
+
+      //   const subjectScore = scoreSubjectState.filter(
+      //     (item) =>
+      //       item.class === classIDState &&
+      //       item.subject === subjectIDState &&
+      //       item.term === termIDState
+      //   )[0];
+      //   let userID = subjectScore?.user;
+      //   setCreatorID(userID);
+      //   console.log("userID>>>>:", userID);
+      // }
+    };
+    updateStatus();
+  }, [status]);
 
   const handleClickAddBtn = () => {
     const finalResultTemp = [];
@@ -84,71 +221,98 @@ export const CreateScore = () => {
       input.value.trim().replace(/\s+/g, " ")
     );
 
-    studentList.forEach((item, i) => {
-      let total15Min = inputs15Min[i]
-        .split(" ")
-        .map((item) => Number(item))
-        .reduce((total, num) => total + num * param15Value, 0);
-      let total1Per = inputs1Per[i]
-        .split(" ")
-        .map((item) => Number(item))
-        .reduce((total, num) => total + num * param1Value, 0);
-      let totalParam =
-        inputs15Min[i].split(" ").length * param15Value +
-        inputs1Per[i].split(" ").length * param1Value;
-      const newItem = {
-        ...item,
-        score15Min: inputs15Min[i],
-        score1Per: inputs1Per[i],
-        avgScore: ((total15Min + total1Per) / totalParam).toFixed(2),
-      };
+    //Neu da co final result roi
+    if (finalResult.length > 0) {
+      finalResult.forEach((item, i) => {
+        let total15Min = inputs15Min[i]
+          .split(" ")
+          .map((item) => Number(item))
+          .reduce((total, num) => total + num * param15Value, 0);
+        let total1Per = inputs1Per[i]
+          .split(" ")
+          .map((item) => Number(item))
+          .reduce((total, num) => total + num * param1Value, 0);
+        let totalParam =
+          inputs15Min[i].split(" ").length * param15Value +
+          inputs1Per[i].split(" ").length * param1Value;
+        const newItem = {
+          ...item,
+          score15Min: inputs15Min[i],
+          score1Per: inputs1Per[i],
+          avgScore: ((total15Min + total1Per) / totalParam).toFixed(2),
+        };
 
-      finalResultTemp.push(newItem);
-    });
+        console.log("push to final result>>>", newItem);
+        finalResultTemp.push(newItem);
+      });
+    } else {
+      studentList.forEach((item, i) => {
+        let total15Min = inputs15Min[i]
+          .split(" ")
+          .map((item) => Number(item))
+          .reduce((total, num) => total + num * param15Value, 0);
+        let total1Per = inputs1Per[i]
+          .split(" ")
+          .map((item) => Number(item))
+          .reduce((total, num) => total + num * param1Value, 0);
+        let totalParam =
+          inputs15Min[i].split(" ").length * param15Value +
+          inputs1Per[i].split(" ").length * param1Value;
+        const newItem = {
+          ...item,
+          score15Min: inputs15Min[i],
+          score1Per: inputs1Per[i],
+          avgScore: ((total15Min + total1Per) / totalParam).toFixed(2),
+        };
+
+        console.log("push to final result>>>", newItem);
+        finalResultTemp.push(newItem);
+      });
+    }
     //kiểm tra ràng buộc dữ liệu
     let checkEmptyMessage = "ok";
     let checkNumberMessage = "ok";
     let checkScoreMessage = "ok";
-    // finalResultTemp.forEach((item) => {
-    //   if (helper.validateData("empty", item) !== "ok")
-    //     checkEmptyMessage = helper.validateData("empty", item);
-    //   if (
-    //     helper.validateData("number", {
-    //       score15Min: item.score15Min.replace(" ", ""),
-    //       score1Per: item.score1Per.replace(" ", ""),
-    //     }) !== "ok"
-    //   )
-    //     checkNumberMessage = helper.validateData("number", {
-    //       score15Min: item.score15Min.replace(" ", ""),
-    //       score1Per: item.score1Per.replace(" ", ""),
-    //     });
-    //   if (
-    //     helper.validateData(
-    //       "score",
-    //       {
-    //         score15Min: item.score15Min,
-    //         score1Per: item.score1Per,
-    //       },
-    //       null,
-    //       null,
-    //       null,
-    //       minScore,
-    //       maxScore
-    //     ) !== "ok"
-    //   )
-    //     checkScoreMessage = helper.validateData(
-    //       "score",
-    //       {
-    //         score15Min: item.score15Min,
-    //         score1Per: item.score1Per,
-    //       },
-    //       null,
-    //       null,
-    //       null,
-    //       minScore,
-    //       maxScore
-    //     );
-    // });
+    finalResultTemp.forEach((item) => {
+      if (helper.validateData("empty", item) !== "ok")
+        checkEmptyMessage = helper.validateData("empty", item);
+      if (
+        helper.validateData("number", {
+          score15Min: item.score15Min.replace(" ", ""),
+          score1Per: item.score1Per.replace(" ", ""),
+        }) !== "ok"
+      )
+        checkNumberMessage = helper.validateData("number", {
+          score15Min: item.score15Min.replace(" ", ""),
+          score1Per: item.score1Per.replace(" ", ""),
+        });
+      if (
+        helper.validateData(
+          "score",
+          {
+            score15Min: item.score15Min,
+            score1Per: item.score1Per,
+          },
+          null,
+          null,
+          null,
+          minScore,
+          maxScore
+        ) !== "ok"
+      )
+        checkScoreMessage = helper.validateData(
+          "score",
+          {
+            score15Min: item.score15Min,
+            score1Per: item.score1Per,
+          },
+          null,
+          null,
+          null,
+          minScore,
+          maxScore
+        );
+    });
     const checkMessageArr = [
       checkEmptyMessage,
       checkNumberMessage,
@@ -174,14 +338,16 @@ export const CreateScore = () => {
   const handleClickSaveBtn = () => {
     document.querySelector(".confirm.add").style.display = "flex";
   };
-  const handleConfirmAcceptBtn = () => {
+  const handleConfirmAcceptBtn = async () => {
     //Lưu xuống CSDL
     const payloadToApi = finalResult.map((item) => {
       return {
+        scoreID: item.scoreID,
         student: item._id,
         class: classIDState,
         subject: subjectIDState,
         term: termIDState,
+        user: user._id,
         scores: [
           ...item.score15Min
             .trim()
@@ -208,15 +374,116 @@ export const CreateScore = () => {
 
     console.log("payloadToApi>>>", payloadToApi);
 
-    payloadToApi.forEach((item) => api.postSubjectScore(item));
+    //Xem đã có điểm đó chưa
+    let isEditActivated =
+      window.localStorage.getItem("score-page") == "activated";
+
+    payloadToApi.forEach(async (item, i) => {
+      if (isEditActivated && item.scoreID) {
+        await api.putSubjectScore(item.scoreID, item);
+      } else {
+        await api.postSubjectScore(item);
+      }
+    });
+
+    // if (isEditActivated) {
+    //   payloadToApi.forEach(
+    //     async (item, i) => await api.putSubjectScore(item.scoreID, item)
+    //   );
+    // } else {
+    //   payloadToApi.forEach(async (item) => await api.postSubjectScore(item));
+    // }
+
+    //update điểm học kì
+    const allTermScore = await api.getTermScores();
+    const allSubjectScore = await api.getSubjectScore();
+    payloadToApi.forEach(async (item) => {
+      //tìm score có tồn tại chưa
+      const termScore = allTermScore.find(
+        (score) =>
+          item.student === score.student &&
+          item.class === score.class &&
+          item.term === score.term
+      );
+
+      //Lấy điểm môn học vừa thêm
+      const subjectScore = allSubjectScore.find(
+        (score) =>
+          item.student === score.student &&
+          item.class === score.class &&
+          item.term === score.term &&
+          item.subject === score.subject
+      );
+
+      let subjectScoreID = subjectScore?._id;
+      let subjectScoreAvg = subjectScore?.avg;
+
+      //Nếu tồn tại, update phần điểm lại
+      if (termScore) {
+        const subjectScores = termScore.subjectScores;
+        let numberOFSubjects = subjectScores.length;
+        let termAvg = termScore.avg;
+        const payloadToTermScore = {
+          ...termScore,
+          subjectScores: [...subjectScores, subjectScoreID],
+          avg: (
+            (numberOFSubjects * termAvg + subjectScoreAvg) /
+            (numberOFSubjects + 1)
+          ).toFixed(2),
+        };
+
+        await api.putTermScore(termScore._id, payloadToTermScore);
+      }
+      //Nếu chưa tồn tại, tạo mới điểm học kì
+      else {
+        const payloadToTermScore = {
+          student: item.student,
+          class: item.class,
+          term: item.term,
+          subjectScores: [subjectScoreID],
+          avg: subjectScoreAvg.toFixed(2),
+        };
+
+        await api.postTermScore(payloadToTermScore);
+      }
+    });
+
     document.querySelector(".notification").style.display = "flex";
     document.querySelector(".confirm.add").style.display = "none";
+    // history.push(`/score/${className}/${subject}/${term}/${schoolYear}/view`);
+    // window.reload();
+    setstatus("view");
   };
   const handleConfirmCancelBtn = () => {
     document.querySelector(".confirm.add").style.display = "none";
   };
+
+  const onClickExport = () => {
+    const scoreToExport = finalResult.map((item) => {
+      return {
+        "Họ tên": item.name,
+        "Điểm 15 phút": item.score15Min,
+        "Điểm 1 tiết": item.score1Per,
+        "Điểm trung bình": item.avgScore,
+      };
+    });
+    const worksheet = XLSX.utils.json_to_sheet(scoreToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    XLSX.writeFile(
+      workbook,
+      `Bảng điểm môn ${subject.toLowerCase()} lớp ${className} ${term.toLowerCase()} năm học ${schoolYear}.xlsx`
+    );
+  };
+
+  const onClickUpdateBtn = () => {
+    setstatus("input");
+    window.localStorage.setItem("score-page", "activated");
+  };
   return (
-    <>
+    <ProtectedPage>
       <Confirm
         confirmType="add"
         result={[]}
@@ -264,19 +531,24 @@ export const CreateScore = () => {
                   {item.name}
                 </div>
                 <div className="item col-20-percent center al-center min-15">
-                  <Input type="small" placeholder="Nhập điểm 15'..." />
+                  <Input
+                    type="small"
+                    // value={finalResult[i]?.score15Min}
+                    placeholder="Nhập điểm 15'..."
+                  />
                 </div>
                 <div className="item col-20-percent center al-center per-1">
-                  <Input type="small" placeholder="Nhập điểm 1 tiết..." />
+                  <Input
+                    type="small"
+                    // value={finalResult[i]?.score1Per}
+                    placeholder="Nhập điểm 1 tiết..."
+                  />
                 </div>
                 <div className="item col-20-percent center al-center">
-                  {/* {avgScore[i]} */}
+                  {/* {finalResult[i]?.avgScore} */}
                 </div>
               </div>
             ))}
-          </div>
-          <div className="btns">
-            <Button innerText="Tạo" btnType="add" onClick={handleClickAddBtn} />
           </div>
         </div>
       ) : (
@@ -292,6 +564,7 @@ export const CreateScore = () => {
             <h4>Năm học: {schoolYear}</h4>
             <h4>Môn học: {subject}</h4>
           </div>
+
           <div className="container">
             <div className="row heading">
               <div className="item col-10-percent center al-center">STT</div>
@@ -317,26 +590,61 @@ export const CreateScore = () => {
                   {item.name}
                 </div>
                 <div className="item col-20-percent center al-center min-15">
-                  {finalResult[i].score15Min}
+                  {finalResult[i]?.score15Min}
                 </div>
                 <div className="item col-20-percent center al-center per-1">
-                  {finalResult[i].score1Per}
+                  {finalResult[i]?.score1Per}
                 </div>
                 <div className="item col-20-percent center al-center">
-                  {finalResult[i].avgScore}
+                  {finalResult[i]?.avgScore}
                 </div>
               </div>
             ))}
           </div>
-          <div className="btns">
+        </div>
+      )}
+      <div className="btns" style={{ margin: "30px 0 0 0" }}>
+        {status === "confirm" && (
+          <>
             <Button
               innerText="Lưu"
               btnType="save"
               onClick={handleClickSaveBtn}
             />
-          </div>
-        </div>
-      )}
-    </>
+          </>
+        )}
+        {status === "input" && (
+          <>
+            <Button
+              innerText="Làm sạch"
+              btnType="clear"
+              onClick={() => {
+                document
+                  .querySelectorAll("input")
+                  .forEach((item) => (item.value = ""));
+              }}></Button>
+            <Button innerText="Tạo" btnType="add" onClick={handleClickAddBtn} />
+          </>
+        )}
+        {status === "view" && (
+          <>
+            <Button
+              innerText="Xuất kết quả"
+              btnType="save"
+              onClick={onClickExport}
+            />
+
+            {(user?.role === "bgh" ||
+              (user?.role === "gv" && user?._id === creatorID)) && (
+              <Button
+                innerText="Chỉnh sửa"
+                btnType="update"
+                onClick={onClickUpdateBtn}
+              />
+            )}
+          </>
+        )}
+      </div>
+    </ProtectedPage>
   );
 };

@@ -4,10 +4,10 @@ import studentImg from "../../assets/student.png";
 import classImg from "../../assets/class.png";
 import imgPage from "../../assets/imgPage.png";
 import { Card } from "../../components/Card";
-
+import ProtectedPage from "../../components/ProtectedPage";
 export const Add = () => {
   return (
-    <>
+    <ProtectedPage>
       <div className="add-page">
         <img className="img-main" src={imgPage} alt="" />
         <div className="main-1"></div>
@@ -39,6 +39,6 @@ export const Add = () => {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedPage>
   );
 };

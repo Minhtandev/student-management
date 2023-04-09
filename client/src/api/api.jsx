@@ -62,6 +62,14 @@ export const api = {
     const url = "param";
     return axiosClient.get(url, params);
   },
+  getUserList: (params) => {
+    const url = "user";
+    return axiosClient.get(url, params);
+  },
+  getAUser: (id, params) => {
+    const url = "user/" + String(id);
+    return axiosClient.get(url, params);
+  },
 
   //POST******************************************************
   postStudentInfo: (payload) => {
@@ -84,12 +92,20 @@ export const api = {
     const url = "subject-score";
     return axiosClient.post(url, payload);
   },
+  postTermScore: (payload) => {
+    const url = "term-score";
+    return axiosClient.post(url, payload);
+  },
   postSubjectReport: (payload) => {
     const url = "subject-report";
     return axiosClient.post(url, payload);
   },
   postTermReport: (payload) => {
     const url = "term-report";
+    return axiosClient.post(url, payload);
+  },
+  postUser: (payload) => {
+    const url = "user";
     return axiosClient.post(url, payload);
   },
 
@@ -107,7 +123,11 @@ export const api = {
     return axiosClient.put(url, payload);
   },
   putTermScore: (id, payload) => {
-    const url = "termScore/" + String(id);
+    const url = "term-score/" + String(id);
+    return axiosClient.put(url, payload);
+  },
+  putSubjectScore: (id, payload) => {
+    const url = "subject-score/" + String(id);
     return axiosClient.put(url, payload);
   },
   putStudentInfo: (id, payload) => {
@@ -116,6 +136,10 @@ export const api = {
   },
   putClassDetail: (id, payload) => {
     const url = "class-detail/" + String(id);
+    return axiosClient.put(url, payload);
+  },
+  putUser: (id, payload) => {
+    const url = "user/" + String(id);
     return axiosClient.put(url, payload);
   },
 
@@ -153,6 +177,11 @@ export const api = {
   deleteTermReport: (id) => {
     // console.log("delete from api");
     const url = "term-report/" + String(id);
+    return axiosClient.delete(url);
+  },
+  deleteUser: (id) => {
+    // console.log("delete from api");
+    const url = "user/" + String(id);
     return axiosClient.delete(url);
   },
 };

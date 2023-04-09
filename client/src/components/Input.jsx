@@ -48,8 +48,7 @@ export const Input = ({
         <label htmlFor="">{labelText}</label>
         <Selected
           props={options.map((item) => item.text)}
-          onChangeSelect={onChangeSelect}
-        ></Selected>
+          onChangeSelect={onChangeSelect}></Selected>
       </div>
     );
   else if (type == "small")

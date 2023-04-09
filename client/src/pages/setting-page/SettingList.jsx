@@ -7,7 +7,7 @@ import { Confirm } from "../../components/Confirm";
 import { Notification } from "../../components/Notification";
 import { handler, helper } from "../../handle-event/HandleEvent";
 import { api } from "../../api/api";
-
+import ProtectedPage from "../../components/ProtectedPage";
 const vietName = {
   "max-age": "Tuổi tối đa",
   "min-age": "Tuổi tối thiểu",
@@ -91,7 +91,7 @@ export const SettingList = () => {
   };
 
   return (
-    <>
+    <ProtectedPage>
       <Confirm
         confirmType="edit"
         result={resultUI}
@@ -171,6 +171,6 @@ export const SettingList = () => {
           </div>
         </div>
       </div>
-    </>
+    </ProtectedPage>
   );
 };
