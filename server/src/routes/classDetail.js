@@ -1,19 +1,19 @@
 const router = require("express").Router();
-const ClassDetailController = require("../controller/ClassDetailController");
+const classDetailController = require("../controller/classDetailController.js");
 
 // ADD A CLASS
-router.post("/", ClassDetailController.addClassDetail);
+router.post("/", classDetailController.addClassDetail);
 
 //GET ALL CLASSES
-router.get("/", ClassDetailController.getAllClasses);
+router.get("/", classDetailController.getAllClasses);
 
 //GET A CLASS
-router.get("/:id", ClassDetailController.getClass);
+router.get("/:id", classDetailController.getClass);
 
 //UPDATE A CLASS
-router.put("/:id", ClassDetailController.updateClass);
+router.put("/:id", classDetailController.updateClass);
 
 //DELETE A CLASS
-router.delete("/:id", ClassDetailController.deleteClass);
+router.delete("/:id", classDetailController.deleteClass);
 
 module.exports = router;
