@@ -5,19 +5,19 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 var bodyParser = require("body-parser");
-const settingRoute = require("./api/routes/setting");
-const studentRoute = require("./api/routes/student");
-const gradeRoute = require("./api/routes/grade");
-const classDetailRoute = require("./api/routes/classDetail");
-const classRoute = require("./api/routes/class");
-const subjectRoute = require("./api/routes/subject");
-const termRoute = require("./api/routes/term");
-const subjectScoreRoute = require("./api/routes/subjectScore");
-const termScoreRoute = require("./api/routes/termScore");
-const paramRoute = require("./api/routes/param");
-const subjectReportRoute = require("./api/routes/subjectReport");
-const termReportRoute = require("./api/routes/termReport");
-const userRoute = require("./api/routes/user");
+const settingRoute = require("./src/routes/setting");
+const studentRoute = require("./src/routes/student");
+const gradeRoute = require("./src/routes/grade");
+const classDetailRoute = require("./src/routes/classDetail");
+const classRoute = require("./src/routes/class");
+const subjectRoute = require("./src/routes/subject");
+const termRoute = require("./src/routes/term");
+const subjectScoreRoute = require("./src/routes/subjectScore");
+const termScoreRoute = require("./src/routes/termScore");
+const paramRoute = require("./src/routes/param");
+const subjectReportRoute = require("./src/routes/subjectReport");
+const termReportRoute = require("./src/routes/termReport");
+const userRoute = require("./src/routes/user");
 
 app.use(
   cors({
