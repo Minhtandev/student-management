@@ -1,6 +1,6 @@
 const { Student, ClassDetail, Grade } = require("../models/model");
 
-const ClassDetailController = {
+const classDetailController = {
   //ADD CLASS
   addClassDetail: async (req, res) => {
     try {
@@ -73,4 +73,4 @@ const ClassDetailController = {
   },
 };
 
-module.exports = ClassDetailController;
+module.exports = classDetailController;
