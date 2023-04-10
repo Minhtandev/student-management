@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const ParamController = require("../controller/ParamController");
+const ParamController = require("../controller/paramController");
 
 // ADD A SETTING
 router.post("/", ParamController.addParam);
