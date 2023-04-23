@@ -1,55 +1,59 @@
 @use "../../../scss/" as *;
 
 .create-report-term {
-  @include manage();
-  @include main-container;
+	@include manage();
+	@include main-container;
 
-  .score-info {
-    @include flex(center, center);
-    margin-bottom: 10px;
-    h4 {
-      margin-left: 12px;
-      margin-right: 12px;
-    }
-  }
-  .row {
-    display: flex;
-    color: #000;
-    font-size: 14px;
+	.container {
+		margin: 0;
+	}
 
-    &.heading {
-      @include heading();
+	.score-info {
+		@include flex(center, center);
+		margin-bottom: 10px;
+		h4 {
+			margin-left: 12px;
+			margin-right: 12px;
+		}
+	}
+	.row {
+		display: flex;
+		color: #000;
+		font-size: 14px;
 
-      & > .item {
-        @include heading-item();
-      }
-    }
+		&.heading {
+			@include heading();
 
-    &.content {
-      padding-top: 14px;
-      padding-bottom: 10px;
+			& > .item {
+				@include heading-item();
+			}
+		}
 
-      & > .item {
-        justify-content: center;
-      }
-    }
+		&.content {
+			padding-top: 14px;
+			padding-bottom: 10px;
 
-    &.content button:first-child img,
-    &.content button:nth-child(2) img {
-      margin-right: 10px;
-    }
+			& > .item {
+				justify-content: center;
+			}
+		}
 
-    img {
-      cursor: pointer;
-    }
-  }
+		&.content button:first-child img,
+		&.content button:nth-child(2) img {
+			margin-right: 10px;
+		}
 
-  .btns {
-    margin-left: 25px;
-    margin-top: 30px;
+		img {
+			cursor: pointer;
+		}
+	}
 
-    button {
-      margin-right: 30px;
-    }
-  }
+	.btns {
+		margin-left: 25px;
+		margin-top: 30px;
+
+		button {
+			margin-right: 30px;
+		}
+	}
 }
