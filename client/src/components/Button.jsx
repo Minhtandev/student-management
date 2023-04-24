@@ -31,8 +31,7 @@ export const Button = ({
         <button
           className="delete-selected-btn"
           onClick={onClick}
-          data-set={dataSet}
-        >
+          data-set={dataSet}>
           {innerText}
         </button>
       );
@@ -59,12 +58,17 @@ export const Button = ({
         <button
           className="save-btn--small"
           onClick={onClick}
-          data-set={dataSet}
-        >
+          data-set={dataSet}>
           {innerText}
         </button>
       );
 
+    case "detail":
+      return (
+        <button className="detail-btn" onClick={onClick} data-set={dataSet}>
+          {innerText}
+        </button>
+      );
     default:
       return <>Lỗi</>;
   }

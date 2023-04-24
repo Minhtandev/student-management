@@ -79,7 +79,11 @@
       flex-direction: row;
 
       & > .item {
-        justify-content: center;
+        line-height: 56px;
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
       }
     }
 
@@ -107,6 +111,16 @@
     align-items: center;
     button {
       margin-right: 30px;
+    }
+  }
+
+  .class-info {
+    @include flex(center, center);
+    margin-bottom: 10px;
+    h5 {
+      margin-left: 12px;
+      margin-right: 12px;
+      font-size: 16px;
     }
   }
 }

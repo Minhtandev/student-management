@@ -37,8 +37,20 @@ export const SearchStudent = () => {
       let max = settingList.find((item) => item.name === "max-age")?.value;
       setMinAge(Number(min));
       setMaxAge(Number(max));
-      setStudentInfoState(studentInfoArr);
-      setStudentArrTempState(studentInfoArr);
+      setStudentInfoState(
+        studentInfoArr.sort((a, b) => {
+          let firstNameA = a.name.split(" ").slice(-1);
+          let firstNameB = b.name.split(" ").slice(-1);
+          return firstNameA > firstNameB ? 1 : firstNameB > firstNameA ? -1 : 0;
+        })
+      );
+      setStudentArrTempState(
+        studentInfoArr.sort((a, b) => {
+          let firstNameA = a.name.split(" ").slice(-1);
+          let firstNameB = b.name.split(" ").slice(-1);
+          return firstNameA > firstNameB ? 1 : firstNameB > firstNameA ? -1 : 0;
+        })
+      );
       setRole(userFromLocal ? userFromLocal.role : "");
     };
     getData();
@@ -76,7 +88,13 @@ export const SearchStudent = () => {
       const allStudentArrCopy = studentInfoState.filter(
         (studentInfo) => studentInfo._id !== studentID
       );
-      setStudentInfoState(allStudentArrCopy);
+      setStudentInfoState(
+        allStudentArrCopy.sort((a, b) => {
+          let firstNameA = a.name.split(" ").slice(-1);
+          let firstNameB = b.name.split(" ").slice(-1);
+          return firstNameA > firstNameB ? 1 : firstNameB > firstNameA ? -1 : 0;
+        })
+      );
 
       //cập nhật CSDL
       await api.deleteStudent(studentID);
@@ -218,9 +236,7 @@ export const SearchStudent = () => {
 
         <div className="container">
           <div className="row heading">
-            <div className="item col-25-percent center al-left pl-70">
-              Họ Tên
-            </div>
+            <div className="item col-25-percent center al-center">Họ Tên</div>
             <div className="item col-25-percent center al-center">Địa chỉ</div>
             <div className="item col-25-percent center al-center">Email</div>
             <div className="item col-15-percent center al-center">
@@ -237,7 +253,7 @@ export const SearchStudent = () => {
             return (
               <>
                 <div className="row content">
-                  <div className="item col-25-percent al-left pl-50">
+                  <div className="item col-25-percent al-center">
                     {item.name}
                   </div>
                   <div className="item col-25-percent al-center">
@@ -251,6 +267,25 @@ export const SearchStudent = () => {
                   </div>
                   {role !== "gv" && (
                     <div className="item col-10-percent center al-center">
+                      <button
+                        className="info-btn"
+                        data-set={i}
+                        onClick={(e) => {
+                          setResultUI([
+                            {
+                              "Họ và tên": item.name,
+                              "Giới tính":
+                                item.gender === "male" ? "Nam" : "Nữ",
+                              "Địa chỉ": item.address,
+                              Email: item.email,
+                              "Ngày sinh": item.birth,
+                            },
+                          ]);
+                          document.querySelector(".detail").style.display =
+                            "flex";
+                        }}>
+                        <img src={InfoIcon} alt="" className="info-img" />
+                      </button>
                       <button
                         className="edit-btn"
                         data-set={i}
@@ -274,7 +309,7 @@ export const SearchStudent = () => {
                 </div>
                 {item.Edit ? (
                   <div className="row content">
-                    <div className="item col-25-percent center al-left pl-50">
+                    <div className="item col-25-percent center al-center">
                       <input
                         type="text"
                         className="input--small"

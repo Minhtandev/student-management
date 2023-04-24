@@ -1,5 +1,5 @@
 import React from "react";
-import "./Search.scss";
+import "../student/Search.scss";
 import InfoIcon from "../../assets/info-icon.png";
 import EditIcon from "../../assets/edit-icon.png";
 import DeleteIcon from "../../assets/Delete-icon.png";
@@ -16,15 +16,14 @@ import { api } from "../../api/api";
 import { schoolYear } from "../../config/data";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../components/ProtectedPage";
+import { useParams } from "react-router-dom";
 //studentArrTemp là để hiển thị, studentScoreArr là để lưu xuống CSDL
 
 export const SearchClassDetail = () => {
+  const { id } = useParams();
   const [allStudent, setAllStudent] = useState([]);
-  const [allClassDeatil, setAllClassDetail] = useState([]);
   const [studentOfClass, setStudentOfClass] = useState([]);
   const [classDetail, setClassDetail] = useState(null);
-  const [schoolYear, setSchoolYear] = useState("");
-  const [className, setClassName] = useState("");
   const [result, setResult] = useState([]);
   const [resultUI, setResultUI] = useState([]);
   const [message, setMessage] = useState("");
@@ -34,13 +33,19 @@ export const SearchClassDetail = () => {
   useEffect(() => {
     const getData = async () => {
       const studentInfoArr = await api.getStudentInfoArr();
-      const classDetailArr = await api.getClassDetail();
+      const classDetail = await api.getA_ClassDetail(id);
       const userFromLocal = JSON.parse(
         window.localStorage.getItem("user-qlhs")
       );
 
+      const studentIDs = classDetail.students;
+      const students =
+        studentInfoArr.filter((student) => studentIDs.includes(student._id)) ||
+        [];
+
+      setStudentOfClass(students);
+      setClassDetail(classDetail);
       setAllStudent(studentInfoArr);
-      setAllClassDetail(classDetailArr);
       setSearchStudents(studentInfoArr.slice(0, 5));
       setRole(userFromLocal ? userFromLocal.role : "");
     };
@@ -91,22 +96,22 @@ export const SearchClassDetail = () => {
       }
     },
 
-    handleClickSearchBtn: () => {
-      const classDetail = allClassDeatil.find(
-        (classDetail) =>
-          classDetail.name === className &&
-          classDetail.schoolYear === schoolYear
-      );
-      if (classDetail) {
-        setClassDetail(classDetail);
+    // handleClickSearchBtn: () => {
+    //   const classDetail = allClassDeatil.find(
+    //     (classDetail) =>
+    //       classDetail.name === className &&
+    //       classDetail.schoolYear === schoolYear
+    //   );
+    //   if (classDetail) {
+    //     setClassDetail(classDetail);
 
-        const studentIDs = classDetail.students;
-        const students =
-          allStudent.filter((student) => studentIDs.includes(student._id)) ||
-          [];
-        setStudentOfClass(students);
-      }
-    },
+    //     const studentIDs = classDetail.students;
+    //     const students =
+    //       allStudent.filter((student) => studentIDs.includes(student._id)) ||
+    //       [];
+    //     setStudentOfClass(students);
+    //   }
+    // },
 
     handleClickDeleteClass: () => {
       helper.turnOnConfirm("delete");
@@ -202,8 +207,8 @@ export const SearchClassDetail = () => {
         <Notification status="failed" message={message} />
 
         {/***HEADER***/}
-        <h3>TRA CỨU DANH SÁCH LỚP</h3>
-        <div className="guide">
+        <h3>CHI TIẾT LỚP</h3>
+        {/* <div className="guide">
           Nhập tên lớp và năm học của lớp bạn muốn tìm.
         </div>
         <div className="grid">
@@ -232,19 +237,25 @@ export const SearchClassDetail = () => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/***KẾT QUẢ DANH SÁCH LỚP***/}
-        <h4 style={{ textAlign: "center" }}>
+        {/* <h4 style={{ textAlign: "center" }}>
           LỚP: {classDetail?.name} NĂM HỌC: {classDetail?.schoolYear}
-        </h4>
+        </h4> */}
+        <div className="class-info">
+          <h5>Tên lớp: {classDetail?.name}</h5>
+          <h5>Năm học: {classDetail?.schoolYear}</h5>
+          <h5>Sĩ số: {studentOfClass.length}</h5>
+        </div>
         <div className="container">
           <div className="row heading">
+            <div className="item col-10-percent center al-center">STT</div>
             <div className="item col-25-percent center al-left pl-70">
               Họ Tên
             </div>
             <div className="item col-25-percent center al-center">Địa chỉ</div>
-            <div className="item col-25-percent center al-center">Email</div>
+            <div className="item col-15-percent center al-center">Email</div>
             <div className="item col-15-percent center al-center">
               Ngày sinh
             </div>
@@ -257,13 +268,16 @@ export const SearchClassDetail = () => {
             return (
               <>
                 <div className="row content">
+                  <div className="item col-10-percent center al-center">
+                    {i + 1}
+                  </div>
                   <div className="item col-25-percent center al-left pl-50">
                     {item.name}
                   </div>
                   <div className="item col-25-percent center al-center">
                     {item.address}
                   </div>
-                  <div className="item col-25-percent center al-center">
+                  <div className="item col-15-percent center al-center">
                     {item.email}
                   </div>
                   <div className="item col-15-percent center al-center">
