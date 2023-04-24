@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { api } from "../../api/api";
 import { useHistory } from "react-router-dom";
 import { schoolYear } from "../../config/data";
+import { Notification } from "../../components/Notification";
 import ProtectedPage from "../../components/ProtectedPage";
 export const Score = () => {
   let history = useHistory();
@@ -15,6 +16,7 @@ export const Score = () => {
   const [termArrState, setTermArrState] = useState([]);
   const [schoolYearArrState, setSchoolYearArrState] = useState([]);
   const [scoreArrState, setScoreArrState] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -98,10 +100,12 @@ export const Score = () => {
       ).length > 0;
     console.log(isExisted);
     if (isExisted) {
-      // document.querySelector(".confirm.override").style.display = "flex";
-      history.push(`score/${className}/${subject}/${term}/${schoolYear}/view`);
+      setMessage("Điểm này đã được nhập");
+      document.querySelector(
+        ".notification--failed"
+      ).parentElement.style.display = "flex";
     } else {
-      history.push(`score/${className}/${subject}/${term}/${schoolYear}/add`);
+      history.push(`score/${className}/${subject}/${term}/${schoolYear}`);
     }
   };
   const handleConfirmCancelBtn = () => {
@@ -120,7 +124,8 @@ export const Score = () => {
           handleConfirmAcceptBtn={handleConfirmAcceptBtn}
           handleConfirmCancelBtn={handleConfirmCancelBtn}
         />
-        <h3>Tạo bảng điểm môn</h3>
+        <Notification status="failed" message={message} />
+        <h3>Nhập điểm</h3>
         <div className="guide">
           Điền thông tin môn học cần tạo bảng điểm mới. Lưu ý điền đầy đủ các
           trường

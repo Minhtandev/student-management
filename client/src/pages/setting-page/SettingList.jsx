@@ -26,7 +26,9 @@ export const SettingList = () => {
   useEffect(() => {
     const getData = async () => {
       const apiArr = await api.getSettingList();
-      setSettingArrState(apiArr);
+      setSettingArrState(
+        apiArr.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
+      );
     };
     getData();
   }, []);
@@ -53,7 +55,11 @@ export const SettingList = () => {
           );
           settingArrStateCopy[index] = result[0];
           settingArrStateCopy[index].Edit = false;
-          setSettingArrState(settingArrStateCopy);
+          setSettingArrState(
+            settingArrStateCopy.sort((a, b) =>
+              a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+            )
+          );
 
           //hiển thị thông báo
           helper.turnOnNotification("edit");

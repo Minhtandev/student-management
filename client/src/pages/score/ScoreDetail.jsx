@@ -12,10 +12,10 @@ import { useHistory } from "react-router-dom";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../components/ProtectedPage";
 //get từ DS lớp, giữ lại id của HS
-export const CreateScore = () => {
+const ScoreDetail = () => {
   const history = useHistory();
   const { className, subject, term, schoolYear } = useParams();
-  const [status, setstatus] = useState("input");
+  const [status, setstatus] = useState("view");
   const [message, setMessage] = useState("");
   const [finalResult, setFinalResult] = useState([]);
   const [studentList, setStudentList] = useState([]);
@@ -213,6 +213,7 @@ export const CreateScore = () => {
   const handleClickAddBtn = () => {
     const finalResultTemp = [];
     const inputs15 = Array.from(document.querySelectorAll(".min-15 input"));
+    //Đưa định dạng mỗi số cách 1 cái
     const inputs15Min = inputs15.map((input) =>
       input.value.trim().replace(/\s+/g, " ")
     );
@@ -276,6 +277,8 @@ export const CreateScore = () => {
     finalResultTemp.forEach((item) => {
       if (helper.validateData("empty", item) !== "ok")
         checkEmptyMessage = helper.validateData("empty", item);
+
+      //Bỏ tất cả space
       if (
         helper.validateData("number", {
           score15Min: item.score15Min.trim().replace(/\s+/g, ""),
@@ -494,7 +497,7 @@ export const CreateScore = () => {
 
       {status == "input" ? (
         <div className="create-score">
-          <h3>Nhập điểm</h3>
+          <h3>Chi tiết điểm</h3>
           <div className="guide">
             Nhập đầy đủ từng cột điểm cho từng học sinh. Điểm trung bình sẽ được
             tính tự động. Nếu có nhiều cột điểm, ngăn với nhau bằng dấu cách "
@@ -553,7 +556,7 @@ export const CreateScore = () => {
         </div>
       ) : (
         <div className="create-score">
-          <h3>Nhập điểm</h3>
+          <h3>Chi tiết điểm</h3>
           <div className="guide">
             Nhập đầy đủ từng cột điểm cho từng học sinh. Điểm trung bình sẽ được
             tính tự động
@@ -648,3 +651,5 @@ export const CreateScore = () => {
     </ProtectedPage>
   );
 };
+
+export default ScoreDetail;
