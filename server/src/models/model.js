@@ -15,6 +15,10 @@ const settingSchema = new mongoose.Schema({
 
 //Định nghĩa một học sinh
 const studentSchema = new mongoose.Schema({
+  ID: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -26,10 +30,19 @@ const studentSchema = new mongoose.Schema({
   },
   birth: String,
   address: String,
+  image: String,
   gender: {
     type: String,
     enum: ["male", "female"],
     required: true,
+  },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  editor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   // classes: [
   //   {
@@ -70,6 +83,18 @@ const classDetailSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  editor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  formTeacher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 //Định nghĩa lớp cố định
@@ -87,6 +112,10 @@ const classSchema = new mongoose.Schema({
 
 //Định nghĩa một môn học
 const subjectSchema = new mongoose.Schema({
+  ID: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -129,6 +158,14 @@ const subjectScoreSchema = new mongoose.Schema({
     },
   ],
   avg: Number,
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  editor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 //điểm theo năm học của học sinh --> dùng cho trang tra cứu
@@ -236,6 +273,10 @@ const termReportSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
+  ID: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
