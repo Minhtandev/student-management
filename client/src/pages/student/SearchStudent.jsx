@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { handler, helper } from "../../handle-event/HandleEvent";
 import { api } from "../../api/api";
 import ProtectedPage from "../../components/ProtectedPage";
+import axios from "axios";
 //studentArrTemp là để hiển thị, studentScoreArr là để lưu xuống CSDL
 import * as XLSX from "xlsx";
 
@@ -25,9 +26,13 @@ export const SearchStudent = () => {
   const [role, setRole] = useState("");
   const [minAge, setMinAge] = useState(0);
   const [maxAge, setMaxAge] = useState(0);
+  const [user, setUser] = useState("");
+  const [userList, setUserList] = useState([]);
+  const [imageLink, setImageLink] = useState("");
   useEffect(() => {
     const getData = async () => {
       const studentInfoArr = await api.getStudentInfoArr();
+      const userList = await api.getUserList();
       const userFromLocal = JSON.parse(
         window.localStorage.getItem("user-qlhs")
       );
@@ -52,9 +57,31 @@ export const SearchStudent = () => {
         })
       );
       setRole(userFromLocal ? userFromLocal.role : "");
+      setUser(userFromLocal ? userFromLocal._id : "");
+      setUserList(userList);
     };
     getData();
   }, []);
+
+  const getNameOfUser = (id) => {
+    const user = userList.find((item) => item._id === id);
+    if (user) return user.name;
+    else return "";
+  };
+
+  const uploadImage = async (image) => {
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "xfubk0t8");
+
+    await axios
+      .post("https://api.cloudinary.com/v1_1/djt9g7wvi/image/upload", formData)
+      .then((res) => {
+        console.log(res);
+        console.log("url ảnh>>>>", res.data.secure_url);
+        setImageLink(res.data.secure_url);
+      });
+  };
 
   const handleEvent = {
     onClickExport: () => {
@@ -135,7 +162,8 @@ export const SearchStudent = () => {
         ).parentElement.style.display = "flex";
       } else {
         //   //cập nhật ở UI
-        let index = window.localStorage.getItem("index");
+        // let index = window.localStorage.getItem("index");
+        let index = result[0].index;
         const studentArrCopy = helper.generateArrCopy(studentArrTempState);
         studentArrCopy[index] = result[0];
         studentArrCopy[index].Edit = false;
@@ -151,11 +179,18 @@ export const SearchStudent = () => {
       let studentArrStateCopy = JSON.parse(JSON.stringify(studentArrTempState));
       let index = +e.target.getAttribute("data-set");
       let inputs = e.target.closest(".row").querySelectorAll("input");
-      studentArrStateCopy[index].name = inputs[0].value;
-      studentArrStateCopy[index].address = inputs[1].value;
-      studentArrStateCopy[index].email = inputs[2].value;
-      studentArrStateCopy[index].birth = inputs[3].value;
-      let newValue = studentArrStateCopy[index];
+      let newImageLink = inputs[2].getAttribute("data-set");
+
+      let newValue = {
+        ...studentArrStateCopy[index],
+        index: index,
+        editor: user,
+        name: inputs[0].value,
+        address: inputs[4].value,
+        email: inputs[3].value,
+        birth: inputs[1].value,
+        image: newImageLink || studentArrStateCopy[index].image,
+      };
       setResult([newValue]);
       setResultUI([
         {
@@ -163,6 +198,7 @@ export const SearchStudent = () => {
           "Địa chỉ": newValue.address,
           Email: newValue.email,
           "Ngày sinh": newValue.birth,
+          Ảnh: newImageLink || studentArrStateCopy[index].image,
         },
       ]);
       helper.turnOnConfirm("edit");
@@ -236,12 +272,14 @@ export const SearchStudent = () => {
 
         <div className="container">
           <div className="row heading">
-            <div className="item col-25-percent center al-center">Họ Tên</div>
-            <div className="item col-25-percent center al-center">Địa chỉ</div>
-            <div className="item col-25-percent center al-center">Email</div>
+            <div className="item col-10-percent center al-center">Mã HS</div>
+            <div className="item col-15-percent center al-center">Họ Tên</div>
             <div className="item col-15-percent center al-center">
               Ngày sinh
             </div>
+            <div className="item col-15-percent center al-center">Hình ảnh</div>
+            <div className="item col-15-percent center al-center">Email</div>
+            <div className="item col-20-percent center al-center">Địa chỉ</div>
             {role !== "gv" && (
               <div className="item col-10-percent center al-center">
                 Thao tác
@@ -253,17 +291,30 @@ export const SearchStudent = () => {
             return (
               <>
                 <div className="row content">
-                  <div className="item col-25-percent al-center">
+                  <div className="item col-10-percent al-center">{item.ID}</div>
+                  <div className="item col-15-percent al-center">
                     {item.name}
-                  </div>
-                  <div className="item col-25-percent al-center">
-                    {item.address}
-                  </div>
-                  <div className="item col-25-percent al-center">
-                    {item.email}
                   </div>
                   <div className="item col-15-percent center al-center">
                     {item.birth}
+                  </div>
+                  <div className="item col-15-percent center al-center img__container">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        className="item__image"
+                        alt=""
+                        width="100px"
+                      />
+                    ) : (
+                      "Chưa có ảnh"
+                    )}
+                  </div>
+                  <div className="item col-15-percent al-center">
+                    {item.email}
+                  </div>
+                  <div className="item col-20-percent center al-center">
+                    {item.address}
                   </div>
                   {role !== "gv" && (
                     <div className="item col-10-percent center al-center">
@@ -273,12 +324,18 @@ export const SearchStudent = () => {
                         onClick={(e) => {
                           setResultUI([
                             {
+                              "Mã HS": item.ID,
                               "Họ và tên": item.name,
                               "Giới tính":
                                 item.gender === "male" ? "Nam" : "Nữ",
                               "Địa chỉ": item.address,
                               Email: item.email,
                               "Ngày sinh": item.birth,
+                              Ảnh: item.image,
+                              "Thời gian nhập học": item.createdAt,
+                              "Thời gian chỉnh sửa": item.editedAt,
+                              "Người tạo": getNameOfUser(item.creator),
+                              "Người chỉnh sửa": getNameOfUser(item.editor),
                             },
                           ]);
                           document.querySelector(".detail").style.display =
@@ -309,7 +366,10 @@ export const SearchStudent = () => {
                 </div>
                 {item.Edit ? (
                   <div className="row content">
-                    <div className="item col-25-percent center al-center">
+                    <div className="item col-10-percent center al-center">
+                      {item.ID}
+                    </div>
+                    <div className="item col-15-percent center al-center">
                       <input
                         type="text"
                         className="input--small"
@@ -326,24 +386,49 @@ export const SearchStudent = () => {
                         }
                       />
                     </div>
-                    <div className="item col-25-percent center al-center">
+                    <div className="item col-15-percent center al-center">
                       <input
                         type="text"
-                        className="input--small"
-                        placeholder="Nhập địa chỉ..."
-                        value={item.address}
+                        className="input--tiny"
+                        placeholder="Nhập ngày sinh..."
+                        value={item.birth}
                         onChange={(e) =>
                           handler.handleEditInputChange(
                             e,
                             i,
                             studentArrTempState,
                             setStudentArrTempState,
-                            "address"
+                            "birth"
                           )
                         }
                       />
                     </div>
-                    <div className="item col-25-percent center al-center">
+                    <div className="item col-15-percent center al-center">
+                      <input
+                        type="file"
+                        className="input--tiny"
+                        onChange={(e) => {
+                          //1. Upload ảnh
+                          uploadImage(e.target.files[0]);
+
+                          //2. Hiển thị ảnh
+                          const rowContentEl =
+                            e.target.closest(".row.content").previousSibling;
+                          const itemContainImg =
+                            rowContentEl.querySelector(".img__container");
+                          itemContainImg.innerHTML = `<img
+                        src={${imageLink}}
+                        className="item__image"
+                        alt=""
+                        width="100px"
+                      />`;
+
+                          //3. Đưa link ảnh vào attribute của input này
+                          e.target.setAttribute("data-set", imageLink);
+                        }}
+                      />
+                    </div>
+                    <div className="item col-15-percent center al-center">
                       <input
                         type="text"
                         className="input--small"
@@ -363,16 +448,16 @@ export const SearchStudent = () => {
                     <div className="item col-15-percent center al-center">
                       <input
                         type="text"
-                        className="input--tiny"
-                        placeholder="Nhập ngày sinh..."
-                        value={item.birth}
+                        className="input--small"
+                        placeholder="Nhập địa chỉ..."
+                        value={item.address}
                         onChange={(e) =>
                           handler.handleEditInputChange(
                             e,
                             i,
                             studentArrTempState,
                             setStudentArrTempState,
-                            "birth"
+                            "address"
                           )
                         }
                       />

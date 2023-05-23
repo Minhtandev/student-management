@@ -9,6 +9,8 @@ export const Input = ({
   rows = "5",
   selectName = "",
   options = [],
+  value = "",
+  onChange = () => {},
   //options có dạng [{value, text}, {}, {}]
   onChangeSelect = () => {},
 }) => {
@@ -26,6 +28,20 @@ export const Input = ({
       <div className="grid__item">
         <label htmlFor="">{labelText}</label>
         <input type="text" placeholder={placeholder} required={true} />
+      </div>
+    );
+  else if (type == "disabled")
+    return (
+      <div className="grid__item">
+        <label htmlFor="">{labelText}</label>
+        <input type="email" value={value} disabled />
+      </div>
+    );
+  else if (type == "image")
+    return (
+      <div className="grid__item">
+        <label htmlFor="">{labelText}</label>
+        <input type="file" onChange={onChange} />
       </div>
     );
   else if (type == "email")
