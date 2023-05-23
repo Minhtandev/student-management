@@ -52,7 +52,13 @@ export const Confirm = ({
                   return (
                     <>
                       {Object.entries(item).map(([key, value]) => {
-                        if (key !== "Checked" && key !== "Edit" && key !== "ID")
+                        if (key === "Ảnh") {
+                          return <img width="200px" src={value} alt="" />;
+                        } else if (
+                          key !== "Checked" &&
+                          key !== "Edit" &&
+                          key !== "ID"
+                        )
                           return (
                             <p>
                               {key}: {value}
@@ -72,13 +78,62 @@ export const Confirm = ({
                 <Button
                   btnType="cancel"
                   onClick={handleConfirmCancelBtn}
-                  innerText="Hủy"
-                ></Button>
+                  innerText="Hủy"></Button>
                 <Button
                   btnType="save"
                   onClick={handleConfirmAcceptBtn}
-                  innerText="Lưu"
-                ></Button>
+                  innerText="Lưu"></Button>
+              </div>
+            </div>
+          </div>
+          <Notification
+            status={status}
+            handleSuccessCloseBtn={handleCloseBtnWithAdd}
+          />
+        </>
+      );
+    case "add-all":
+      return (
+        <>
+          <div className="confirm add-all" style={{ display: "none" }}>
+            <div className="confirm__container">
+              <h2>Xác nhận thêm mới tất cả</h2>
+              <div className="confirm__container__content">
+                {result.map((item, i) => {
+                  return (
+                    <>
+                      {Object.entries(item).map(([key, value]) => {
+                        if (key === "Ảnh") {
+                          return <img width="200px" src={value} alt="" />;
+                        } else if (
+                          key !== "Checked" &&
+                          key !== "Edit" &&
+                          key !== "ID"
+                        )
+                          return (
+                            <p>
+                              {key}: {value}
+                            </p>
+                          );
+                      })}
+                      {i !== result.length - 1 ? (
+                        <div className="seperate"></div>
+                      ) : (
+                        <></>
+                      )}
+                    </>
+                  );
+                })}
+              </div>
+              <div className="btns al-center al-center">
+                <Button
+                  btnType="cancel"
+                  onClick={handleConfirmCancelBtn}
+                  innerText="Hủy"></Button>
+                <Button
+                  btnType="save"
+                  onClick={handleConfirmAcceptBtn}
+                  innerText="Lưu"></Button>
               </div>
             </div>
           </div>
@@ -99,7 +154,13 @@ export const Confirm = ({
                   return (
                     <>
                       {Object.entries(item).map(([key, value]) => {
-                        if (key !== "Checked" && key !== "Edit" && key !== "ID")
+                        if (key === "Ảnh") {
+                          return <img width="200px" src={value} alt="" />;
+                        } else if (
+                          key !== "Checked" &&
+                          key !== "Edit" &&
+                          key !== "ID"
+                        )
                           return (
                             <p>
                               {key}: {value}
@@ -119,13 +180,11 @@ export const Confirm = ({
                 <Button
                   btnType="cancel"
                   onClick={handleConfirmCancelBtn}
-                  innerText="Hủy"
-                ></Button>
+                  innerText="Hủy"></Button>
                 <Button
                   btnType="save"
                   onClick={handleConfirmAcceptBtn}
-                  innerText="Lưu"
-                ></Button>
+                  innerText="Lưu"></Button>
               </div>
             </div>
           </div>
@@ -166,13 +225,11 @@ export const Confirm = ({
                 <Button
                   btnType="cancel"
                   onClick={handleConfirmCancelBtn}
-                  innerText="Hủy"
-                ></Button>
+                  innerText="Hủy"></Button>
                 <Button
                   btnType="save"
                   onClick={handleConfirmAcceptBtn}
-                  innerText="Xóa"
-                ></Button>
+                  innerText="Xóa"></Button>
               </div>
             </div>
           </div>
@@ -214,13 +271,11 @@ export const Confirm = ({
                 <Button
                   btnType="cancel"
                   onClick={handleConfirmCancelBtn}
-                  innerText="Hủy"
-                ></Button>
+                  innerText="Hủy"></Button>
                 <Button
                   btnType="save"
                   onClick={handleConfirmAcceptBtn}
-                  innerText="Xóa"
-                ></Button>
+                  innerText="Xóa"></Button>
               </div>
             </div>
           </div>
@@ -265,13 +320,11 @@ export const Confirm = ({
               <Button
                 btnType="cancel"
                 onClick={handleConfirmCancelBtn}
-                innerText="Hủy"
-              ></Button>
+                innerText="Hủy"></Button>
               <Button
                 btnType="save"
                 onClick={handleConfirmAcceptBtn}
-                innerText="Ghi đè"
-              ></Button>
+                innerText="Ghi đè"></Button>
             </div>
           </div>
         </div>

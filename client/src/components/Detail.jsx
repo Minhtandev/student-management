@@ -22,11 +22,15 @@ export const Detail = ({ result }) => {
             return (
               <>
                 {Object.entries(item).map(([key, value]) => {
-                  return (
-                    <p>
-                      {key} : {value}
-                    </p>
-                  );
+                  if (key === "Ảnh") {
+                    return <img width="200px" src={value} alt="" />;
+                  } else {
+                    return (
+                      <p>
+                        {key} : {value}
+                      </p>
+                    );
+                  }
                 })}
                 {i !== result.length - 1 ? (
                   <div className="seperate"></div>

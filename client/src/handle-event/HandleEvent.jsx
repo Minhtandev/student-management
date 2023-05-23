@@ -28,9 +28,25 @@ export const handler = {
 export const helper = {
   generateID: (dataArr, idName, prefix = "") => {
     const lastID =
-      dataArr.length > 0 ? dataArr[dataArr.length - 1][idName] : prefix + "001";
+      dataArr.length > 0 ? dataArr[dataArr.length - 1][idName] : prefix + "000";
     const lastIDNumber = lastID.replace(prefix, "");
     let newIDNum = Number(lastIDNumber) + 1;
+    let newID;
+    if (newIDNum < 10) {
+      newID = `${prefix}00${newIDNum}`;
+    } else if (newIDNum < 100) {
+      newID = `${prefix}0${newIDNum}`;
+    } else {
+      newID = `${prefix}${newIDNum}`;
+    }
+
+    return newID;
+  },
+  generateIDWithIncrement: (dataArr, idName, prefix = "", increment = 0) => {
+    const lastID =
+      dataArr.length > 0 ? dataArr[dataArr.length - 1][idName] : prefix + "000";
+    const lastIDNumber = lastID.replace(prefix, "");
+    let newIDNum = Number(lastIDNumber) + 1 + increment;
     let newID;
     if (newIDNum < 10) {
       newID = `${prefix}00${newIDNum}`;

@@ -44,6 +44,7 @@ const studentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  timestamps: true,
   // classes: [
   //   {
   //     type: mongoose.Schema.Types.ObjectId,
@@ -95,6 +96,7 @@ const classDetailSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  timestamps: true,
 });
 
 //Định nghĩa lớp cố định
@@ -166,6 +168,7 @@ const subjectScoreSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  timestamps: true,
 });
 
 //điểm theo năm học của học sinh --> dùng cho trang tra cứu
