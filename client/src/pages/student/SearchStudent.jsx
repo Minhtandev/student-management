@@ -83,6 +83,14 @@ export const SearchStudent = () => {
       });
   };
 
+  const getDate = (date) => {
+    const dateObj = new Date(date);
+    let month = dateObj.getMonth() + 1; //months from 1-12
+    let day = dateObj.getDate();
+    let year = dateObj.getFullYear();
+    return day + "/" + month + "/" + year;
+  };
+
   const handleEvent = {
     onClickExport: () => {
       //convert data to data UI
@@ -332,8 +340,8 @@ export const SearchStudent = () => {
                               Email: item.email,
                               "Ngày sinh": item.birth,
                               Ảnh: item.image,
-                              "Thời gian nhập học": item.createdAt,
-                              "Thời gian chỉnh sửa": item.editedAt,
+                              "Thời gian nhập học": getDate(item.createdAt),
+                              "Thời gian chỉnh sửa": getDate(item.updatedAt),
                               "Người tạo": getNameOfUser(item.creator),
                               "Người chỉnh sửa": getNameOfUser(item.editor),
                             },

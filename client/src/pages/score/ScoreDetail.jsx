@@ -11,6 +11,7 @@ import { api } from "../../api/api";
 import { useHistory } from "react-router-dom";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../components/ProtectedPage";
+import { UncontrolledTooltip } from "reactstrap";
 //get từ DS lớp, giữ lại id của HS
 const ScoreDetail = () => {
   const history = useHistory();
@@ -31,6 +32,7 @@ const ScoreDetail = () => {
   const [param1Value, setParam1Value] = useState(2);
   const [user, setUser] = useState(null);
   const [creatorID, setCreatorID] = useState("");
+  const [userList, setUserList] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -46,6 +48,7 @@ const ScoreDetail = () => {
       );
       let classID = classDetail._id;
       const studentsOfClass = classDetail.students;
+      const userList = await api.getUserList();
 
       const subjectArr = await api.getSubjectList();
       let subjectID = subjectArr.find((item) => item.name == subject)._id;
@@ -124,7 +127,7 @@ const ScoreDetail = () => {
             item.subject === subjectID &&
             item.term === termID
         )[0];
-        let userID = subjectScore?.user;
+        let userID = subjectScore?.creator;
         setCreatorID(userID);
         console.log("userID>>>>:", userID);
       }
@@ -141,6 +144,7 @@ const ScoreDetail = () => {
       setStudentList(newStudentList);
       setScoreSubjectState(scoreArr);
       setUser(userFromLocal);
+      setUserList(userList);
     };
     getData();
   }, []);
@@ -209,6 +213,20 @@ const ScoreDetail = () => {
     };
     updateStatus();
   }, [status]);
+
+  const getNameOfUser = (id) => {
+    const user = userList.find((item) => item._id === id);
+    if (user) return user.name;
+    else return "";
+  };
+
+  const getDate = (date) => {
+    const dateObj = new Date(date);
+    let month = dateObj.getMonth() + 1; //months from 1-12
+    let day = dateObj.getDate();
+    let year = dateObj.getFullYear();
+    return day + "/" + month + "/" + year;
+  };
 
   const handleClickAddBtn = () => {
     const finalResultTemp = [];
@@ -345,12 +363,12 @@ const ScoreDetail = () => {
     //Lưu xuống CSDL
     const payloadToApi = finalResult.map((item) => {
       return {
+        editor: user._id,
         scoreID: item.scoreID,
         student: item._id,
         class: classIDState,
         subject: subjectIDState,
         term: termIDState,
-        user: user._id,
         scores: [
           ...item.score15Min
             .trim()
@@ -385,7 +403,7 @@ const ScoreDetail = () => {
       if (isEditActivated && item.scoreID) {
         await api.putSubjectScore(item.scoreID, item);
       } else {
-        await api.postSubjectScore(item);
+        await api.postSubjectScore({ ...item, creator: user._id });
       }
     });
 
@@ -485,6 +503,27 @@ const ScoreDetail = () => {
     setstatus("input");
     window.localStorage.setItem("score-page", "activated");
   };
+
+  const handleClickDeleteBtn = () => {
+    document.querySelector(".confirm.delete").style.display = "flex";
+  };
+
+  const handleCancelDeleteBtn = () => {
+    document.querySelector(".confirm.delete").style.display = "none";
+  };
+
+  const handleConfirmDeleteBtn = () => {
+    console.log("studentList>>>", finalResult);
+
+    finalResult.forEach(async (item) => {
+      await api.deleteSubjectScore(item.scoreID);
+    });
+
+    document.querySelector(".notification").style.display = "flex";
+    document.querySelector(".confirm.delete").style.display = "none";
+    setTimeout(() => history.push(`/search-score`), 500);
+  };
+
   return (
     <ProtectedPage>
       <Confirm
@@ -492,6 +531,12 @@ const ScoreDetail = () => {
         result={[]}
         handleConfirmAcceptBtn={handleConfirmAcceptBtn}
         handleConfirmCancelBtn={handleConfirmCancelBtn}
+      />
+      <Confirm
+        confirmType="delete"
+        result={[]}
+        handleConfirmAcceptBtn={handleConfirmDeleteBtn}
+        handleConfirmCancelBtn={handleCancelDeleteBtn}
       />
       <Notification status="failed" message={message} />
 
@@ -508,6 +553,14 @@ const ScoreDetail = () => {
             <h4>{term}</h4>
             <h4>Năm học: {schoolYear}</h4>
             <h4>Môn học: {subject}</h4>
+          </div>
+          <div className="score-info">
+            <h5>Người nhập: {getNameOfUser(studentList[0]?.creator)}</h5>
+            <h5>Người chỉnh sửa: {getNameOfUser(studentList[0]?.editor)}</h5>
+            <h5>Thời gian nhập: {getDate(studentList[0]?.createdAt)}</h5>
+            <h5>
+              Thời gian chỉnh sửa: {getNameOfUser(studentList[0]?.updatedAt)}
+            </h5>
           </div>
           <div className="container">
             <div className="row heading">
@@ -567,7 +620,12 @@ const ScoreDetail = () => {
             <h4>Năm học: {schoolYear}</h4>
             <h4>Môn học: {subject}</h4>
           </div>
-
+          <div className="score-info">
+            <h5>Người nhập: {getNameOfUser(studentList[0]?.creator)}</h5>
+            <h5>Người chỉnh sửa: {getNameOfUser(studentList[0]?.editor)}</h5>
+            <h5>Thời gian nhập: {getDate(studentList[0]?.createdAt)}</h5>
+            <h5>Thời gian chỉnh sửa: {getDate(studentList[0]?.updatedAt)}</h5>
+          </div>
           <div className="container">
             <div className="row heading">
               <div className="item col-10-percent center al-center">STT</div>
@@ -592,12 +650,24 @@ const ScoreDetail = () => {
                 <div className="item col-30-percent center al-left pl-50">
                   {item.name}
                 </div>
-                <div className="item col-20-percent center al-center min-15">
+                <div
+                  className="item col-20-percent center al-center min-15"
+                  href="#"
+                  id={"Min" + i}>
                   {finalResult[i]?.score15Min}
                 </div>
-                <div className="item col-20-percent center al-center per-1">
+                <UncontrolledTooltip placement="right" target={"Min" + i}>
+                  Hệ số 1
+                </UncontrolledTooltip>
+                <div
+                  className="item col-20-percent center al-center per-1"
+                  href="#"
+                  id={"Per" + i}>
                   {finalResult[i]?.score1Per}
                 </div>
+                <UncontrolledTooltip placement="right" target={"Per" + i}>
+                  Hệ số 2
+                </UncontrolledTooltip>
                 <div className="item col-20-percent center al-center">
                   {finalResult[i]?.avgScore}
                 </div>
@@ -619,13 +689,9 @@ const ScoreDetail = () => {
         {status === "input" && (
           <>
             <Button
-              innerText="Làm sạch"
+              innerText="Xóa"
               btnType="clear"
-              onClick={() => {
-                document
-                  .querySelectorAll("input")
-                  .forEach((item) => (item.value = ""));
-              }}></Button>
+              onClick={handleClickDeleteBtn}></Button>
             <Button innerText="Tạo" btnType="add" onClick={handleClickAddBtn} />
           </>
         )}

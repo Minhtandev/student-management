@@ -24,6 +24,9 @@ export const UserList = () => {
   useEffect(() => {
     const getData = async () => {
       const apiArr = await api.getUserList();
+      apiArr.map((item) => {
+        return { ...item, hide: true };
+      });
       setUserArr(apiArr);
     };
     getData();
@@ -288,6 +291,13 @@ export const UserList = () => {
     // },
   };
 
+  const toggleShow = (i) => {
+    let isHide = userArr[i].hide;
+    const copyUserArr = helper.generateArrCopy(userArr);
+    copyUserArr[i].hide = !isHide;
+    setUserArr(copyUserArr);
+  };
+
   return (
     <ProtectedPage>
       <Confirm
@@ -352,8 +362,40 @@ export const UserList = () => {
                     <div className="item col-20-percent center">
                       {item.username}
                     </div>
-                    <div className="item col-20-percent center">
-                      {item.password}
+                    <div className="item col-20-percent center relative">
+                      <input
+                        type={item.hide ? "password" : "text"}
+                        readOnly
+                        value={item.password}
+                      />
+                      <i
+                        className={item.hide ? "" : "active"}
+                        onClick={() => toggleShow(i)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 18 14">
+                          <defs>
+                            <clipPath id="prefix__clip-path">
+                              <path d="M0 0H18V14H0z" fill="none"></path>
+                            </clipPath>
+                          </defs>
+                          <g>
+                            <path
+                              d="M-37.567 1107.684a1.663 1.663 0 0 0 .166 2.076 1.646 1.646 0 0 0 2.189.282 3.23 3.23 0 0 1-1.36 3.641 3.37 3.37 0 0 1-4.191-.439 3.356 3.356 0 0 1-.466-4.155 3.227 3.227 0 0 1 3.662-1.405z"
+                              style={{
+                                transform: "translate(47.411px, -1103.874px)",
+                              }}
+                              fill="#000"></path>
+                            <path
+                              id="prefix__Path_444"
+                              d="M-72.261 1086.057a3.875 3.875 0 0 0 .03-2.126 9.08 9.08 0 0 0-1.988-3.144 9.017 9.017 0 0 0-5.858-2.745 9.749 9.749 0 0 0-5.133.8 8.778 8.778 0 0 0-4.739 5.158 3.641 3.641 0 0 0-.03 1.957 9.088 9.088 0 0 0 2.023 3.232 8.981 8.981 0 0 0 5.819 2.741 9.786 9.786 0 0 0 5.1-.768 8.749 8.749 0 0 0 4.765-5.077.235.235 0 0 1 .011-.028zm-2.145-.719a6.7 6.7 0 0 1-5.541 4.253c-.386.055-.778.068-1.073.093a6.978 6.978 0 0 1-6.707-4.2 1.068 1.068 0 0 1 0-.979 6.752 6.752 0 0 1 5.523-4.114 7.468 7.468 0 0 1 5.136 1.014 6.591 6.591 0 0 1 2.665 3.235 1.02 1.02 0 0 1-.003.698z"
+                              style={{
+                                transform: "translate(90.098px, -1077.99px)",
+                              }}
+                              fill="#000"></path>
+                          </g>
+                        </svg>
+                      </i>
                     </div>
                     <div className="item col-20-percent center">
                       {item.role}

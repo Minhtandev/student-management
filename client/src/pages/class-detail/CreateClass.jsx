@@ -29,6 +29,9 @@ export const CreateClass = () => {
   const [classArr, setClassArr] = useState([]);
   const [maxTotal, setMaxTotal] = useState(0);
   const [message, setMessage] = useState("");
+  const [teachers, setTeachers] = useState([]);
+  const [userList, setUserList] = useState([]);
+  const [user, setUser] = useState("");
 
   useEffect(() => {
     const getData = async () => {
@@ -36,6 +39,8 @@ export const CreateClass = () => {
       const classArr = await api.getClassList();
       const CLASSArr = await api.getClassDetail();
       const settingList = await api.getSettingList();
+      const userList = await api.getUserList();
+      const user = JSON.parse(window.localStorage.getItem("user-qlhs"));
       const UIgradeArr = gradeArr.map((item) => {
         return {
           ...item,
@@ -54,6 +59,11 @@ export const CreateClass = () => {
           text: item,
         };
       });
+
+      const teachers = userList.filter((item) => item.role === "gv");
+      const teachersName = teachers.map((item) => {
+        return { value: item._id, text: item.username };
+      });
       const studentArr = await api.getStudentInfoArr();
       const allClassDetailArr = await api.getClassDetail();
       setGradeArrState(UIgradeArr);
@@ -65,6 +75,9 @@ export const CreateClass = () => {
       setAllClassDetail(allClassDetailArr);
       setClassArr(CLASSArr);
       setMaxTotal(settingList.find((item) => item.name === "max-total")?.value);
+      setTeachers(teachersName);
+      setUserList(userList);
+      setUser(user._id);
     };
     getData();
   }, []);
@@ -189,6 +202,18 @@ export const CreateClass = () => {
       document.querySelector(".confirm.add").style.display = "none";
     },
     handleConfirm: () => {
+      //Lấy GVCN
+      const selects = Array.from(
+        document.querySelectorAll(".dropdown_selected")
+      );
+      const teacherSelect = selects[selects.length - 1];
+      let teacherName = teacherSelect.querySelector(
+        ".dropdown_selected-default"
+      ).innerText;
+      let teacherId =
+        userList.find((item) => item.username === teacherName)?._id || "";
+      // console.log("teacherId>>>>", teacherId);
+
       //Danh sách lớp phải lớn hơn 0
       if (newClassArrState.length > 0) {
         //Lưu xuống CSDL
@@ -197,11 +222,17 @@ export const CreateClass = () => {
           name: className,
           schoolYear: schoolyear,
           students: newStudentIDs,
+          creator: user,
+          editor: user,
+          formTeacher: teacherId,
         });
         api.postClassDetai({
           name: className,
           schoolYear: schoolyear,
           students: newStudentIDs,
+          creator: user,
+          editor: user,
+          formTeacher: teacherId,
         });
         document.querySelector(".confirm.add").style.display = "none";
         //hiển thị thông báo
@@ -383,6 +414,13 @@ export const CreateClass = () => {
             <h5>Năm học: {schoolyear}</h5>
             <h5>Sĩ số: {newClassArrState.length}</h5>
           </div>
+          <Input
+            type="select"
+            labelText="Giáo viên chủ nhiệm"
+            name="gender"
+            selectName="gender"
+            options={teachers}
+          />
           <div className="container">
             <div className="row heading">
               <div className="item col-5-percent center al-center">STT</div>

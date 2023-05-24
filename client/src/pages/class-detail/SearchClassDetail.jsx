@@ -17,6 +17,7 @@ import { schoolYear } from "../../config/data";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../components/ProtectedPage";
 import { useParams } from "react-router-dom";
+import { Input } from "../../components/Input";
 //studentArrTemp là để hiển thị, studentScoreArr là để lưu xuống CSDL
 
 export const SearchClassDetail = () => {
@@ -30,10 +31,14 @@ export const SearchClassDetail = () => {
   const [edit, setEdit] = useState(false);
   const [searchStudents, setSearchStudents] = useState([]);
   const [role, setRole] = useState("");
+  const [userList, setUserList] = useState([]);
+  const [user, setUser] = useState("");
+  const [teachers, setTeachers] = useState([]);
   useEffect(() => {
     const getData = async () => {
       const studentInfoArr = await api.getStudentInfoArr();
       const classDetail = await api.getA_ClassDetail(id);
+      const userList = await api.getUserList();
       const userFromLocal = JSON.parse(
         window.localStorage.getItem("user-qlhs")
       );
@@ -43,14 +48,35 @@ export const SearchClassDetail = () => {
         studentInfoArr.filter((student) => studentIDs.includes(student._id)) ||
         [];
 
+      const teachers = userList.filter((item) => item.role === "gv");
+      const teachersName = teachers.map((item) => {
+        return { value: item._id, text: item.username };
+      });
       setStudentOfClass(students);
       setClassDetail(classDetail);
       setAllStudent(studentInfoArr);
       setSearchStudents(studentInfoArr.slice(0, 5));
       setRole(userFromLocal ? userFromLocal.role : "");
+      setUserList(userList);
+      setUser(userFromLocal._id);
+      setTeachers(teachersName);
     };
     getData();
-  }, []);
+  }, [edit]);
+
+  const getNameOfUser = (id) => {
+    const user = userList.find((item) => item._id === id);
+    if (user) return user.name;
+    else return "";
+  };
+
+  const getDate = (date) => {
+    const dateObj = new Date(date);
+    let month = dateObj.getMonth() + 1; //months from 1-12
+    let day = dateObj.getDate();
+    let year = dateObj.getFullYear();
+    return day + "/" + month + "/" + year;
+  };
 
   const handleEvent = {
     handleConfirmToDelete: async () => {
@@ -142,17 +168,28 @@ export const SearchClassDetail = () => {
     },
     handleClickSaveBtn: async () => {
       helper.turnOnConfirm("edit");
-      setEdit(false);
     },
     handleClickConfirmUpdate: async () => {
+      //Lấy GVCN
+      const teacherSelect = document.querySelector(".dropdown_selected");
+      let teacherName = teacherSelect.querySelector(
+        ".dropdown_selected-default"
+      ).innerText;
+      let teacherId =
+        userList.find((item) => item.username === teacherName)?._id || "";
+      // console.log("teacherId>>>>", teacherId);
+
       const payloadToAPI = {
         ...classDetail,
+        formTeacher: teacherId,
+        editor: user,
         students: studentOfClass.map((item) => item._id),
       };
 
       await api.putClassDetail(classDetail._id, payloadToAPI);
 
       helper.turnOnNotification("edit");
+      setEdit(false);
     },
     handleClickAddStudent: (e) => {
       const addImgBtn = e.target.closest("button");
@@ -244,10 +281,26 @@ export const SearchClassDetail = () => {
           LỚP: {classDetail?.name} NĂM HỌC: {classDetail?.schoolYear}
         </h4> */}
         <div className="class-info">
+          <h5>Người lập: {getNameOfUser(classDetail?.creator)}</h5>
+          <h5>Người chỉnh sửa: {getNameOfUser(classDetail?.editor)}</h5>
+          <h5>Thời gian tạo: {getDate(classDetail?.createdAt)}</h5>
+          <h5>Thời gian chỉnh sửa: {getDate(classDetail?.updatedAt)}</h5>
+        </div>
+        <div className="class-info">
           <h5>Tên lớp: {classDetail?.name}</h5>
           <h5>Năm học: {classDetail?.schoolYear}</h5>
           <h5>Sĩ số: {studentOfClass.length}</h5>
+          <h5>GVCN: {getNameOfUser(classDetail?.formTeacher)}</h5>
         </div>
+        {edit && (
+          <Input
+            type="select"
+            labelText="Giáo viên chủ nhiệm"
+            name="gender"
+            selectName="gender"
+            options={teachers}
+          />
+        )}
         <div className="container">
           <div className="row heading">
             <div className="item col-10-percent center al-center">STT</div>

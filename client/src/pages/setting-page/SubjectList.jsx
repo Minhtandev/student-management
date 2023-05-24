@@ -18,20 +18,25 @@ export const SubjectList = () => {
   const [result, setResult] = useState([]);
   const [resultUI, setResultUI] = useState([]);
   const [message, setMessage] = useState([]);
+  const [newID, setNewID] = useState("");
 
   useEffect(() => {
     const getData = async () => {
       const apiArr = await api.getSubjectList();
+      console.log(apiArr);
+      let newID = helper.generateID(apiArr, "ID", "MH");
       setSubjectArrState(
         apiArr.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
       );
+      setNewID(newID);
     };
     getData();
-  }, []);
+  }, [result]);
 
   const handleEvent = {
     handleConfirmAcceptBtn: {
-      editSubject: () => {
+      editSubject: async () => {
+        console.log("result[0]", result[0]);
         //kiểm tra ràng buộc dữ liệu
         let checkEmptyMessage = helper.validateData("empty", result[0]);
         // let isExisting =
@@ -72,13 +77,13 @@ export const SubjectList = () => {
           helper.turnOnNotification("edit");
 
           //Cập nhật xuống CSDL
-          api.putSubject(subjectArrState[index]._id, {
-            name: result[0].name,
+          await api.putSubject(result[0]._id, {
+            ...result[0],
           });
           setResult([]);
         }
       },
-      addSubject: () => {
+      addSubject: async () => {
         //kiểm tra ràng buộc dữ liệu
         let checkEmptyMessage = helper.validateData("empty", result[0]);
         let isExisting =
@@ -100,7 +105,7 @@ export const SubjectList = () => {
           const subjectArrStateCopy = helper.generateArrCopy(subjectArrState);
 
           //thêm item mới vào mảng copy
-          const newSubjectArrStateCopy = [...subjectArrStateCopy, ...result];
+          const newSubjectArrStateCopy = [...subjectArrStateCopy, result[0]];
 
           //Cập nhật mảng, xuất thông báo, ẩn dòng thêm mới
           setSubjectArrState(
@@ -112,11 +117,14 @@ export const SubjectList = () => {
           document.querySelector(".row.add").style.display = "none";
 
           //Cập nhật xuống CSDL
-          api.postSubject({
-            name: result[0].name,
+          await api.postSubject({
+            ID: newID,
             name: result[0].name,
           });
           setResult([]);
+
+          //Cập nhật newID để thêm mới tiếp
+          setNewID(helper.generateID(subjectArrState, "ID", "MH"));
         }
       },
       deleteSubject: () => {
@@ -181,6 +189,7 @@ export const SubjectList = () => {
     },
     handleSaveToEditBtn: {
       subject: (e) => {
+        console.log("subjectArr>>>>", subjectArrState);
         let subjectArrStateCopy = JSON.parse(JSON.stringify(subjectArrState));
         let index = +e.target.getAttribute("data-set");
         let inputValue = e.target.closest(".row").querySelector("input").value;
@@ -218,7 +227,7 @@ export const SubjectList = () => {
       subject: () => {
         const inputs = document.querySelectorAll(".row.add input");
         const newItem = {
-          name: helper.generateID(subjectArrState, "name", ""),
+          ID: newID,
           name: inputs[0].value,
           Edit: false,
           Checked: false,
@@ -304,8 +313,9 @@ export const SubjectList = () => {
           <div className="container">
             <div className="row heading">
               <div className="item col-10-percent center "></div>
-              <div className="item col-45-percent center">Tên môn</div>
-              <div className="item col-45-percent center">Thao tác</div>
+              <div className="item col-30-percent center ">Mã môn học</div>
+              <div className="item col-30-percent center">Tên môn</div>
+              <div className="item col-30-percent center">Thao tác</div>
             </div>
             {subjectArrState.map((item, i) => {
               return (
@@ -319,10 +329,11 @@ export const SubjectList = () => {
                         data-set={i}
                       />
                     </div>
-                    <div className="item col-45-percent center">
+                    <div className="item col-30-percent center">{item.ID}</div>
+                    <div className="item col-30-percent center">
                       {item.name}
                     </div>
-                    <div className="item col-45-percent center">
+                    <div className="item col-30-percent center">
                       <button
                         className="edit-btn"
                         data-set={i}
@@ -348,7 +359,10 @@ export const SubjectList = () => {
                   {item.Edit ? (
                     <div className="row content">
                       <div className="item col-10-percent center"></div>
-                      <div className="item col-45-percent center">
+                      <div className="item col-30-percent center">
+                        {item.ID}
+                      </div>
+                      <div className="item col-30-percent center">
                         <input
                           type="text"
                           className="input--small"
@@ -365,7 +379,7 @@ export const SubjectList = () => {
                           }
                         />
                       </div>
-                      <div className="item col-45-percent center save-btn__container">
+                      <div className="item col-30-percent center save-btn__container">
                         <button
                           onClick={(e) =>
                             handleEvent.handleSaveToEditBtn.subject(e)
@@ -384,14 +398,15 @@ export const SubjectList = () => {
             })}
             <div className="row content add" style={{ display: "none" }}>
               <div className="item col-10-percent center"></div>
-              <div className="item col-45-percent center">
+              <div className="item col-30-percent center">{newID}</div>
+              <div className="item col-30-percent center">
                 <input
                   type="text"
                   className="input--small"
                   placeholder="Nhập tên môn học mới..."
                 />
               </div>
-              <div className="item col-45-percent center save-btn__container">
+              <div className="item col-30-percent center save-btn__container">
                 <button
                   onClick={handleEvent.handleSaveToAddBtn.subject}
                   className="save-btn--small">

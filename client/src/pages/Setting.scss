@@ -120,8 +120,33 @@
 	margin-top: 30px;
 }
 
+//hide/show password
+.manage-class .item i {
+	position: absolute;
+	right: 10px;
+	top: 4px;
+	svg {
+		width: 20px;
+		display: block;
+	}
+}
+
+.manage-class .item i.active::before {
+	content: "";
+	transform: rotate(120deg);
+	position: absolute;
+	top: 0.4rem;
+	left: 0;
+	width: 100%;
+	border: 2px solid #000;
+}
+
 .manage-subject ~ .btns {
 	margin-top: 30px;
+}
+
+.relative {
+	position: relative;
 }
 
 // .manage-class {

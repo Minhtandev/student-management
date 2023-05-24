@@ -215,7 +215,7 @@ export const AddStudent = () => {
       };
     });
     console.log("payload>>>>", payload);
-    payload.forEach(async (newStudent) => {
+    for (const newStudent of payload) {
       //kiểm tra ràng buộc
       // let checkEmptyMessage = helper.validateData("empty", newStudent);
       let checkAgeMessage = helper.validateData(
@@ -246,7 +246,7 @@ export const AddStudent = () => {
         //hiện thông báo
         document.querySelector(".notification").style.display = "flex";
       }
-    });
+    }
   };
 
   //Xử lý nút hủy của màn hình xác nhận import
