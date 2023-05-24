@@ -74,13 +74,13 @@ export const SearchStudent = () => {
     formData.append("file", image);
     formData.append("upload_preset", "xfubk0t8");
 
-    await axios
-      .post("https://api.cloudinary.com/v1_1/djt9g7wvi/image/upload", formData)
-      .then((res) => {
-        console.log(res);
-        console.log("url ảnh>>>>", res.data.secure_url);
-        setImageLink(res.data.secure_url);
-      });
+    // await axios
+    //   .post("https://api.cloudinary.com/v1_1/djt9g7wvi/image/upload", formData)
+    //   .then((res) => {
+    //     console.log(res);
+    //     console.log("url ảnh>>>>", res.data.secure_url);
+    //     setImageLink(res.data.secure_url);
+    //   });
   };
 
   const handleEvent = {
