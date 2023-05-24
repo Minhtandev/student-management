@@ -11,6 +11,7 @@ import { api } from "../../api/api";
 import { useHistory } from "react-router-dom";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../components/ProtectedPage";
+import { UncontrolledTooltip } from "reactstrap";
 //get từ DS lớp, giữ lại id của HS
 export const CreateScore = () => {
   const history = useHistory();
@@ -342,6 +343,7 @@ export const CreateScore = () => {
     //Lưu xuống CSDL
     const payloadToApi = finalResult.map((item) => {
       return {
+        editor: user._id,
         scoreID: item.scoreID,
         student: item._id,
         class: classIDState,
@@ -382,7 +384,7 @@ export const CreateScore = () => {
       if (isEditActivated && item.scoreID) {
         await api.putSubjectScore(item.scoreID, item);
       } else {
-        await api.postSubjectScore(item);
+        await api.postSubjectScore({ ...item, creator: user._id });
       }
     });
 
@@ -589,12 +591,24 @@ export const CreateScore = () => {
                 <div className="item col-30-percent center al-left pl-50">
                   {item.name}
                 </div>
-                <div className="item col-20-percent center al-center min-15">
+                <div
+                  className="item col-20-percent center al-center min-15"
+                  href="#"
+                  id={"Min" + i}>
                   {finalResult[i]?.score15Min}
                 </div>
-                <div className="item col-20-percent center al-center per-1">
+                <UncontrolledTooltip placement="right" target={"Min" + i}>
+                  Hệ số 1
+                </UncontrolledTooltip>
+                <div
+                  className="item col-20-percent center al-center per-1"
+                  href="#"
+                  id={"Per" + i}>
                   {finalResult[i]?.score1Per}
                 </div>
+                <UncontrolledTooltip placement="right" target={"Per" + i}>
+                  Hệ số 2
+                </UncontrolledTooltip>
                 <div className="item col-20-percent center al-center">
                   {finalResult[i]?.avgScore}
                 </div>

@@ -79,6 +79,10 @@ hr {
 		margin-bottom: 30px;
 	}
 
+	.select {
+		margin-bottom: 15px;
+	}
+
 	.class-info {
 		@include flex(center, center);
 		margin-bottom: 10px;
