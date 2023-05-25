@@ -493,9 +493,13 @@ const ScoreDetail = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+
+    let today = new Date();
+    let time = today.toTimeString().split(":").join("").substr(0, 4);
+    let timestamp = helper.getTimestamp("yyyymmdd", today) + "" + time;
     XLSX.writeFile(
       workbook,
-      `Bảng điểm môn ${subject.toLowerCase()} lớp ${className} ${term.toLowerCase()} năm học ${schoolYear}.xlsx`
+      `Bảng điểm môn ${subject.toLowerCase()} lớp ${className} ${term.toLowerCase()} năm học ${schoolYear} ${timestamp}.xlsx`
     );
   };
 

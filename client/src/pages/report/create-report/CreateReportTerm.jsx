@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../../../api/api";
 import { ScoreSchoolYear } from "../../../config/getAPI";
 import * as XLSX from "xlsx";
+import { helper } from "../../../handle-event/HandleEvent";
 import ProtectedPage from "../../../components/ProtectedPage";
 export const CreateReportTerm = () => {
   const { term, schoolYear } = useParams();
@@ -21,9 +22,12 @@ export const CreateReportTerm = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    let today = new Date();
+    let time = today.toTimeString().split(":").join("").substr(0, 4);
+    let timestamp = helper.getTimestamp("yyyymmdd", today) + "" + time;
     XLSX.writeFile(
       workbook,
-      `Báo cáo ${term.toLowerCase()} năm học ${schoolYear}.xlsx`
+      `Báo cáo ${term.toLowerCase()} năm học ${schoolYear} ${timestamp}.xlsx`
     );
   };
   useEffect(() => {
@@ -76,7 +80,7 @@ export const CreateReportTerm = () => {
           term: term,
           schoolYear: schoolYear,
           passed: passed,
-          rate: `${((passed * 100) / total).toFixed(2)}%`,
+          rate: total == 0 ? "0%" : `${((passed * 100) / total).toFixed(2)}%`,
         });
       });
       setData(DATA);
