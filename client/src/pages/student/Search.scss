@@ -79,11 +79,12 @@
       flex-direction: row;
 
       & > .item {
-        line-height: 56px;
-        display: -webkit-box;
-        overflow: hidden;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 1;
+        // line-height: 56px;
+        // display: -webkit-box;
+        // overflow: hidden;
+        // -webkit-box-orient: vertical;
+        // -webkit-line-clamp: 1;
+        word-break: break-all;
       }
     }
 

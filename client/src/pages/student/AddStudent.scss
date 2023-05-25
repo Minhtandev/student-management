@@ -20,6 +20,10 @@
   .guide {
     margin-left: 45px;
   }
+
+  .container {
+    padding-left: 35px;
+  }
 }
 
 .grid__item {
@@ -101,4 +105,5 @@ TH {
 .restrict-card {
   height: 175px;
   overflow-y: overlay;
+  margin-bottom: 15px;
 }

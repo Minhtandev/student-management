@@ -28,7 +28,6 @@ export const SearchStudent = () => {
   const [maxAge, setMaxAge] = useState(0);
   const [user, setUser] = useState("");
   const [userList, setUserList] = useState([]);
-  const [imageLink, setImageLink] = useState("");
   useEffect(() => {
     const getData = async () => {
       const studentInfoArr = await api.getStudentInfoArr();
@@ -74,13 +73,10 @@ export const SearchStudent = () => {
     formData.append("file", image);
     formData.append("upload_preset", "xfubk0t8");
 
-    await axios
-      .post("https://api.cloudinary.com/v1_1/djt9g7wvi/image/upload", formData)
-      .then((res) => {
-        console.log(res);
-        console.log("url ảnh>>>>", res.data.secure_url);
-        setImageLink(res.data.secure_url);
-      });
+    return axios.post(
+      "https://api.cloudinary.com/v1_1/djt9g7wvi/image/upload",
+      formData
+    );
   };
 
   const getDate = (date) => {
@@ -98,6 +94,7 @@ export const SearchStudent = () => {
         return {
           "Họ tên": student.name,
           Email: student.email,
+          Ảnh: student.image,
           "Ngày sinh": student.birth,
           "Giới tính": student.gender === "male" ? "Nam" : "Nữ",
           "Địa chỉ": student.address,
@@ -109,7 +106,11 @@ export const SearchStudent = () => {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
       //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
       //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-      XLSX.writeFile(workbook, `Danh sách học sinh.xlsx`);
+      let today = new Date();
+      let time = today.toTimeString().split(":").join("").substr(0, 4);
+      let timestamp = helper.getTimestamp("yyyymmdd", today) + "" + time;
+
+      XLSX.writeFile(workbook, `Danh sách học sinh ${timestamp}.xlsx`);
     },
     handleConfirmToDelete: async () => {
       let studentID = result[0]._id;
@@ -299,26 +300,24 @@ export const SearchStudent = () => {
             return (
               <>
                 <div className="row content">
-                  <div className="item col-10-percent al-center">{item.ID}</div>
-                  <div className="item col-15-percent al-center">
+                  <div className="item col-10-percent center al-center">
+                    {item.ID}
+                  </div>
+                  <div className="item col-15-percent center al-center">
                     {item.name}
                   </div>
                   <div className="item col-15-percent center al-center">
                     {item.birth}
                   </div>
                   <div className="item col-15-percent center al-center img__container">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        className="item__image"
-                        alt=""
-                        width="100px"
-                      />
-                    ) : (
-                      "Chưa có ảnh"
-                    )}
+                    <img
+                      src={item.image}
+                      className="item__image"
+                      alt="Chưa có ảnh"
+                      width="100px"
+                    />
                   </div>
-                  <div className="item col-15-percent al-center">
+                  <div className="item col-15-percent center al-center">
                     {item.email}
                   </div>
                   <div className="item col-20-percent center al-center">
@@ -397,7 +396,7 @@ export const SearchStudent = () => {
                     <div className="item col-15-percent center al-center">
                       <input
                         type="text"
-                        className="input--tiny"
+                        className="input--small"
                         placeholder="Nhập ngày sinh..."
                         value={item.birth}
                         onChange={(e) =>
@@ -414,25 +413,21 @@ export const SearchStudent = () => {
                     <div className="item col-15-percent center al-center">
                       <input
                         type="file"
-                        className="input--tiny"
+                        className="input--small"
                         onChange={(e) => {
                           //1. Upload ảnh
-                          uploadImage(e.target.files[0]);
-
-                          //2. Hiển thị ảnh
-                          const rowContentEl =
-                            e.target.closest(".row.content").previousSibling;
-                          const itemContainImg =
-                            rowContentEl.querySelector(".img__container");
-                          itemContainImg.innerHTML = `<img
-                        src={${imageLink}}
-                        className="item__image"
-                        alt=""
-                        width="100px"
-                      />`;
-
-                          //3. Đưa link ảnh vào attribute của input này
-                          e.target.setAttribute("data-set", imageLink);
+                          uploadImage(e.target.files[0]).then((res) => {
+                            let imageLink = res.data.secure_url;
+                            console.log("url ảnh>>>>", imageLink);
+                            // setImageLink(imageLink);
+                            //2. Hiển thị ảnh
+                            const studentArrCopy =
+                              helper.generateArrCopy(studentArrTempState);
+                            studentArrCopy[i].image = imageLink;
+                            setStudentArrTempState(studentArrCopy);
+                            //3. Đưa link ảnh vào attribute của input này
+                            e.target.setAttribute("data-set", imageLink);
+                          });
                         }}
                       />
                     </div>

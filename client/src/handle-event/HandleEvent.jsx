@@ -26,6 +26,23 @@ export const handler = {
 };
 
 export const helper = {
+  getTimestamp: (mode, userdate) => {
+    var dte = userdate || new Date(),
+      d = dte.getDate().toString(),
+      m = (dte.getMonth() + 1).toString(),
+      yyyy = dte.getFullYear().toString(),
+      dd = d.length < 2 ? "0" + d : d,
+      mm = m.length < 2 ? "0" + m : m,
+      yy = yyyy.substring(2, 4);
+    switch (mode) {
+      case "dd_mm_yyyy":
+        return dd + "_" + mm + "_" + yyyy;
+      case "yyyymmdd":
+        return yyyy + mm + dd;
+      default:
+        return dte;
+    }
+  },
   generateID: (dataArr, idName, prefix = "") => {
     const lastID =
       dataArr.length > 0 ? dataArr[dataArr.length - 1][idName] : prefix + "000";

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../../../components/Button";
 import { useParams } from "react-router-dom";
 import { api } from "../../../api/api";
+import { helper } from "../../../handle-event/HandleEvent";
 // import { scoreSubject } from "../../../config/getAPI";
 import * as XLSX from "xlsx";
 import ProtectedPage from "../../../components/ProtectedPage";
@@ -21,9 +22,13 @@ export const CreateReportSubject = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    let today = new Date();
+    let time = today.toTimeString().split(":").join("").substr(0, 4);
+    let timestamp = helper.getTimestamp("yyyymmdd", today) + "" + time;
+
     XLSX.writeFile(
       workbook,
-      `Báo cáo môn ${subject.toLowerCase()} ${term.toLowerCase()} năm học ${schoolYear}.xlsx`
+      `Báo cáo môn ${subject.toLowerCase()} ${term.toLowerCase()} năm học ${schoolYear} ${timestamp}.xlsx`
     );
   };
 
@@ -80,7 +85,7 @@ export const CreateReportSubject = () => {
           term: term,
           schoolYear: schoolYear,
           passed: passed,
-          rate: `${((passed * 100) / total).toFixed(2)}%`,
+          rate: total == 0 ? "0%" : `${((passed * 100) / total).toFixed(2)}%`,
         });
       });
       setData(DATA);

@@ -148,6 +148,7 @@ export const SearchClassDetail = () => {
         return {
           "Họ tên": student.name,
           Email: student.email,
+          Ảnh: student.image,
           "Ngày sinh": student.birth,
           "Giới tính": student.gender === "male" ? "Nam" : "Nữ",
           "Địa chỉ": student.address,
@@ -158,9 +159,13 @@ export const SearchClassDetail = () => {
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
       //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
       //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+      let today = new Date();
+      let time = today.toTimeString().split(":").join("").substr(0, 4);
+      let timestamp = helper.getTimestamp("yyyymmdd", today) + "" + time;
+
       XLSX.writeFile(
         workbook,
-        `Danh sách lớp ${classDetail?.name} ${classDetail?.schoolYear}.xlsx`
+        `Danh sách lớp ${classDetail?.name} ${classDetail?.schoolYear} ${timestamp}.xlsx`
       );
     },
     handleClickUpdateBtn: () => {
