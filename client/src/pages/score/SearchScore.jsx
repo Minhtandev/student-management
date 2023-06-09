@@ -121,6 +121,9 @@ export const SearchScore = () => {
             <div className="item col-20-percent center al-center">Thao tác</div>
           </div>
 
+          {scoreUIArr.length === 0 && (
+            <span style={{ paddingLeft: "15px" }}>Không tìm thấy điểm</span>
+          )}
           {scoreUIArr.map((item, i) => {
             return (
               <>
