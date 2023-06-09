@@ -371,7 +371,11 @@ export const CreateClass = () => {
                 Thao tác
               </div>
             </div>
-
+            {studentArrTempState.length === 0 && (
+              <span style={{ paddingLeft: "15px" }}>
+                Không tìm thấy học sinh
+              </span>
+            )}
             {studentArrTempState.map((item, i) => {
               if (item)
                 return (

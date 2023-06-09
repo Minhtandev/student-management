@@ -295,7 +295,9 @@ export const SearchStudent = () => {
               </div>
             )}
           </div>
-
+          {studentArrTempState.length === 0 && (
+            <span style={{ paddingLeft: "15px" }}>Không tìm thấy học sinh</span>
+          )}
           {studentArrTempState.map((item, i) => {
             return (
               <>

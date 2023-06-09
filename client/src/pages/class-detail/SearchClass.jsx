@@ -79,6 +79,11 @@ export const SearchClass = () => {
             <div className="item col-25-percent center al-center">Thao tác</div>
           </div>
 
+          {classUIArr.length === 0 && (
+            <span style={{ paddingLeft: "15px" }}>
+              Không tìm thấy danh sách lớp
+            </span>
+          )}
           {classUIArr.map((item, i) => {
             return (
               <>

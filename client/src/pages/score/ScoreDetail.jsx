@@ -696,7 +696,7 @@ const ScoreDetail = () => {
               innerText="Xóa"
               btnType="clear"
               onClick={handleClickDeleteBtn}></Button>
-            <Button innerText="Tạo" btnType="add" onClick={handleClickAddBtn} />
+            <Button innerText="Lưu" btnType="add" onClick={handleClickAddBtn} />
           </>
         )}
         {status === "view" && (
