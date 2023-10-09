@@ -175,7 +175,7 @@ const Sidebar = ({ nodeRef = "", handleShow = () => {} }) => {
                         itemId: "/setting/subject-list",
                       },
                       {
-                        title: "Danh sách accounts",
+                        title: "Danh sách tài khoản",
                         itemId: "/setting/user",
                       },
                     ],
