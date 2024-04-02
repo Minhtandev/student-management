@@ -174,19 +174,19 @@ const Sidebar = ({ nodeRef = "", handleShow = () => {} }) => {
                         title: "Danh sách môn học",
                         itemId: "/setting/subject-list",
                       },
-                      {
-                        title: "Danh sách tài khoản",
-                        itemId: "/setting/user",
-                      },
+                      // {
+                      //   title: "Danh sách tài khoản",
+                      //   itemId: "/setting/user",
+                      // },
                     ],
                   },
-                  {
-                    title: "Đăng xuất",
-                    itemId: "/login",
-                    elemBefore: () => (
-                      <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
-                    ),
-                  },
+                  // {
+                  //   title: "Đăng xuất",
+                  //   itemId: "/login",
+                  //   elemBefore: () => (
+                  //     <img src={People} alt="" /> //<i class="fa-solid fa-user-graduate"></i>
+                  //   ),
+                  // },
                 ]}
               />
             )}

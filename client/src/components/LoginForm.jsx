@@ -22,7 +22,6 @@ const LoginForm = () => {
 	} = useForm({ resolver: yupResolver(validateSchema), mode: "onChange" });
 	// handleSubmit
 	const onSubmit = async (data) => {
-		console.log(data);
 		const userArr = await api.getUserList();
 		const user = userArr.find((item) => item.username === data.username);
 		let isValid =
